@@ -1,8 +1,6 @@
 # NimSort42
 
-## Setup
-
-### Pull Submoodules
+## Pull Submodules
 ```bash
  git submodule update --init --recursive
 ```
