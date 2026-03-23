@@ -51,3 +51,5 @@ Puffer **(01.06 bis 15.06)**
 11. Abschlusspräsentationen **(23.06) bis (29.06)**
 - Beide Abschließenden Präsentationen sind gehalten.
 
+
+noch hinzufügen: Greifprozess als unterpunkt wahrscheinlich in 7. oder 8.
