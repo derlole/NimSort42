@@ -9,13 +9,13 @@
 - Die Entscheidungen sind begründet Dokumentiert
 - Ein Projektplan mit Meilensteinen wurde erstellt
 
-2. Kommunikation mit der Hardware **(24.03) bis (30.03) || vorzugsweise (31.03) bis (06.04)**
-- Eine Kommunikation mit der Hardware kann hergestellt werden
-- die msg Informationen der Hardware Schnittstelle können empfangen und gesendet werden
-
-3. Kickoff Präsentation mit Softwarearchitektur **(31.03) bis (06.04) || vorzugsweise (24.03) bis (30.03)**
+2. Kickoff Präsentation mit Softwarearchitektur **(24.03) bis (30.03)**
 - Die Kickoff Präsentation ist gehalten
 - Eine vorläufige akzeptierte Softwarearchitektur ist erstellt
+
+3. Kommunikation mit der Hardware **(31.03) bis (06.04)**
+- Eine Kommunikation mit der Hardware kann hergestellt werden
+- die msg Informationen der Hardware Schnittstelle können empfangen und gesendet werden
 - Kamerabild kann gemacht werden
 
 4. Vision Basis und Ros Architektur Programmieren **(07.04) bis (13.04)**
@@ -52,15 +52,22 @@ Puffer **(01.06 bis 15.06)**
 11. Abschlusspräsentationen **(23.06) bis (29.06)**
 - Beide Abschließenden Präsentationen sind gehalten.
 
+Puffer **(30.06 bis 13.07)**
 
+### Meilensteine
+1. Notwendige Koordinatensysteme festgelegt *1/2*
+2. Grundlagen realisieren. *3/4*
+3. Prädizierte Positionen im Weltkoordiantensystem Ausgeben *5/6*
+4. Regelung auf einen Punkt im Weltkoordinatensystem *7/8*
+5. Prozesslogik ist in Python Programmiert und getestet *9*
+6. Abschlusspräsentationen *10/11*
 
 ### Risikomamagement
 - Hardware versagt oder wird nicht früh genug bereit gestellt-> Zeitplan geht nicht auf
 - Team Mitglied fällt aus -> Zeitplan geht nicht auf
 - Professor fällt aus -> Projekt nicht bewertbar
 - Zu geringe Hardwareverfügbarkeit -> zu wenig praktisches testen möglich
-- 
-
+-> 2 + 2 Wochen Puffer 
 ### Stakeholder
 - Teanmmitglieder -> Tolles Note <= 4.0
 - Professor -> Möchte seinen Lehrauftrag erfüllen 
