@@ -62,16 +62,16 @@ Puffer **(30.06 bis 13.07)**
 5. Prozesslogik ist in Python Programmiert und getestet *9*
 6. Abschlusspräsentationen *10/11*
 
-### Risikomamagement
+### Risikomanagement
 - Hardware versagt oder wird nicht früh genug bereit gestellt-> Zeitplan geht nicht auf
 - Team Mitglied fällt aus -> Zeitplan geht nicht auf
 - Professor fällt aus -> Projekt nicht bewertbar
 - Zu geringe Hardwareverfügbarkeit -> zu wenig praktisches testen möglich
 -> 2 + 2 Wochen Puffer 
 ### Stakeholder
-- Teanmmitglieder -> Tolles Note <= 4.0
+- Teammitglieder -> Tolles Note <= 4.0
 - Professor -> Möchte seinen Lehrauftrag erfüllen 
-- Kunde (Haribo) -> möchte einhorn Gummibärchen sortieren
+- Kunde (Haribo) -> möchte Einhorn Gummibärchen sortieren
 
 ### Arbeitsmethode
 -> Iterativ
