@@ -37,6 +37,7 @@
 8. Vision Modell fertigstellen und feinjustieren **(12.05) bis (25.05)**
 - Feature / Shape Matching ist programmiert.
 - Klassifikation der Form funktioniert zuverlässig.
+- Greifprozess ist programmiert und getestet
 
 9. Prozesslogik ist in Python Programmiert und getestet **(26.05) bis (01.06)**
 - alle daten aus Kamera pipeline, Sensorlogik u.a. werden in einer statemachine der Prozesslogik zusammengefasst.
@@ -52,4 +53,23 @@ Puffer **(01.06 bis 15.06)**
 - Beide Abschließenden Präsentationen sind gehalten.
 
 
-noch hinzufügen: Greifprozess als unterpunkt wahrscheinlich in 7. oder 8.
+
+### Risikomamagement
+- Hardware versagt oder wird nicht früh genug bereit gestellt-> Zeitplan geht nicht auf
+- Team Mitglied fällt aus -> Zeitplan geht nicht auf
+- Professor fällt aus -> Projekt nicht bewertbar
+- Zu geringe Hardwareverfügbarkeit -> zu wenig praktisches testen möglich
+- 
+
+### Stakeholder
+- Teanmmitglieder -> Tolles Note <= 4.0
+- Professor -> Möchte seinen Lehrauftrag erfüllen 
+- Kunde (Haribo) -> möchte einhorn Gummibärchen sortieren
+
+### Arbeitsmethode
+-> Iterativ
+
+### Hauptverantwortlichkeiten (Wichtig nicht ausschließlicher Arbeitsbereich)
+- Louis: Vision Pipeline 
+- Yannick: Prozesslogik/Init
+- Benjamin: Regelung/AxisController

@@ -1,53 +1,124 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
-% Theme (kannst du ändern)
-\usetheme{Madrid}
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
 
-% Pakete
+\usetheme{CambridgeUS}
+\usecolortheme{default}
+
 \usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
 
-% Titelinformationen
-\title{Meine Präsentation}
-\author{Dein Name}
+
+\title[Kurztitel]{Kickoff Präsentation}
+\subtitle{RO45 Robotik Projekt 3}
+\author{NimSort42}
+\institute{Hochschule Kempten}
 \date{\today}
 
 \begin{document}
+	
+	\begin{frame}
+		\titlepage
+	\end{frame}
+	
+	\begin{frame}{Inhalt}
+		\tableofcontents
+	\end{frame}
 
-% Titelfolie
-\begin{frame}
-    \titlepage
-\end{frame}
-
-% Folie mit deinem Bild
-%\begin{frame}{Projekt: Nimsort42}
-%    \centering
-%    \includegraphics[width=0.8\textwidth]{nimsort42.png}
-%\end{frame}
-
-% Beispiel-Inhaltsfolie
-\begin{frame}{Inhalt}
-    \begin{itemize}
-        \item Einführung
-        \item Funktionsweise
-        \item Ergebnisse
-        \item Fazit
-    \end{itemize}
-\end{frame}
-
-% Beispiel-Folie mit Text + Bild
-\begin{frame}{Beschreibung}
-    \begin{columns}
-        \column{0.5\textwidth}
-        \textbf{Kurzbeschreibung:}
-        \begin{itemize}
-            \item Mechanisches Sortiersystem
-            \item Präzise Steuerung
-            \item Förderband integriert
-        \end{itemize}
-
-        \column{0.5\textwidth}
-        \includegraphics[width=\textwidth]{nimsort42.png}
-    \end{columns}
-\end{frame}
-
+	\section{Vorstellung des Teams}
+	
+	\begin{frame}{Team}
+		\begin{itemize}
+			\item Hintergrund des Themas
+			\item Problemstellung
+			\item Ziel der Arbeit
+		\end{itemize}
+	\end{frame}
+	
+	\section{Projektvorstellung}
+	
+	\begin{frame}{Projekt}
+		Es handelt siche um Nimsort\\
+		sortiert Katzen und Magische Einhörner
+	\end{frame}
+	
+	\begin{frame}{Anforderungen}
+		Eine Beispielgleichung:
+		\[
+		F = m \cdot a
+		\]
+	\end{frame}
+	
+	\section{Projektmanagment}
+	
+	\begin{frame}{Meilensteine}
+		\begin{figure}
+			\centering
+			\caption{Beispielabbildung}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Timeline}
+		\begin{figure}
+			\centering
+			\caption{Beispielabbildung}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Risikomanagment}
+		\begin{figure}
+			\centering
+			\caption{Beispielabbildung}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Stakeholder}
+		\begin{figure}
+			\centering
+			\caption{Beispielabbildung}
+		\end{figure}
+	\end{frame}
+	
+	\begin{frame}{Hauptverantwortlichkeiten}
+		\begin{figure}
+			\centering
+			\caption{Beispielabbildung}
+		\end{figure}
+	\end{frame}
+	% --------------------
+	\section{Technische Realisierung}
+	
+	\begin{frame}{Harteware}
+		\begin{itemize}
+			\item Ergebnis 1
+			\item Ergebnis 2
+			\item Ausblick
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Weicheware}
+		\begin{itemize}
+			\item Ergebnis 1
+			\item Ergebnis 2
+			\item Ausblick
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Architektur}
+		\begin{itemize}
+			\item Ergebnis 1
+			\item Ergebnis 2
+			\item Ausblick
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Fragen}
+		\centering
+		\Huge Vielen Dank für Ihre Aufmerksamkeit
+	\end{frame}
+	
 \end{document}
