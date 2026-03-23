@@ -1,0 +1,4 @@
+- WCS (liegt am linken Band anfang)
+- Nullpunkt CS entspricht TCP-CS (Koordinatensystem in dem nach homing alle werte 0 sind) (keine Rotatortische Achsen -> Keine erreichbarkeitsverschiebung im TCP im vergleich zu Nullpunkt)
+- Kamerakoordinatensystem (in der Kameralinse)
+- Bildkoordinatensystem
