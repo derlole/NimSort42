@@ -12,7 +12,7 @@
 \usepackage{siunitx}
 \usepackage{booktabs}
 
-\usepackage{twemojis}
+%\usepackage{twemojis}
 \title[Kurztitel]{Kick-off Präsentation}
 \subtitle{RO45 Robotik Projekt 3 – Automatische Sortieranlage}
 \author{NimSort42}
@@ -59,12 +59,12 @@
 	
 	\begin{frame}{Meilensteine}
 		\begin{itemize}
-			\item Notwendige Koordinatensysteme festgelegt 
-			\item Grundlagen realisieren. 
-			\item Prädizierte Positionen im Weltkoordiantensystem Ausgeben 
-			\item Regelung auf einen Punkt im Weltkoordinatensystem 
-			\item Prozesslogik ist in Python Programmiert und getestet 
-			\item Abschlusspräsentationen 
+			\item Notwendige Koordinatensysteme festgelegt (30.03.2026)
+			\item Code-Grundlagen realisieren (13.04.2026)
+			\item Prädizierte Positionen im Weltkoordinatensystem ausgeben (27.04.2026)
+			\item Regelung auf einen Punkt im Weltkoordinatensystem (11.05.2026)
+			\item Prozesslogik ist in Python programmiert und getestet (01.06.2026)
+			\item Abschlusspräsentationen (29.06.2026)
 		\end{itemize}
 	\end{frame}
 	
@@ -84,8 +84,13 @@
 				Eingeschränkte Hardwareverfügbarkeit & $\Rightarrow$ Weniger Tests
 			\end{tabular}
 		\end{itemize}
+		\textbf{Umgang:}\\
+		\begin{itemize}
+			\item Akzeptanz
+			\item Puffer eingeplant (4 Wochen)
+		\end{itemize} 
 	\end{frame}
-		
+	
 	\begin{frame}{Stakeholder}
 		\begin{itemize}
 			\item \begin{tabular}[t]{@{}p{3cm} l@{}}
@@ -105,7 +110,7 @@
 		\begin{tabular}{@{}l l@{}}
 			\textbf{Bachhuber Yannick} & $\Rightarrow$ Prozesslogik, Initialisierung \\ 
 			\textbf{Keppler Benjamin} & $\Rightarrow$ Regelung, Achsensteuerung \\
-			\textbf{Moser Louis} & $\Rightarrow$ Vision Pipeline, Objekterkennung \\
+			\textbf{Moser Louis} & $\Rightarrow$ Vision-Pipeline, Objekterkennung \\
 		\end{tabular}
 	\end{frame}
 	
@@ -117,7 +122,7 @@
 			\item Portalroboter mit Sauggreifer (Arbeitsraum: $\SI{0.1}{m}^3$)
 			\item Förderband mit variabler Geschwindigkeit ($0$–$\SI{0.05}{m/s}$)
 			\item Arduino Mega mit Stepper Shield zur Achsansteuerung
-			\item ELP USB Kamera (2.0 MP) zur Objekterkennung
+			\item ELP USB-Kamera (2.0 MP) zur Objekterkennung
 			\item Zwei Sortierkisten (Katze / Einhorn) und eine Restkiste
 		\end{itemize}
 	\end{frame}
@@ -127,38 +132,42 @@
 			\item Betriebssystem: Ubuntu 22.04
 			\item Framework: ROS2 Humble Hawksbill
 			\item OpenCV/scikit-learn in Python
-		
+			
 		\end{itemize}
 	\end{frame}
 	
 	\begin{frame}{Architektur-Achsen}
 		\begin{center}
-			\includegraphics[width=0.8\textwidth]{../pictures/arch1.png}
+			\includegraphics[width=0.8\textwidth]{arch1.png}
 		\end{center}
 	\end{frame}
-
+	
 	\begin{frame}{Architektur-Prozesslogik}
 		\begin{center}
-			\includegraphics[width=0.85\textwidth]{../pictures/arch2.png}
+			\includegraphics[width=0.85\textwidth]{arch2.png}
 		\end{center}
 	\end{frame}	
 	
 	\begin{frame}{Architektur-Kamera}
 		\begin{center}
-			\includegraphics[width=0.7\textwidth]{../pictures/arch3.png}
+			\includegraphics[width=0.7\textwidth]{arch3.png}
 		\end{center}
 	\end{frame}	
 	
 	\begin{frame}
 		\begin{columns}
 			\begin{column}{0.6\textwidth}
-				\includegraphics[width=0.78\textwidth]{../pictures/logo_nimsort42.png}
+				\includegraphics[width=0.7\textwidth]{logo_nimsort42.png}
 			\end{column}
 			\begin{column}{0.4\textwidth}
-				So leicht haben sie noch nie sortiert! Wie aus Zauberhand.\\
-				
-				Projektteam: \\
-				Projektende: HIER DATUM
+				\textbf{So leicht haben Sie noch nie sortiert! Wie aus Zauberhand.}\\
+				\vspace{5mm}
+				\textbf{Projektteam:}\\
+				Bachhuber Yannick\\
+				Keppler Benjamin\\
+				Moser Louis\\
+				\vspace{5mm}
+				\textbf{Voraussichtliches Projektende:}\\ 30.03.2026
 				
 			\end{column}
 		\end{columns}
