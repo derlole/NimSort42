@@ -1,4 +1,0 @@
-\babel@toc {ngerman}{}\relax 
-\beamer@sectionintoc {1}{Team \& Projekt}{3}{0}{1}
-\beamer@sectionintoc {2}{Projektmanagement}{4}{0}{2}
-\beamer@sectionintoc {3}{Technische Realisierung}{8}{0}{3}
