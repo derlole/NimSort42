@@ -1,11 +1,11 @@
 <mxfile host="65bd71144e">
     <diagram id="-qwBCs8K-67AFgMfpn37" name="Page-1">
-        <mxGraphModel dx="2773" dy="1909" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="2145" dy="1942" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
                 <mxCell id="2" value="" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="600" y="-500" width="185" height="260" as="geometry"/>
+                    <mxGeometry x="597.5" y="-500" width="185" height="260" as="geometry"/>
                 </mxCell>
                 <mxCell id="3" value="ROS_Node" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d80073;shadow=0;strokeColor=#A50040;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="630" y="-490" width="120" height="60" as="geometry"/>
@@ -135,10 +135,10 @@
                 <mxCell id="71" value="Vision" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d80073;shadow=0;strokeColor=#A50040;fontColor=#ffffff;" parent="1" vertex="1">
                     <mxGeometry x="-310" y="-225" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="72" value="feature detection" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+                <mxCell id="72" value="FeatureDetction" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
                     <mxGeometry x="-570" y="-180" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="73" value="capter and preprocessing" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
+                <mxCell id="73" value="OpencvPipeline" style="rounded=1;whiteSpace=wrap;html=1;shadow=1;fillColor=#60a917;fontColor=#ffffff;strokeColor=#2D7600;" parent="1" vertex="1">
                     <mxGeometry x="-570" y="-260" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="78" value="/NimSortImgeData" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#6a00ff;shadow=0;strokeColor=#3700CC;fontColor=#ffffff;" parent="1" vertex="1">
