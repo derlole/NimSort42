@@ -45,7 +45,7 @@ class Axis:
     def __init__(self, name: str, controller:  Controller, trajectory_planner: TrajectoryPlanner, initial_position: float = 0.0):
         self._name = name
         self._controller = controller
-        self.planner = trajectory_planner
+        self._planner = trajectory_planner
 
         self._position = initial_position
         self._velocity = 0.0
