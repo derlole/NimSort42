@@ -1,9 +1,9 @@
 # Verbeserungsvorschlag
 
-- Projektplan schön Grafisch darstellen!
+- Projektplan schön grafisch darstellen!
 - Übergänge besser kentlich machen 
-- Für jeden Aspekt erwähnen wass man machen möchete / will
-	- vison z.b. bild aufnemen Vorverarbeiten und was geplant ist (grobe umsetzung)
+- Für jeden Aspekt erwähnen was man machen möchete / will
+	- Vison z.b. Bild aufnehmen vorverarbeiten und was geplant ist (grobe Umsetzung)
 
 
 
@@ -14,18 +14,17 @@
 
 # Gut gelaufen
 
-- risilomanagment gut 
+- Risikomanagment gut 
 - Software Architektur gut 
 - Layout ist ansprechend und technisch gut 
-- gute Aufteileing
+- gute Aufteilung
 - gut gesprochen 
 
 
 # Techische Anmerkung 
 
-- Point klasse Position x y z anschauen, muss micht immer neu definirt werden ?
-- LLM  Fragen
-- Einlesen für Ros Koordinaten Transformation 
+- Point Message Position x y z anschauen, muss micht immer neu definiert werden ?
+- Einlesen für Ros Koordinatentransformation 
 	- CS Transformation macht Ros 	
 	- JDF oder X makro 
-	- Statisch (unregelmäsig gepublisched ) oder dynamisch (schnellerer Ryhtmus)
+	- Statisch (unregelmäsig gepublisched ) oder Dynamisch (schnellerer Ryhtmus)
