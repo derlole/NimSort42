@@ -34,12 +34,13 @@
 ### OpencvPipeline
 - Taking Picture
 - process picture with according filters
-- calculate an return parameters
+- calculates object position
+- calculate an return preprocessed Image and Object position
 
 ### FeatureDetection
-- receive parameters
+- receive preprocessed Image 
+- retrieves neede parameters
 - calculate object clasification with parameters
-- calculate object position
 - return calculated obejct data
 
 ### PositionPrediction
