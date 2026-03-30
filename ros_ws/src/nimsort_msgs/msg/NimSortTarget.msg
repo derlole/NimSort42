@@ -1,4 +1,4 @@
 # NimSortTarget.msg
 
-geometry_msg/msg/Point target_point
+geometry_msgs/Point target_point
 int32 process_id 
