@@ -24,3 +24,9 @@ int32 process_id --> represents Axistask #TODO genau definieren!!
 bool reached  
 bool gripper_active  
 
+
+
+## Python Interfaces
+
+### OpencvPipeline
+
