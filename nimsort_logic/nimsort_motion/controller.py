@@ -80,10 +80,10 @@ class Controller:
         Returns
         -------
         float
-            target acceleration [m/s²]
+            target_acceleration [m/s²]
         """
         if dt <= 0.0:
-            raise ValueError(f"dt muss positiv sein, ist {dt}.")
+            raise ValueError(f"dt must be positiv, current value is {dt}.")
         
         p_term = self.kp * position_error
 

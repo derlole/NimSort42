@@ -38,6 +38,8 @@ class Axis:
         axis-name e.g. "X"
     controller: Controller
         Axis-Controller Class
+    trajectory_planner: TrajectoryPlanner
+        Axis-TrajectoryPlanner Class
     initial_position: float
         Initial Axis Position [m] (should be 0.0)
 
