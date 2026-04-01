@@ -71,7 +71,7 @@ class Axis:
         Zycliclly called function to update the acceleration accourding to the current_position trough trajectoryPlanner and Controller.
         """
         if dt <= 0.0:
-            raise ValueError(f"Axis '{self.name}': dt muss positiv sein, ist {dt}.")
+            raise ValueError(f"Axis '{self.name}': dt must be positive {dt}.")
 
         self._velocity = (current_position - self._prev_position) / dt
         self._position = current_position
