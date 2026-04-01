@@ -78,7 +78,7 @@ class Controller:
         target_acceleration : float [m/s²].
 
         Returns
-        -------
+        ---
         float
             target_acceleration [m/s²]
         """
