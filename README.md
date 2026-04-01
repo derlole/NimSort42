@@ -5,6 +5,11 @@
  git submodule update --init --recursive
 ```
 
+## Run Submodules
+```bash
+ros2 launch ro45_ros2_pickrobot_serial launch_nodes.py
+```
+
 ## Install Local Python packages
 ```bash
 cd nimsort_logic
