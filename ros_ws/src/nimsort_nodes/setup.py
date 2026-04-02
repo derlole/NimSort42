@@ -24,6 +24,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
+            'nimsort_axis_controller = nimsort_nodes.axis_controller_node:main'
         ],
     },
 )
