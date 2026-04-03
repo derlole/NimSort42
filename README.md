@@ -1,9 +1,17 @@
 # NimSort42
 
 ## Pull Submodules
+In order to build all packages you have to recursively pull the submodules into your local repository with the following command:
 ```bash
- git submodule update --init --recursive
+git submodule update --init --recursive
 ```
+## Build all necessary modules
+```bash
+cd ros_ws
+colcon build
+source install/setup.bash
+```
+Make sure that there are no build errors or build files in the wrong directory, after building you should be able to start everything needed for the application to run.
 
 ## Run Submodules
 ```bash
