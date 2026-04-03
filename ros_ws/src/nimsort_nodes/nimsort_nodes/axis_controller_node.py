@@ -59,10 +59,9 @@ class AxisController(Node):
 
         threading.Thread(target=self.keyboard_listener, daemon=True).start()
 
-    def send_acceleration(self, acc):
+    def send_acceleration(self, acc): #TODO this is a temporary funciton to controll onöy one axis at a time manually
         msg = RobotCmd()
 
-        # ⚠️ HIER ggf. anpassen je nach Message-Struktur!
         msg.accel_x = acc
         msg.accel_y = 0.0
         msg.accel_z = 0.0
