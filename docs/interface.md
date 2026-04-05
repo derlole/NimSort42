@@ -28,6 +28,24 @@ bool gripper_active
 
 ## Python Interfaces
 
+### OpencvPipeline
+This interface defines the interaction between the Vision node and the FeatureDetection.
+
+- `init_cv()` Inits the OpencvPipeline system
+- `capture_image()` Captures an Image
+- `get_position()` Get the Position in Cam-CS #TODO Maby in World
+- `get_timestamp()` Get the Timestamp
+- `rest_cv()` Resets the hole Process
+
+
+### FeatureDetection
+
+- `init_feature_Detection()` Inits the FeatureDetection System
+- `set_image()` Set the Image
+- `get_feature()` Get the feature #TODO Maby other word for feature (objekt)
+- `reset_feature_Detection()` Resets the hole Process
+
+
 ### AxisInterface
 This interface defines the interaction between the AxisController node and the individual axis instances.
 
