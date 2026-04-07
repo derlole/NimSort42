@@ -31,23 +31,13 @@ bool gripper_active
 ### OpencvPipeline
 This interface defines the interaction between the Vision node and the FeatureDetection.
 
-- `init_cv()` Inits the OpencvPipeline system
 - `capture_image()` Captures an Image
-- `get_position()` Get the Position in Cam-CS #TODO Maybe in World
-- `get_timestamp()` Get the Timestamp
-- `rest_cv()` Resets the whole Process
-
-#TODO KOMMENTAR: evlt. diese funktionen im Interface nur als eine funktion (oder höchstens zwei) z.B. capture_image() und get_image_data() oder sowas. was intern passiert muss/soll im interface nicht zu sehen sein. init_cv brachst du nicht jede klasse hat zwangsweise eine __init__() function
-
+- `get_image_data() -> tuple[float, float, np.ndarray]` Get the Data from the Image (Position in X and Y in Camera CS, The Image)
+- `get_ image_data() -> tuple[float, float, np.ndarray]` Get the Data from the Image (Position in X and Y in Camera CS, The Image)
 
 ### FeatureDetection
 
-- `init_feature_Detection()` Inits the FeatureDetection System
-- `set_image()` Set the Image
-- `get_feature()` Get the feature #TODO Maybe other word for feature (objekt)
-- `reset_feature_Detection()` Resets the whole Process
-
-#TODO KOMMENTAR: init_bla wieder löschen, braucht man nicht im interface. auch hier set_image() und get_feature() kombinieren, das bild und das feature sind keine speziellen attribute der Klasse, diese müssen nicht mit gettern und settern abstrahiert werden, desewegen wollen wi von außen so einfache zugriffe wior möglich. du kannst, wenn du das möchtest soetwas, wie propertys für get_last_feature_data machen, wo erneut der letzte datensatz wieder kommt, aber das ist optional.
+- `get_feature(image: np.ndarray) -> int` Get the Feature (magic Unicorn, Cat, Circle and Square)
 
 ### AxisInterface
 This interface defines the interaction between the AxisController node and the individual axis instances.
