@@ -10,7 +10,7 @@ int32 ts --> timestamp
 ### NimSortPrediction.msg
 
 geometry_msg/msg/Point predicted_position_wcs  
-int32 object_type --> cat [0], magicalUnicorn [1], square [2], circle [3]    
+int32 object_type --> cat [0], magicalUnicorn [1], square [2], circle [3]  
 
 
 ### NimSortTarget.msg
@@ -23,7 +23,6 @@ int32 process_id --> represents Axistask #TODO genau definieren!!
 
 bool reached  
 bool gripper_active  
-
 
 
 ## Python Interfaces
