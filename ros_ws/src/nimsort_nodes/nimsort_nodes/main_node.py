@@ -1,8 +1,8 @@
 import rclpy
 from rclpy.node import MutuallyExclusiveCallbackGroup, Node 
-from nimsort_logic.nimsort_main.main_interface import MainInterface
+from nimsort_logic.nimsort_main.main_interface import MainInterface #TODO: Are u sure about that?
 from nimsort_logic.nimsort_main.main import NimSortMain 
-from ro45_portalrobot_interfaces.msg import MotionState, Target, Prediction
+from ro45_portalrobot_interfaces.msg import MotionState, Target, Prediction #TODO: Are u sure about that?
 
 class MainNode(Node):
     def __init__(self):
@@ -47,7 +47,7 @@ class MainNode(Node):
 def main(args=None):
     rclpy.init(args=args)
     
-    from rclpy.executors import MultiThreadedExecutor
+    from rclpy.executors import MultiThreadedExecutor #TODO: why down here?
     
     main_node = MainNode()
     
