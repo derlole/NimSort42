@@ -1,5 +1,5 @@
 import threading
-from nimsort_logic.nimsort_main.main_interface import MainInterface
+from nimsort_main.main_interface import MainInterface
 
 
 class NimSortMain(MainInterface):

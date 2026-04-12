@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import MutuallyExclusiveCallbackGroup, Node 
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 
-from nimsort_logic.nimsort_main.main import NimSortMain 
+from nimsort_main.main import NimSortMain 
 from nimsort_msgs.msg import NimSortPrediction, NimSortMotionState, NimSortTarget
 
 class MainNode(Node):

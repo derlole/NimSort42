@@ -25,7 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'nimsort_axis_controller = nimsort_nodes.axis_controller_node:main',
-            'nimsort_position_prediction = nimsort_nodes.position_prediction_node:main',
+            'nimsort_position_prediction = nimsort_nodes.postion_prediction_node:main',
             'nimsort_vision = nimsort_nodes.camera_supreme_commander:main',
             'nimsort_main = nimsort_nodes.main_node:main'
         ],
