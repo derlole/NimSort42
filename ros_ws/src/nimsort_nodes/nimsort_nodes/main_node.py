@@ -1,33 +1,28 @@
 import rclpy
 from rclpy.node import MutuallyExclusiveCallbackGroup, Node 
-from nimsort_logic.nimsort_main.main_interface import MainInterface #TODO: Are u sure about that?
+from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
+
 from nimsort_logic.nimsort_main.main import NimSortMain 
-from ro45_portalrobot_interfaces.msg import MotionState, Target, Prediction #TODO: Are u sure about that?
+from nimsort_msgs.msg import NimSortPrediction, NimSortMotionState, NimSortTarget
 
 class MainNode(Node):
     def __init__(self):
-        super().__init__('main_node')
+        super().__init__('nimsort_main_node')
         
         self.nimsort_main = NimSortMain()
-        self.publisher_ = self.create_publisher(Target, 'target', 10)
-        
-       
-        self.callback_group = MutuallyExclusiveCallbackGroup()
-
+        self.publisher_ = self.create_publisher(NimSortTarget, 'target', 10)
         
         self.subscription_motion = self.create_subscription(
-            MotionState,
+            NimSortMotionState,
             'motion_state',
             self.listener_callback_motion,
-            10,
-            callback_group=self.callback_group)
+            10)
         
         self.subscription_prediction = self.create_subscription(
-            Prediction,
+            NimSortPrediction,
             'prediction',
             self.listener_callback_prediction,
-            10,
-            callback_group=self.callback_group)
+            10)
 
     def listener_callback_motion(self, msg):
         """Verarbeitet MotionState Nachricht"""
@@ -46,19 +41,15 @@ class MainNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    
-    from rclpy.executors import MultiThreadedExecutor #TODO: why down here?
-    
     main_node = MainNode()
-    
-    
+
     executor = MultiThreadedExecutor()
     executor.add_node(main_node)
     
     try:
         executor.spin()
-    except KeyboardInterrupt:
-        main_node.get_logger().info('MainNode gestoppt')
+    except (ExternalShutdownException, KeyboardInterrupt):
+        main_node.get_logger().error("[MAIN][main----]: Shutdown Node")
         
     finally:
         executor.shutdown()

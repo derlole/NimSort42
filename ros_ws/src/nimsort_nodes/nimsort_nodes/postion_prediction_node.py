@@ -1,7 +1,8 @@
 import rclpy
-from rclpy.node import Node, MutuallyExclusiveCallbackGroup
+from rclpy.node import Node
+from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
+
 from nimsort_msgs.msg import NimSortPrediction, NimSortImageData
-from rclpy.executors import ExternalShutdownException
 
 class PositionPrediction(Node):
     def __init__(self):
@@ -23,7 +24,7 @@ class PositionPrediction(Node):
 
         self.timer = self.create_timer(
             0.1,
-            self.main_loop_callback
+            self.main_order
         )
 
     def image_data_callback(self, msg):
@@ -34,20 +35,25 @@ class PositionPrediction(Node):
         #TODO fill msg
         self.prediction_pub.publish(msg)
 
-    def main_loop_callback(self):
+    def main_order(self):
         pass
 
 def main(args=None):
     rclpy.init(args=args)
     node = PositionPrediction()
 
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+
     try:
-        rclpy.spin(node)
-    except (KeyboardInterrupt, ExternalShutdownException):
-        pass
+        executor.spin()
+    except (ExternalShutdownException, KeyboardInterrupt):
+        node.get_logger().error("[ACN-][main----]: Shutdown Node")
+
     finally:
-        node.destroy_node()
+        executor.shutdown()
         rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()

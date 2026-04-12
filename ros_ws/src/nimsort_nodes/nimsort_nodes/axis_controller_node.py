@@ -1,19 +1,9 @@
 import rclpy
 from rclpy.node import Node
-from rclpy.executors import ExternalShutdownException
+from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 
 from nimsort_msgs.msg import NimSortMotionState, NimSortTarget
 from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
-
-import sys
-import termios
-import tty
-import select
-
-START_VALUE = 0.0
-INCREMENT = -0.001
-STEPS_PER_PHASE = 10 
-
 
 class AxisController(Node):
     def __init__(self):
@@ -22,10 +12,6 @@ class AxisController(Node):
         self.last_robot_pos = None
         self.last_nimsort_target = None
 
-        self.current_acceleration = START_VALUE
-
-        self.state = "IDLE"
-        self.counter = 0
 
         self.nimsort_target_sub = self.create_subscription(
             NimSortTarget,
@@ -52,48 +38,16 @@ class AxisController(Node):
 
         self.timer = self.create_timer(
             0.1,
-            self.main_loop_callback
+            self.main_order
         )
 
     def send_acceleration(self, acc):
         msg = RobotCmd()
-        msg.accel_x = acc
-        msg.accel_y = 0.0
-        msg.accel_z = 0.0
+        #TODO fill msg
         self.robot_cmd_pub.publish(msg)
 
-    def main_loop_callback(self):
-        self.get_logger().info(f"Current state: {self.state}, Counter: {self.counter}")
-        if self.state == "IDLE":
-            return
-
-        elif self.state == "ACCEL_FORWARD":
-            self.send_acceleration(self.current_acceleration)
-            self.counter += 1
-
-            if self.counter >= STEPS_PER_PHASE:
-                self.counter = 0
-                self.state = "ACCEL_BACKWARD"
-
-        elif self.state == "ACCEL_BACKWARD":
-            self.send_acceleration(-self.current_acceleration)
-            self.counter += 1
-
-            if self.counter >= STEPS_PER_PHASE:
-                self.counter = 0
-                self.state = "IDLE"
-                self.get_logger().info(
-                    f"Test fertig mit acceleration: {self.current_acceleration}"
-                )
-                self.send_acceleration(0.0)
-
-    def start_test(self):
-        self.current_acceleration += INCREMENT
-        self.get_logger().info(
-            f"Starte Test mit acceleration: {self.current_acceleration}"
-        )
-        self.state = "ACCEL_FORWARD"
-        self.counter = 0
+    def main_order(self):
+        pass
 
     def nimsort_target_callback(self, msg):
         self.last_nimsort_target = msg
@@ -107,33 +61,16 @@ def main(args=None):
     rclpy.init(args=args)
     node = AxisController()
 
-    fd = sys.stdin.fileno()
-    old_settings = termios.tcgetattr(fd)
-
-    print("\n--- Steuerung ---")
-    print("i → Test starten")
-    print("Ctrl+C → Beenden\n")
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
 
     try:
-        tty.setcbreak(fd)
-
-        while rclpy.ok():
-            rclpy.spin_once(node, timeout_sec=0.1)
-
-            rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
-
-            if rlist:
-                key = sys.stdin.read(1)
-
-                if key == 'i':
-                    node.start_test()
-
+        executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
-        node.get_logger().info("Shutting down AxisController node.")
+        node.get_logger().error("[ACN-][main----]: Shutdown Node")
 
     finally:
-        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        node.destroy_node()
+        executor.shutdown()
         rclpy.shutdown()
 
 

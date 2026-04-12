@@ -1,7 +1,9 @@
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import String
-from rclpy.executors import ExternalShutdownException
+from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
+
+from nimsort_msgs.msg import NimSortImageData
+
 
 
 class Vision(Node):
@@ -10,8 +12,8 @@ class Vision(Node):
         super().__init__('camera_supreme_commander')
 
         self.publisher_ = self.create_publisher(
-            String, 
-            'output_topic', 
+            NimSortImageData, 
+            '/NimSortImageData', 
             10
         )
         
@@ -27,13 +29,18 @@ def main(args=None):
     rclpy.init(args=args)
     node = Vision()
 
+    executor = MultiThreadedExecutor()
+    executor.add_node(node)
+
     try:
-        rclpy.spin(node)
-    except (KeyboardInterrupt, ExternalShutdownException):
-        pass
+        executor.spin()
+    except (ExternalShutdownException, KeyboardInterrupt):
+        node.get_logger().error("[ACN-][main----]: Shutdown Node")
+
     finally:
-        node.destroy_node()
+        executor.shutdown()
         rclpy.shutdown()
+
 
 
 if __name__ == '__main__':
