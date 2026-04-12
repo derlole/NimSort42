@@ -1,4 +1,4 @@
-# Logging convetion in NimSort Nodes and Python Classes
+# Logging convetions in NimSort Nodes and Python Classes
 
 ## Information Log
 ### Nodes
@@ -22,20 +22,20 @@ get_logger().error(CONTENT)
 print([ERR-]: CONTENT)
 
 ## Info
-when launching nodes with launch file the node-name is automaitcally setuo in front, so we do not need to add them manually to the log-message
+when launching nodes with launch file the node-name is automatically setup in front, so we do not need to add them manually to the log-message
 
 ## Content definition
 
 CONTENT:
 [ClassShortName][functionName]: msg
 
-## Lenght
+## Length
 By defining length con ClassShortName and functionName the logs stay viewable, due to obvious start of the message.
 
-Therfore the ClassShortName has to be 4 Characters long. e.g for the class AxisController the ClassShortName could be -> [AxCo] or [AC--] 
+Therefore the ClassShortName has to be 4 Characters long. e.g for the class AxisController the ClassShortName could be -> [AxCo] or [AC--] 
 
 Same concept for functionNames but with 8 Characters. 
-e.g. for the update funciton -> [update--]
+e.g. for the update function -> [update--]
 
-lets pretent the ValueError in line 74 in the class Axis happens the log without launch file would look like this:
+lets pretend the ValueError in line 74 in the class Axis happens the log without launch file would look like this:
 [ERR-]: [Axis][update--]: Axis 'X': dt must be positive -10.0
