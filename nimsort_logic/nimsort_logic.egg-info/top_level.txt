@@ -1,2 +1,3 @@
+config
 nimsort_motion
 nimsort_vision
