@@ -9,7 +9,7 @@ from typing import Optional
 
 from nimsort_motion.controller import Controller
 from nimsort_motion.trajectroy_planner import TrajectoryPlanner
-from nimsort_logic.nimsort_motion.axis_interface import AxisInterface 
+from nimsort_motion.axis_interface import AxisInterface 
 
 @dataclass
 class AxisState(AxisInterface):

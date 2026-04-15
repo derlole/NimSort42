@@ -1,3 +1,5 @@
+from nimsort_motion.controller_interface import ControllerInterface
+
 """
 controller.py
 ---
@@ -5,7 +7,7 @@ PDF-Controller Class for handling the control of one Robotaxis.
 ---
 """
 
-class Controller:
+class Controller(ControllerInterface):
     """
     PDF-Regler (Proportional + filtered Derivative + filtered Feedforward)
 

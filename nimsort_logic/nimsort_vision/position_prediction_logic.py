@@ -1,5 +1,5 @@
 from nimsort_vision.magic_object import MagicObject
-from .position_prediction_interface import PositionPredictionInterface
+from nimsort_vision.position_prediction_interface import PositionPredictionInterface
 
 
 DT = 0.1            # Timer-Intervall in Sekunden
@@ -18,7 +18,7 @@ class PositionPrediction(PositionPredictionInterface):
         self._conveyor_belt_speed = speed_mps
 
     def set_object_data(self, object_type: int, position: tuple[float, float, float], ts: int) -> None:
-        self._objects[object_type] = MagicObject(
+        self._objects[object_type] = MagicObject( # TODO do not use obejct_type as key for dict 
             object_type=object_type,
             position=position,
             ts=float(ts),
@@ -54,7 +54,7 @@ class PositionPrediction(PositionPredictionInterface):
 
    
 
-    def _update_positions(self) -> None:
+    def _update_positions(self) -> None: # TODO Maybe assume to remove entrys later, but nut for
         """X-Position aller Objekte um speed * dt erhöhen."""
         for object_type, obj in self._objects.items():
             x_new = obj.position[0] + self._conveyor_belt_speed * DT

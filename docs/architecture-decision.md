@@ -45,7 +45,7 @@
 
 ### PositionPrediction
 - store received ImageData in any fitting datastructure
-- calculate positionPrediction for next possible Object
+- calculate positionPrediction for next possible MagicObject
 
 ### MainLogic
 - System statemachine

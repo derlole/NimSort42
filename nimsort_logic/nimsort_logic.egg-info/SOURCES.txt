@@ -1,7 +1,5 @@
 README.md
 setup.py
-config/__init__.py
-config/transforms.py
 nimsort_logic.egg-info/PKG-INFO
 nimsort_logic.egg-info/SOURCES.txt
 nimsort_logic.egg-info/dependency_links.txt
@@ -18,5 +16,7 @@ nimsort_vision/__init__.py
 nimsort_vision/feature_detection_interface.py
 nimsort_vision/magic_object.py
 nimsort_vision/opencv_pieline_interface.py
+nimsort_vision/opencv_pipeline.py
 nimsort_vision/position_prediction_interface.py
+nimsort_vision/position_prediction_logic.py
 nimsort_vision/tuner.py
