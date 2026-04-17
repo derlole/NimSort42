@@ -77,6 +77,6 @@ Puffer **(30.06 bis 13.07)**
 -> Iterativ
 
 ### Hauptverantwortlichkeiten (Wichtig nicht ausschließlicher Arbeitsbereich)
-- Louis: Vision Pipeline 
-- Yannick: Prozesslogik/Init
+- Louis: Vision Pipeline( Machine Learing Modell) 
+- Yannick: Prozesslogik(Main)/Postion Predition
 - Benjamin: Regelung/AxisController
