@@ -10,6 +10,7 @@ class PositionPredictionNode(Node):
     def __init__(self):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
+        self.object_id_counter = 0
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
@@ -26,7 +27,10 @@ class PositionPredictionNode(Node):
 
     def image_data_callback(self, msg: NimSortImageData):
         self.logic.set_conveyor_belt_speed(msg.conveyor_belt_speed)
+        object_id = self.object_id_counter
+        self.object_id_counter += 1
         self.logic.set_object_data(
+            object_id=object_id,
             object_type=msg.object_type,
             position=(
                 msg.current_position_wcs.x,
@@ -34,6 +38,7 @@ class PositionPredictionNode(Node):
                 msg.current_position_wcs.z,
             ),
             ts=msg.ts,
+            speed=getattr(msg, 'speed', 1.0),
         )
 
     def send_prediction(self, position: tuple[float, float, float], object_type: int):
@@ -48,13 +53,13 @@ class PositionPredictionNode(Node):
 
     def main_order(self):
         try:
-            x, y, z, object_type = self.logic.calculate_next_object_position()
+            magic_obj = self.logic.get_next_object_to_publish()
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
 
-        self.get_logger().debug(f"Objekt {object_type} | XY: ({x:.3f}, {y:.3f})")
-        self.send_prediction((x, y, z), object_type)
+        self.get_logger().debug(f"Objekt {magic_obj.object_type} | XY: ({magic_obj.position[0]:.3f}, {magic_obj.position[1]:.3f})")
+        self.send_prediction(magic_obj.position, magic_obj.object_type)
 
 
 def main(args=None):
