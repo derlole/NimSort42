@@ -2,3 +2,20 @@
 - Nullpunkt CS entspricht TCP-CS (Koordinatensystem in dem nach homing alle werte 0 sind) (keine Rotatorische Achsen -> Keine Erreichbarkeits verschiebung im TCP im vergleich zu Nullpunkt)
 - Kamerakoordinatensystem (in der Kameralinse)
 - Bildkoordinatensystem
+
+### Transformations
+
+#### World -> Robot Transformation
+WCSx + 29.0cm
+WCSy - 4.0cm
+WCSz + 8.3cm
+
+Roll, Pitch, Yaw = 0.0, 0.0, 0.0
+
+#### Camera -> World Transformation
+
+CCSx + 32.1cm
+CCSy + 3.7cm
+CCSz - 48.9cm
+
+Roll, Pitch, Yaw = 0.0, -32.7deg(0,57xxx rad), 0.0
