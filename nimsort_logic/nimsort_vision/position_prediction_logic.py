@@ -3,7 +3,7 @@ from nimsort_vision.position_prediction_interface import PositionPredictionInter
 
 
 DT = 0.1            # Timer-Intervall in Sekunden
-X_THRESHOLD = 40.0   # Schwellwert anpassen
+X_THRESHOLD = 40.0   # Schwellwert anpassen #TODO define threshold and document it. According issue: #63
 
 
 class PositionPrediction(PositionPredictionInterface):
@@ -22,7 +22,7 @@ class PositionPrediction(PositionPredictionInterface):
         self._objects[object_id] = MagicObject(
             object_type=object_type,
             position=position,
-            ts=float(ts),
+            ts=float(ts), #TODO why float here if it comes as an int the float gived u a .0 at the end for no reason. Python does handle the speed stuff later on with the multiplication with another float and would return a float
             speed=speed,
         )
 
@@ -33,19 +33,19 @@ class PositionPrediction(PositionPredictionInterface):
         if abs(self._conveyor_belt_speed) < 1e-6:
             raise ValueError("[WARN]: Förderband steht still – keine Prädiktion möglich.")
 
-        # X für alle Objekte aufaddieren
+        # X für alle Objekte aufaddieren # TODO in my oppinion this comment is not neccesarry, the function name states the action
         self._update_positions()
 
-        # Objekte über Schwellwert entfernen
-        self._remove_objects_over_threshold()
+        # Objekte über Schwellwert entfernen # TODO in my oppinion this comment is not neccesarry, the function name states the action
+        self._remove_objects_over_threshold() #TODO are we sure we want to remove it or just ignore it? I Think if we would remove it we should store it anywhere else, whereever this is.
 
         if not self._objects:
             raise ValueError("[WARN]: Alle Objekte haben den Schwellwert überschritten.")
 
-        # Objekt mit größter X-Position publizieren
+        # Objekt mit größter X-Position publizieren  # TODO in my oppinion this comment is not neccesarry, the function name states the action. At least correct it because at this point nothing gets published
         next_obj = self.get_next_object_to_publish()
         return (next_obj.position[0], next_obj.position[1], next_obj.position[2], next_obj.object_type)
-
+    
     @property
     def get_stored_objects(self) -> list[MagicObject]:
         return list(self._objects.values())
@@ -62,7 +62,7 @@ class PositionPrediction(PositionPredictionInterface):
         next_obj = max(self._objects.values(), key=lambda obj: obj.position[0])
         return next_obj
 
-    def _update_positions(self) -> None: # TODO Maybe assume to remove entrys later, but nut for
+    def _update_positions(self) -> None: 
         """X-Position aller Objekte um speed * dt erhöhen."""
         updated_objects = {}
         for obj in self._objects.values():
@@ -86,5 +86,5 @@ class PositionPrediction(PositionPredictionInterface):
             if obj.position[0] >= X_THRESHOLD
         ]
         for object_type in to_remove:
-            print(f"[INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.")
+            print(f"[INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") #TODO logging.md
             del self._objects[object_type]
