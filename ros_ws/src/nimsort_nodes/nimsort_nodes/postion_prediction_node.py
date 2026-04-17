@@ -51,9 +51,9 @@ class PositionPredictionNode(Node):
         msg.object_type = object_type
         self.prediction_pub.publish(msg)
 
-    def main_order(self):
+    def main_order(self): # TODO doesnt you miss somewhere the self.logic.calculate_next_object_position()?? 
         try:
-            magic_obj = self.logic.get_next_object_to_publish()
+            magic_obj = self.logic.get_next_object_to_publish() # TODO smart shifted around the bad interface, you could assume just rewrite the interface to do not get a tuple with four values fromt the calculate_next_object_position().
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
