@@ -18,4 +18,6 @@ CCSx + 32.1cm
 CCSy + 3.7cm
 CCSz - 48.9cm
 
-Roll, Pitch, Yaw = 0.0, -32.7deg(0,57xxx rad), 0.0
+Roll, Pitch, Yaw = 0.0, -32.7deg, 0.0
+
+The 32.7deg are calculated with a picture and two sets of lines with one time 32.8deg and one time 32.6deg

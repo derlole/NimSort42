@@ -7,12 +7,12 @@ WORLD_FRAME = "world"
 ROBOT_FRAME = "robot"
 CAMERA_FRAME = "camera"
 
-WORLD_TO_ROBOT_TRANSLATION = (0.0, 0.0, 0.0)  # x_r, y_r, z_r
+WORLD_TO_ROBOT_TRANSLATION = (0.29, -0.04, 0.083)  # x_r, y_r, z_r
 WORLD_TO_ROBOT_RPY = (0.0, 0.0, 0.0)          # roll_r, pitch_r, yaw_r
 
-ROBOT_PITCH_ANGLE_DEG = 32.7
-ROBOT_TO_CAMERA_TRANSLATION = (-0.2, 0.0, 1.0)
-ROBOT_TO_CAMERA_RPY = (0.0, -(32.7 * (math.pi/180)), 0.0)
+WORLD_PITCH_ANGLE_DEG = 32.7
+CAMERA_TO_WORLD_TRANSLATION = (0.321, 0.037, -0.489)
+CAMERA_TO_WORLD_RPY = (0.0, -(WORLD_PITCH_ANGLE_DEG * (math.pi/180)), 0.0)
 
 
 def generate_launch_description():
@@ -39,14 +39,14 @@ def generate_launch_description():
             executable="static_transform_publisher",
             name="robot_to_camera",
             arguments=[
-                str(ROBOT_TO_CAMERA_TRANSLATION[0]),
-                str(ROBOT_TO_CAMERA_TRANSLATION[1]),
-                str(ROBOT_TO_CAMERA_TRANSLATION[2]),
-                str(ROBOT_TO_CAMERA_RPY[0]),
-                str(ROBOT_TO_CAMERA_RPY[1]),
-                str(ROBOT_TO_CAMERA_RPY[2]),
-                ROBOT_FRAME,
+                str(CAMERA_TO_WORLD_TRANSLATION[0]),
+                str(CAMERA_TO_WORLD_TRANSLATION[1]),
+                str(CAMERA_TO_WORLD_TRANSLATION[2]),
+                str(CAMERA_TO_WORLD_RPY[0]),
+                str(CAMERA_TO_WORLD_RPY[1]),
+                str(CAMERA_TO_WORLD_RPY[2]),
                 CAMERA_FRAME,
+                WORLD_FRAME,
             ],
         ),
 
