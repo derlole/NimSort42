@@ -1,6 +1,6 @@
 import cv2 as cv
 import time
-import numpy as np#
+import numpy as np
 
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 
@@ -11,6 +11,9 @@ class OpencvPipeline(OpencvPipelineInterface):
         self.image = None
         self.timestamp = None
         self._last_result = None
+
+        # Fester ROI (x, y, breite, höhe) – anpassen nach Bedarf!
+        self.interest_roi = (30, 155, 600, 185)
 
         # Kalibrierungsdaten
         self.camera_matrix = np.array([
@@ -32,7 +35,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._roi = None
         self._image_shape = None
 
-    def _init_undistort_maps(self, image_shape): #  Verzerrungen im Bild korrigieren (Vorberiten)
+    def _init_undistort_maps(self, image_shape):
         """Berechnet Undistortion-Maps für die gegebene Bildgröße."""
         h, w = image_shape[:2]
         new_camera_matrix, roi = cv.getOptimalNewCameraMatrix(
@@ -42,7 +45,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._roi = roi
         self._image_shape = image_shape[:2]
 
-    def _undistort(self, image): #   Verzerrungen im Bild korrigieren!!
+    def _undistort(self, image):
         """Entzerrt das Bild mit den Kalibrierungsdaten."""
         if self._image_shape != image.shape[:2]:
             self._init_undistort_maps(image.shape)
@@ -100,8 +103,8 @@ class OpencvPipeline(OpencvPipelineInterface):
         """Verarbeitet self.image und gibt den Schwerpunkt im Kamerakoordinatensystem zurück.
 
         Das Bild wird zunächst entzerrt (Undistortion), dann der Schwerpunkt
-        der größten Kontur berechnet und anschließend in Kamerakoordinaten
-        umgerechnet.
+        der größten Kontur im definierten ROI berechnet und anschließend
+        in Kamerakoordinaten umgerechnet.
 
         Returns:
             tuple: (X_c, Y_c, Z_c, timestamp, annotated_image)
@@ -118,8 +121,12 @@ class OpencvPipeline(OpencvPipelineInterface):
         undistorted = self._undistort(self.image)
         image = undistorted.copy()
 
-        # Graustufen + Glätten + Threshold
-        gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+        # ROI ausschneiden
+        rx, ry, rw, rh = self.interest_roi
+        roi = image[ry:ry+rh, rx:rx+rw]
+
+        # Graustufen + Glätten + Threshold – nur auf dem ROI
+        gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         _, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
@@ -129,25 +136,30 @@ class OpencvPipeline(OpencvPipelineInterface):
         contours = sorted(contours, key=cv.contourArea, reverse=True)
 
         if not contours:
-            raise RuntimeError("Keine Konturen im Bild gefunden.")
+            raise RuntimeError("Keine Konturen im ROI gefunden.")
 
         # Größte Kontur verwenden
         contour = contours[0]
 
-        # Schwerpunkt in Pixelkoordinaten
+        # Schwerpunkt in ROI-Koordinaten
         M = cv.moments(contour)
         if M["m00"] != 0:
-            cx_px = float(M["m10"] / M["m00"])
-            cy_px = float(M["m01"] / M["m00"])
+            cx_roi = float(M["m10"] / M["m00"])
+            cy_roi = float(M["m01"] / M["m00"])
         else:
-            cx_px, cy_px = 0.0, 0.0
+            cx_roi, cy_roi = 0.0, 0.0
+
+        # ROI-Koordinaten → Vollbild-Koordinaten
+        cx_px = cx_roi + rx
+        cy_px = cy_roi + ry
 
         # Schwerpunkt in Kamerakoordinaten umrechnen
         X_c, Y_c, Z_c = self._pixel_to_camera(cx_px, cy_px)
 
-        # Kontur, Schwerpunkt und Koordinaten ins Bild zeichnen
-        cv.drawContours(image, [contour], -1, (0, 255, 0), 2)
-        cv.circle(image, (int(cx_px), int(cy_px)), 5, (0, 0, 255), -1)
+        # Annotierungen ins Vollbild zeichnen
+        cv.rectangle(image, (rx, ry), (rx+rw, ry+rh), (0, 0, 255), 2)  # ROI-Rahmen
+        cv.drawContours(roi, [contour], -1, (0, 255, 0), 2)              # Kontur im ROI
+        cv.circle(image, (int(cx_px), int(cy_px)), 5, (0, 0, 255), -1)  # Schwerpunkt
         cv.putText(
             image,
             f"cam: ({X_c:.4f}, {Y_c:.4f})",

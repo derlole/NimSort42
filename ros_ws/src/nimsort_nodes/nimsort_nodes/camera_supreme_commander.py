@@ -41,7 +41,7 @@ class Vision(Node):
             transformed = self.tf_buffer.transform(
                 point,
                 WORLD_FRAME,
-                timeout=rclpy.duration.Duration(seconds=0.05)
+                timeout = rclpy.duration.Duration(seconds = 0.05)
             )
             return transformed
         
