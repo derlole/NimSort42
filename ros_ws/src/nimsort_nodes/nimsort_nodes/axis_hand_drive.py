@@ -18,7 +18,7 @@ class AxisControllerHand(Node):
     def __init__(self):
         super().__init__('axis_hand_drive_node')
 
-        self.current_acceleration = START_VALUE
+        self.current_acceleration = (-0.007, -0.007, 0.007)
 
         self.state = "IDLE"
         self.counter = 0
@@ -34,34 +34,45 @@ class AxisControllerHand(Node):
             self.main_loop_callback
         )
 
-    def send_acceleration(self, acc):
+    def send_acceleration(self, acc_x, acc_y, acc_z):
         msg = RobotCmd()
-        msg.accel_x = 0.0
-        msg.accel_y = -acc
-        msg.accel_z = 0.0
+        msg.accel_x = acc_x
+        msg.accel_y = acc_y
+        msg.accel_z = acc_z
         self.robot_cmd_pub.publish(msg)
 
     def main_loop_callback(self):
-        # nur reagieren, wenn Test läuft
         if self.state != "ACCEL":
             return
 
-        self.send_acceleration(self.current_acceleration)
-        self.counter += 1
+        # Phase 1: Beschleunigung
+        if self.counter < DURATION_STEPS:
+            self.send_acceleration(self.current_acceleration[0], self.current_acceleration[1], self.current_acceleration[2])
 
-        if self.counter >= DURATION_STEPS:
-            self.send_acceleration(0.0)
+        # Phase 2: Gegenbeschleunigung
+        elif self.counter < 2 * DURATION_STEPS:
+            self.send_acceleration(
+                -self.current_acceleration[0],
+                -self.current_acceleration[1],
+                -self.current_acceleration[2],
+            )
+
+        # Fertig
+        else:
+            self.send_acceleration(0.0, 0.0, 0.0)
             self.state = "DONE"
             self.get_logger().info(
                 f"Test fertig mit acceleration: {self.current_acceleration}"
             )
+            return
+
+        self.counter += 1
 
     def start_test(self):
         if self.state != "IDLE":
             self.get_logger().warn("Test läuft bereits oder ist beendet.")
             return
 
-        self.current_acceleration += INCREMENT
         self.get_logger().info(
             f"Starte Test mit acceleration: {self.current_acceleration}"
         )
@@ -100,7 +111,6 @@ def main(args=None):
 
     finally:
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-        node.send_acceleration(0.0)
         node.destroy_node()
         rclpy.shutdown()
 
