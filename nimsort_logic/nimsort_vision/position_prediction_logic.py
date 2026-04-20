@@ -1,5 +1,6 @@
 from nimsort_vision.magic_object import MagicObject
 from nimsort_vision.position_prediction_interface import PositionPredictionInterface
+from nimsort_vision.plausibilty_check import PlausibilityCheck
 
 
 DT = 0.1            # Timer-Intervall in Sekunden
@@ -13,6 +14,7 @@ class PositionPrediction(PositionPredictionInterface):
         self._conveyor_belt_speed: float = 0.0
         self._objects: dict[int, MagicObject] = {}
         self._object_id_counter: int = 0
+        self._plausibility_check = PlausibilityCheck()
 
 
     def set_conveyor_belt_speed(self, speed_mps: float) -> None:
@@ -23,6 +25,7 @@ class PositionPrediction(PositionPredictionInterface):
             object_type=object_type,
             position=position,
             ts=float(ts),
+            speed=speed,
         )
 
     def calculate_next_object_position(self) -> tuple[float, float, float, int]:
@@ -56,6 +59,10 @@ class PositionPrediction(PositionPredictionInterface):
             raise ValueError("[WARN]: Keine Objekte verfügbar zum Publizieren.")
         
         next_obj = max(self._objects.values(), key=lambda obj: obj.position[0])
+        
+        if not self._plausibility_check.check_position(next_obj.position):
+            raise ValueError("[WARN]: Ausgabe-Position hat Plausibilitätsprüfung nicht bestanden.")
+        
         return next_obj
 
     def _update_positions(self) -> None: 
@@ -67,6 +74,7 @@ class PositionPrediction(PositionPredictionInterface):
                 object_type=obj.object_type,
                 position=[x_new, obj.position[1], obj.position[2]],
                 ts=obj.ts,
+                speed=obj.speed,
             )
             object_id = self._object_id_counter
             self._object_id_counter += 1
@@ -81,5 +89,5 @@ class PositionPrediction(PositionPredictionInterface):
             if obj.position[0] >= X_THRESHOLD
         ]
         for object_type in to_remove:
-            print(f"[INFO][PoPr][root----]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.")
+            print(f"[PoPr][ROOT----][INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") 
             del self._objects[object_type]
