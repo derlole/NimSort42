@@ -49,13 +49,13 @@ class Vision(Node):
             self.get_logger().warn(f"{str(e)}")
             return None
         
-    def publish_image_data(self, x_ccs: float, y_ccs: float, z_ccs: float, ts: int, object_type: int, conveyor_belt_speed: float):
+    def publish_image_data(self, x_wcs: float, y_wcs: float, z_wcs: float, ts: int, object_type: int, conveyor_belt_speed: float):
         msg = NimSortImageData()
         msg.current_position_wcs = Point()
 
-        msg.current_position_wcs.x = x_ccs
-        msg.current_position_wcs.y = y_ccs
-        msg.current_position_wcs.z = z_ccs
+        msg.current_position_wcs.x = x_wcs
+        msg.current_position_wcs.y = y_wcs
+        msg.current_position_wcs.z = z_wcs
         msg.object_type = object_type
         msg.ts = ts
         msg.conveyor_belt_speed = conveyor_belt_speed 
