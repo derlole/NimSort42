@@ -37,7 +37,7 @@ def generate_launch_description():
         Node(
             package="tf2_ros",
             executable="static_transform_publisher",
-            name="robot_to_camera",
+            name="camera_to_world",
             arguments=[
                 str(CAMERA_TO_WORLD_TRANSLATION[0]),
                 str(CAMERA_TO_WORLD_TRANSLATION[1]),
