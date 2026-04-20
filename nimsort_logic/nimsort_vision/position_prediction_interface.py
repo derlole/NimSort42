@@ -17,13 +17,18 @@ class PositionPredictionInterface(ABC):
         pass
  
     @abstractmethod
-    def set_object_data(self, object_type: int, position: tuple[float, float, float], ts: int) -> None:
+    def set_object_data(self, object_id: int, object_type: int, position: list[float], ts: int, speed: float = 1.0) -> None:
         """Set the data for a detected object."""
         pass
  
     @abstractmethod
     def calculate_next_object_position(self) -> tuple[float, float, float, int]:
         """Returns (x, y, z, object_type) of the next arriving object."""
+        pass
+ 
+    @abstractmethod
+    def get_next_object_to_publish(self) -> 'MagicObject':
+        """Returns the MagicObject with the highest X-Position."""
         pass
  
     @property

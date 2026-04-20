@@ -4,6 +4,6 @@ from dataclasses import dataclass
 class MagicObject:
     """Class representing a detected object with its type and position."""
     object_type: int
-    position: tuple[float, float, float]
+    position: list[float]  # [x, y, z] in meters
     ts: float
-    speed: float = 1.0  #TODO Default speed in m/s, can be updated later if needed #TODO HAS TO BE UPDATED!! Default speed would be 0.01 #TODO question #73
+    speed: float = 1.0  # Default speed in m/s, can be updated later if needed

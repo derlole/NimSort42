@@ -18,11 +18,11 @@ class PositionPrediction(PositionPredictionInterface):
     def set_conveyor_belt_speed(self, speed_mps: float) -> None:
         self._conveyor_belt_speed = speed_mps
 
-    def set_object_data(self, object_id: int, object_type: int, position: tuple[float, float, float], ts: int, speed: float = 1.0) -> None:
+    def set_object_data(self, object_id: int, object_type: int, position: list[float], ts: int, speed: float = 1.0) -> None:
         self._objects[object_id] = MagicObject(
             object_type=object_type,
             position=position,
-            ts=float(ts), #TODO why float here if it comes as an int the float gived u a .0 at the end for no reason. Python does handle the speed stuff later on with the multiplication with another float and would return a float
+            ts=float(ts),
             speed=speed,
         )
 
@@ -33,16 +33,13 @@ class PositionPrediction(PositionPredictionInterface):
         if abs(self._conveyor_belt_speed) < 1e-6:
             raise ValueError("[WARN]: Förderband steht still – keine Prädiktion möglich.")
 
-        # X für alle Objekte aufaddieren # TODO in my oppinion this comment is not neccesarry, the function name states the action
         self._update_positions()
 
-        # Objekte über Schwellwert entfernen # TODO in my oppinion this comment is not neccesarry, the function name states the action
-        self._remove_objects_over_threshold() #TODO are we sure we want to remove it or just ignore it? I Think if we would remove it we should store it anywhere else, whereever this is.
+        self._remove_objects_over_threshold()
 
         if not self._objects:
             raise ValueError("[WARN]: Alle Objekte haben den Schwellwert überschritten.")
 
-        # Objekt mit größter X-Position publizieren  # TODO in my oppinion this comment is not neccesarry, the function name states the action. At least correct it because at this point nothing gets published
         next_obj = self.get_next_object_to_publish()
         return (next_obj.position[0], next_obj.position[1], next_obj.position[2], next_obj.object_type)
     
@@ -69,7 +66,7 @@ class PositionPrediction(PositionPredictionInterface):
             x_new = obj.position[0] + self._conveyor_belt_speed * DT
             updated_obj = MagicObject(
                 object_type=obj.object_type,
-                position=(x_new, obj.position[1], obj.position[2]),
+                position=[x_new, obj.position[1], obj.position[2]],
                 ts=obj.ts,
                 speed=obj.speed,
             )
@@ -86,5 +83,5 @@ class PositionPrediction(PositionPredictionInterface):
             if obj.position[0] >= X_THRESHOLD
         ]
         for object_type in to_remove:
-            print(f"[INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") #TODO logging.md
+            print(f"[INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") #TODO logging.md Habe es angepasst oder zumindest daschte ich es
             del self._objects[object_type]

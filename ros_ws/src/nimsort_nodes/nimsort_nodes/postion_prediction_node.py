@@ -32,16 +32,16 @@ class PositionPredictionNode(Node):
         self.logic.set_object_data(
             object_id=object_id,
             object_type=msg.object_type,
-            position=(
+            position=[
                 msg.current_position_wcs.x,
                 msg.current_position_wcs.y,
                 msg.current_position_wcs.z,
-            ),
+            ],
             ts=msg.ts,
             speed=getattr(msg, 'speed', 1.0),
         )
 
-    def send_prediction(self, position: tuple[float, float, float], object_type: int):
+    def send_prediction(self, position: list[float], object_type: int):
         msg = NimSortPrediction()
         msg.predicted_position_wcs = Point(
             x=position[0],
@@ -51,9 +51,10 @@ class PositionPredictionNode(Node):
         msg.object_type = object_type
         self.prediction_pub.publish(msg)
 
-    def main_order(self): # TODO doesnt you miss somewhere the self.logic.calculate_next_object_position()?? 
+    def main_order(self):
         try:
-            magic_obj = self.logic.get_next_object_to_publish() # TODO smart shifted around the bad interface, you could assume just rewrite the interface to do not get a tuple with four values fromt the calculate_next_object_position().
+            self.logic.calculate_next_object_position()
+            magic_obj = self.logic.get_next_object_to_publish()
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
