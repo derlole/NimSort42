@@ -69,6 +69,8 @@ class MagicObject:
     position: tuple[float, float, float]  # Position (X, Y, Z) in m
     ts: float                             # Zeitstempel der Erkennung
     speed: float = 1.0                    # Objekt-Geschwindigkeit in m/s
+### Timestamp 
+Der Timestamp basiert auf der Phythonbibliothek Time. Es wird der Zeitpunkt der Bildaufnahme dort gespeichert. 
 
 
 #### `PositionPredictionLogic` (`position_prediction_logic.py`)
@@ -115,48 +117,6 @@ Das Main Module koordiniert die Kommunikation zwischen Vision, Motion und den RO
 
 ### Komponenten
 
-#### `PositionPredictionNode` (`postion_prediction_node.py`)
-ROS2-Node für die Verarbeitung von Bilddaten und Publikation von Vorhersagen.
-
-**Subscriptions:**
-- `/NimSortImageData` - Bilddaten von der Kamera
-
-**Publications:**
-- `/NimSortPrediction` - Vorhersagte Objekt-Positionen
-
-**Timer:**
-- `main_order` - Periodische Verarbeitung (0.1s Intervall)
-
-### Nachrichtentypen
-
-#### `NimSortImageData`
-Input-Nachricht mit Bilddaten
-
-#### `NimSortPrediction`
-Output-Nachricht mit Vorhersagen
-
-### Workflow
-
-```
-ImageData (Input)
-    |
-    v
-image_data_callback
-    |
-    v
-PositionPredictionLogic.set_object_data()
-    |
-    v
-main_order Timer
-    |
-    v
-PositionPredictionLogic.calculate_next_object_position()
-    |
-    v
-NimSortPrediction (Output)
-```
-
----
 
 ## 3. Motion Module
 
@@ -165,7 +125,7 @@ Das Motion Module ist verantwortlich für die physische Bewegungssteuerung des R
 
 ### Komponenten
 
-#### Roboterarme Steuerung
+#### Roboterarm Steuerung
 Kommunikation mit den mechanischen Systemen zur Umsetzung der Sortierungsbefehle.
 
 **Verbindung zu Main:**
