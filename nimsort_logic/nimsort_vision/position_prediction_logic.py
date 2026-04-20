@@ -23,7 +23,6 @@ class PositionPrediction(PositionPredictionInterface):
             object_type=object_type,
             position=position,
             ts=float(ts),
-            speed=speed,
         )
 
     def calculate_next_object_position(self) -> tuple[float, float, float, int]:
@@ -68,7 +67,6 @@ class PositionPrediction(PositionPredictionInterface):
                 object_type=obj.object_type,
                 position=[x_new, obj.position[1], obj.position[2]],
                 ts=obj.ts,
-                speed=obj.speed,
             )
             object_id = self._object_id_counter
             self._object_id_counter += 1
@@ -83,5 +81,5 @@ class PositionPrediction(PositionPredictionInterface):
             if obj.position[0] >= X_THRESHOLD
         ]
         for object_type in to_remove:
-            print(f"[INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") #TODO logging.md Habe es angepasst oder zumindest daschte ich es
+            print(f"[INFO][PoPr][root----]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.")
             del self._objects[object_type]

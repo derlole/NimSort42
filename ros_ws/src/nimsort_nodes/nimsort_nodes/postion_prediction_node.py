@@ -38,8 +38,9 @@ class PositionPredictionNode(Node):
                 msg.current_position_wcs.z,
             ],
             ts=msg.ts,
-            speed=getattr(msg, 'speed', 1.0),
+            speed=msg.speed,
         )
+        self.logic.set_conveyor_belt_speed(msg.speed)
 
     def send_prediction(self, position: list[float], object_type: int):
         msg = NimSortPrediction()
