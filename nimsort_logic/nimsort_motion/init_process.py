@@ -42,15 +42,18 @@ class InitProcess(InitProcessInterface):
         self.last_y = y
         self.last_z = z
 
-        if abs(dx) < 0.001 and abs(dy) < 0.001 and abs(dz) < 0.001:
-            if self.finish_counter < 10:
-                self.finish_counter += 1
-            else:
-                self.finished = True
-        
         if self.counter < 10:
             return HOMING_ACCELERATION
+        elif self.counter < 20:
+            return ZERO_ACCELERATION
         else:
+            if abs(dx) < 0.001 and abs(dy) < 0.001 and abs(dz) < 0.001:
+                if self.finish_counter < 10:
+                    self.finish_counter += 1
+                else:
+                    self.finished = True
+            else:
+                self.finish_counter = 0 
             return ZERO_ACCELERATION
 
     def reset(self) -> None:
