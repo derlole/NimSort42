@@ -17,6 +17,7 @@ nimsort_vision/feature_detection_interface.py
 nimsort_vision/magic_object.py
 nimsort_vision/opencv_pieline_interface.py
 nimsort_vision/opencv_pipeline.py
+nimsort_vision/opencv_pipeline_aruco.py
 nimsort_vision/position_prediction_interface.py
 nimsort_vision/position_prediction_logic.py
 nimsort_vision/tuner.py
