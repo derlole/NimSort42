@@ -1,122 +1,124 @@
 import cv2 as cv
 import time
 import numpy as np
-
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 
+# --- Konfiguration ---
+CAMERA_INDEX = 4
+
+CAMERA_MATRIX = np.array([
+    [2710.666860974311,    0.0,             367.8525523358933],
+    [   0.0,           2766.057464263328,   245.68063913559047],
+    [   0.0,              0.0,               1.0],
+], dtype=np.float64)
+
+DIST_COEFFS = np.array(
+    [-1.4668410355213393, -19.46254234953102,
+     -0.0022364037989029096, -0.03440200232868026,
+     450.2793784546618],
+    dtype=np.float64,
+)
+
+ROI = (10, 113, 615, 194)  # (x, y, width, height)
+
+MIN_CONTOUR_AREA = 4500
+
+
 class OpencvPipeline(OpencvPipelineInterface):
+
     def __init__(self):
-        """Initialize the opencv pipeline"""
-        self.camera_index = 4
-        self.image = None
-        self.timestamp = None
+        self.time_stamp = None
         self._last_result = None
-
-        # Fester ROI (x, y, breite, höhe) 
-        self.interest_roi = (30, 155, 600, 185)
-
-        # Kalibrierungsdaten
-        self.camera_matrix = np.array([
-            [2470.6158742234998, 0.0,               536.6431517087357],
-            [0.0,               2449.454166610392,  234.50734304897156],
-            [0.0,               0.0,                1.0]
-        ], dtype=np.float64)
-
-        self.dist_coeff = np.array([
-            -0.2139440134403675,
-            -24.358573379001676,
-            0.006326811273390342,
-            -0.03215022298226852,
-            289.2947414539591
-        ], dtype=np.float64)
-
-        # Optimierte Kameramatrix vorberechnen (wird bei erstem Bild gesetzt)
-        self._new_camera_matrix = None
-        self._roi = None
-        self._image_shape = None
-
-        # Kamera einmalig öffnen
-        self._cap = cv.VideoCapture(self.camera_index)
+        
+        self._cap = cv.VideoCapture(CAMERA_INDEX)
         if not self._cap.isOpened():
-            raise RuntimeError(f"Kamera {self.camera_index} konnte nicht geöffnet werden.")
-        self._cap.set(cv.CAP_PROP_BUFFERSIZE, 1)
+            raise RuntimeError(f"Kamera {CAMERA_INDEX} konnte nicht geöffnet werden.")
 
-    def __del__(self):
-        """Kamera beim Löschen des Objekts freigeben."""
-        if hasattr(self, '_cap') and self._cap.isOpened():
-            self._cap.release()
+        # Einmalig einen Frame lesen, um die Auflösung zu ermitteln
+        ret, test_image = self._cap.read()
+        if not ret or test_image is None:
+            raise RuntimeError("Kein Test-Frame von der Kamera erhalten.")
 
-    def release(self):
-        """Kamera manuell freigeben."""
-        if self._cap.isOpened():
-            self._cap.release()
+        h, w = test_image.shape[:2]
 
-    def _init_undistort_maps(self, image_shape):
-        """Berechnet Undistortion-Maps für die gegebene Bildgröße."""
-        h, w = image_shape[:2]
-        new_camera_matrix, roi = cv.getOptimalNewCameraMatrix(
-            self.camera_matrix, self.dist_coeff, (w, h), alpha=1, newImgSize=(w, h)
+        # Neue Kameramatrix + Remap-Maps vorberechnen
+        new_cam_matrix, _ = cv.getOptimalNewCameraMatrix(
+            CAMERA_MATRIX, DIST_COEFFS, (w, h), alpha=1, newImgSize=(w, h)
         )
-        self._new_camera_matrix = new_camera_matrix
-        self._roi = roi
-        self._image_shape = image_shape[:2]
+        self._map1, self._map2 = cv.initUndistortRectifyMap(
+            CAMERA_MATRIX, DIST_COEFFS, None,
+            new_cam_matrix, (w, h), cv.CV_16SC2
+        )
 
-    def _undistort(self, image):
-        """Entzerrt das Bild mit den Kalibrierungsdaten."""
-        if self._image_shape != image.shape[:2]:
-            self._init_undistort_maps(image.shape)
-        return cv.undistort(image, self.camera_matrix, self.dist_coeff, None, self._new_camera_matrix)
+        # ROI-Slice + Offset einmalig vorberechnen
+        x, y, rw, rh = ROI
+        self._rx = x
+        self._ry = y
+        self._roi_slice = (slice(y, y + rh), slice(x, x + rw))
 
-    def _pixel_to_camera(self, cx_px, cy_px):
-        """
-        Transformiert Pixelkoordinaten in normierte Kamerakoordinaten.
-        """
-        K = self._new_camera_matrix if self._new_camera_matrix is not None else self.camera_matrix
-        fx = K[0, 0]
-        fy = K[1, 1]
-        cx = K[0, 2]
-        cy = K[1, 2]
+        # Kameramatrix-Werte als Skalare cachen für _pixel_to_camera
+        self._fx = float(CAMERA_MATRIX[0, 0])
+        self._fy = float(CAMERA_MATRIX[1, 1])
+        self._cx = float(CAMERA_MATRIX[0, 2])
+        self._cy = float(CAMERA_MATRIX[1, 2])
 
-        X_c = (cx_px - cx) / fx
-        Y_c = (cy_px - cy) / fy
-        Z_c = 1.0
+        self._raw_frame: np.ndarray | None = None
 
-        return float(X_c), float(Y_c), float(Z_c)
+    # ------------------------------------------------------------------
+    # Hilfsmethode
+    # ------------------------------------------------------------------
+
+    def _pixel_to_camera(self, u: float, v: float, Z: float = 1.0):
+        """Konvertiert Pixelkoordinaten in normierte Kamerakoordinaten."""
+        X_c = (u - self._cx) / self._fx * Z
+        Y_c = (v - self._cy) / self._fy * Z
+        return X_c, Y_c, Z
+
+    # ------------------------------------------------------------------
+    # Interface-Methoden
+    # ------------------------------------------------------------------
 
     def captureImage(self):
-        """Nimmt ein einzelnes Bild von der bereits geöffneten Kamera auf."""
-        # Puffer leeren: ein Frame lesen und verwerfen
-        self._cap.grab()
+        """Liest exklusiv den Rohframe – minimale Laufzeit."""
+        ret, self._raw_frame = self._cap.read()
+        self.time_stamp = int(time.time() * 1000)
 
-        ret, frame = self._cap.read()
-        self.timestamp = int(time.time() * 1000)
+        print(f"[OcvP][captureImage]: Frame captured at {self.time_stamp} ms")
 
-        if not ret or frame is None:
-            raise RuntimeError("Bild konnte nicht aufgenommen werden.")
-
-        self.image = frame
+        if not ret or self._raw_frame is None:
+            raise RuntimeError("Bildaufnahme fehlgeschlagen.")
 
     def getImageData(self):
-        """Verarbeitet self.image und gibt den Schwerpunkt im Kamerakoordinatensystem zurück."""
-        if self.image is None:
-            raise RuntimeError("Kein Bild vorhanden. Bitte zuerst captureImage() aufrufen.")
+        """
+        Entzerrt das zuletzt aufgenommene Bild, schneidet den ROI aus
+        und berechnet den Schwerpunkt der größten Kontur in Kamerakoordinaten.
 
-        undistorted = self._undistort(self.image)
-        image = undistorted.copy()
+        Returns:
+            (X_c: float, Y_c: float, Z_c: float, timestamp: int, roi_image: np.ndarray)
+        """
+        print(f"[OcvP][getImageData]: Processing image")
+        if self._raw_frame is None:
+            raise RuntimeError("Kein Bild – zuerst captureImage() aufrufen.")
 
-        rx, ry, rw, rh = self.interest_roi
-        roi = image[ry:ry+rh, rx:rx+rw]
+        # 1) Entzerrung – remap ist schneller als undistort(), da Maps vorberechnet sind
+        undistorted = cv.remap(self._raw_frame, self._map1, self._map2, cv.INTER_LINEAR)
 
+        # 2) ROI per vorberechneter Slices – Zero-Copy-View, kein Overhead
+        roi = undistorted[self._roi_slice]
+
+        # 3) Graustufen → Blur → Otsu-Threshold
         gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         _, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
+        # 4) Konturen finden und nach Mindestfläche filtern
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-        contours = [cnt for cnt in contours if cv.contourArea(cnt) >= 50]
-        contours = sorted(contours, key=cv.contourArea, reverse=True)
-
+        contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
+        contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
+        
         if not contours:
             raise RuntimeError("Keine Konturen im ROI gefunden.")
+            #print("[OcvP][getImage]: Keine Konturen im ROI gefunden.")
 
         contour = contours[0]
 
@@ -127,25 +129,25 @@ class OpencvPipeline(OpencvPipelineInterface):
         else:
             cx_roi, cy_roi = 0.0, 0.0
 
-        cx_px = cx_roi + rx
-        cy_px = cy_roi + ry
+        # 8) Schwerpunkt in Vollbild-Pixelkoordinaten umrechnen
+        cx_px = cx_roi + self._rx
+        cy_px = cy_roi + self._ry
 
+        # 9) Kamerakoordinaten berechnen
         X_c, Y_c, Z_c = self._pixel_to_camera(cx_px, cy_px)
 
-        cv.rectangle(image, (rx, ry), (rx+rw, ry+rh), (0, 0, 255), 2)
-        cv.drawContours(roi, [contour], -1, (0, 255, 0), 2)
-        cv.circle(image, (int(cx_px), int(cy_px)), 5, (0, 0, 255), -1)
-        cv.putText(
-            image,
-            f"cam: ({X_c:.4f}, {Y_c:.4f})",
-            (int(cx_px) + 10, int(cy_px) - 10),
-            cv.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2
-        )
-
-        result = (X_c, Y_c, Z_c, self.timestamp, image)
+        result = (X_c, Y_c, Z_c, self.time_stamp, roi)
         self._last_result = result
-        return X_c, Y_c, Z_c, self.timestamp, image
+        return result
 
-    def getLastImageData(self) -> tuple[float, float, float, int, np.ndarray]:
+    def getLastImageData(self):
         """Get the image data from the last captured image"""
         return self._last_result
+
+    # ------------------------------------------------------------------
+    # Ressourcen-Verwaltung
+    # ------------------------------------------------------------------
+
+    def release(self):
+        if self._cap.isOpened():
+            self._cap.release()

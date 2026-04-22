@@ -66,13 +66,13 @@ class Vision(Node):
 
 
     def main_order(self):
-        print(f"[ACN-][main_ord]: Starting main order{time.time()}")
+        print(f"[VN--][main_ord]: Starting main order{time.time()}")
         try:
             self.pipeline.captureImage()
             x_ccs, y_ccs, z_ccs, ts, image = self.pipeline.getImageData()
 
         except ValueError as e:
-            self.get_logger.error("[ACN-][main_ord]:" + str(e))
+            self.get_logger.error("[VN--][main_ord]:" + str(e))
 
         # TODO insert trained_model_here to calculate the correct object_type
         point_wcs = self.tf_camera_to_world(x_ccs, y_ccs, z_ccs)
