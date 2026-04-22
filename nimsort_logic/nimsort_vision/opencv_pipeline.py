@@ -12,7 +12,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         self.timestamp = None
         self._last_result = None
 
-        # Fester ROI (x, y, breite, höhe) – anpassen nach Bedarf!
+        # Fester ROI (x, y, breite, höhe) 
         self.interest_roi = (30, 155, 600, 185)
 
         # Kalibrierungsdaten
@@ -35,6 +35,22 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._roi = None
         self._image_shape = None
 
+        # Kamera einmalig öffnen
+        self._cap = cv.VideoCapture(self.camera_index)
+        if not self._cap.isOpened():
+            raise RuntimeError(f"Kamera {self.camera_index} konnte nicht geöffnet werden.")
+        self._cap.set(cv.CAP_PROP_BUFFERSIZE, 1)
+
+    def __del__(self):
+        """Kamera beim Löschen des Objekts freigeben."""
+        if hasattr(self, '_cap') and self._cap.isOpened():
+            self._cap.release()
+
+    def release(self):
+        """Kamera manuell freigeben."""
+        if self._cap.isOpened():
+            self._cap.release()
+
     def _init_undistort_maps(self, image_shape):
         """Berechnet Undistortion-Maps für die gegebene Bildgröße."""
         h, w = image_shape[:2]
@@ -54,21 +70,6 @@ class OpencvPipeline(OpencvPipelineInterface):
     def _pixel_to_camera(self, cx_px, cy_px):
         """
         Transformiert Pixelkoordinaten in normierte Kamerakoordinaten.
-
-        Verwendet die (neue) Kameramatrix um den Schwerpunkt vom
-        Bildkoordinatensystem ins Kamerakoordinatensystem zu überführen.
-        Die Z-Komponente wird auf 1 normiert (keine Tiefeninformation).
-
-            X_c = (u - cx) / fx
-            Y_c = (v - cy) / fy
-            Z_c = 1.0
-
-        Args:
-            cx_px (float): X-Pixelkoordinate
-            cy_px (float): Y-Pixelkoordinate
-
-        Returns:
-            tuple: (X_c, Y_c, Z_c) normierte Kamerakoordinaten
         """
         K = self._new_camera_matrix if self._new_camera_matrix is not None else self.camera_matrix
         fx = K[0, 0]
@@ -83,16 +84,12 @@ class OpencvPipeline(OpencvPipelineInterface):
         return float(X_c), float(Y_c), float(Z_c)
 
     def captureImage(self):
-        """Capture the image from the camera"""
-        cap = cv.VideoCapture(self.camera_index)
-        if not cap.isOpened():
-            raise RuntimeError(f"Kamera {self.camera_index} konnte nicht geöffnet werden.")
+        """Nimmt ein einzelnes Bild von der bereits geöffneten Kamera auf."""
+        # Puffer leeren: ein Frame lesen und verwerfen
+        self._cap.grab()
 
-        cap.set(cv.CAP_PROP_BUFFERSIZE, 1)
-
-        ret, frame = cap.read()
+        ret, frame = self._cap.read()
         self.timestamp = int(time.time() * 1000)
-        cap.release()
 
         if not ret or frame is None:
             raise RuntimeError("Bild konnte nicht aufgenommen werden.")
@@ -100,37 +97,20 @@ class OpencvPipeline(OpencvPipelineInterface):
         self.image = frame
 
     def getImageData(self):
-        """Verarbeitet self.image und gibt den Schwerpunkt im Kamerakoordinatensystem zurück.
-
-        Das Bild wird zunächst entzerrt (Undistortion), dann der Schwerpunkt
-        der größten Kontur im definierten ROI berechnet und anschließend
-        in Kamerakoordinaten umgerechnet.
-
-        Returns:
-            tuple: (X_c, Y_c, Z_c, timestamp, annotated_image)
-                - X_c (float): X-Koordinate im Kamerakoordinatensystem (normiert)
-                - Y_c (float): Y-Koordinate im Kamerakoordinatensystem (normiert)
-                - Z_c (float): Z-Koordinate (immer 1.0, keine Tiefeninformation)
-                - timestamp (int): Unix-Timestamp der Aufnahme in ms
-                - annotated_image (np.ndarray): Entzerrtes Bild mit Konturen
-        """
+        """Verarbeitet self.image und gibt den Schwerpunkt im Kamerakoordinatensystem zurück."""
         if self.image is None:
             raise RuntimeError("Kein Bild vorhanden. Bitte zuerst captureImage() aufrufen.")
 
-        # Bild entzerren
         undistorted = self._undistort(self.image)
         image = undistorted.copy()
 
-        # ROI ausschneiden
         rx, ry, rw, rh = self.interest_roi
         roi = image[ry:ry+rh, rx:rx+rw]
 
-        # Graustufen + Glätten + Threshold – nur auf dem ROI
         gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         _, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
-        # Konturen finden, filtern und sortieren
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= 50]
         contours = sorted(contours, key=cv.contourArea, reverse=True)
@@ -138,10 +118,8 @@ class OpencvPipeline(OpencvPipelineInterface):
         if not contours:
             raise RuntimeError("Keine Konturen im ROI gefunden.")
 
-        # Größte Kontur verwenden
         contour = contours[0]
 
-        # Schwerpunkt in ROI-Koordinaten
         M = cv.moments(contour)
         if M["m00"] != 0:
             cx_roi = float(M["m10"] / M["m00"])
@@ -149,17 +127,14 @@ class OpencvPipeline(OpencvPipelineInterface):
         else:
             cx_roi, cy_roi = 0.0, 0.0
 
-        # ROI-Koordinaten → Vollbild-Koordinaten
         cx_px = cx_roi + rx
         cy_px = cy_roi + ry
 
-        # Schwerpunkt in Kamerakoordinaten umrechnen
         X_c, Y_c, Z_c = self._pixel_to_camera(cx_px, cy_px)
 
-        # Annotierungen ins Vollbild zeichnen
-        cv.rectangle(image, (rx, ry), (rx+rw, ry+rh), (0, 0, 255), 2)  # ROI-Rahmen
-        cv.drawContours(roi, [contour], -1, (0, 255, 0), 2)              # Kontur im ROI
-        cv.circle(image, (int(cx_px), int(cy_px)), 5, (0, 0, 255), -1)  # Schwerpunkt
+        cv.rectangle(image, (rx, ry), (rx+rw, ry+rh), (0, 0, 255), 2)
+        cv.drawContours(roi, [contour], -1, (0, 255, 0), 2)
+        cv.circle(image, (int(cx_px), int(cy_px)), 5, (0, 0, 255), -1)
         cv.putText(
             image,
             f"cam: ({X_c:.4f}, {Y_c:.4f})",

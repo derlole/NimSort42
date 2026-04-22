@@ -66,6 +66,7 @@ class Vision(Node):
 
 
     def main_order(self):
+        print(f"[ACN-][main_ord]: Starting main order{time.time()}")
         try:
             self.pipeline.captureImage()
             x_ccs, y_ccs, z_ccs, ts, image = self.pipeline.getImageData()
