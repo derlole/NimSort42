@@ -3,31 +3,26 @@ import time
 import numpy as np
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 
-# --- Konfiguration ---
 CAMERA_INDEX = 4
-
 CAMERA_MATRIX = np.array([
     [2710.666860974311,    0.0,             367.8525523358933],
     [   0.0,           2766.057464263328,   245.68063913559047],
     [   0.0,              0.0,               1.0],
 ], dtype=np.float64)
-
 DIST_COEFFS = np.array(
     [-1.4668410355213393, -19.46254234953102,
      -0.0022364037989029096, -0.03440200232868026,
      450.2793784546618],
     dtype=np.float64,
 )
-
 ROI = (10, 113, 615, 194)  # (x, y, width, height)
-
 MIN_CONTOUR_AREA = 4500
 
 
 class OpencvPipeline(OpencvPipelineInterface):
 
     def __init__(self):
-        self.time_stamp = None
+        self.time_stamp_ms = None
         self._last_result = None
         
         self._cap = cv.VideoCapture(CAMERA_INDEX)
@@ -64,26 +59,18 @@ class OpencvPipeline(OpencvPipelineInterface):
 
         self._raw_frame: np.ndarray | None = None
 
-    # ------------------------------------------------------------------
-    # Hilfsmethode
-    # ------------------------------------------------------------------
-
     def _pixel_to_camera(self, u: float, v: float, Z: float = 1.0):
         """Konvertiert Pixelkoordinaten in normierte Kamerakoordinaten."""
         X_c = (u - self._cx) / self._fx * Z
         Y_c = (v - self._cy) / self._fy * Z
         return X_c, Y_c, Z
 
-    # ------------------------------------------------------------------
-    # Interface-Methoden
-    # ------------------------------------------------------------------
-
     def captureImage(self):
         """Liest exklusiv den Rohframe – minimale Laufzeit."""
         ret, self._raw_frame = self._cap.read()
-        self.time_stamp = int(time.time() * 1000)
+        self.time_stamp_ms = int(time.time() * 1000)
 
-        print(f"[OcvP][captureImage]: Frame captured at {self.time_stamp} ms")
+        print(f"[OcvP][captureImage]: Frame captured at {self.time_stamp_ms} ms")
 
         if not ret or self._raw_frame is None:
             raise RuntimeError("Bildaufnahme fehlgeschlagen.")
@@ -100,18 +87,14 @@ class OpencvPipeline(OpencvPipelineInterface):
         if self._raw_frame is None:
             raise RuntimeError("Kein Bild – zuerst captureImage() aufrufen.")
 
-        # 1) Entzerrung – remap ist schneller als undistort(), da Maps vorberechnet sind
         undistorted = cv.remap(self._raw_frame, self._map1, self._map2, cv.INTER_LINEAR)
 
-        # 2) ROI per vorberechneter Slices – Zero-Copy-View, kein Overhead
         roi = undistorted[self._roi_slice]
 
-        # 3) Graustufen → Blur → Otsu-Threshold
         gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         _, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
 
-        # 4) Konturen finden und nach Mindestfläche filtern
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
         contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
@@ -129,24 +112,18 @@ class OpencvPipeline(OpencvPipelineInterface):
         else:
             cx_roi, cy_roi = 0.0, 0.0
 
-        # 8) Schwerpunkt in Vollbild-Pixelkoordinaten umrechnen
         cx_px = cx_roi + self._rx
         cy_px = cy_roi + self._ry
 
-        # 9) Kamerakoordinaten berechnen
         X_c, Y_c, Z_c = self._pixel_to_camera(cx_px, cy_px)
 
-        result = (X_c, Y_c, Z_c, self.time_stamp, roi)
+        result = (X_c, Y_c, Z_c, self.time_stamp_ms, roi)
         self._last_result = result
         return result
 
     def getLastImageData(self):
         """Get the image data from the last captured image"""
         return self._last_result
-
-    # ------------------------------------------------------------------
-    # Ressourcen-Verwaltung
-    # ------------------------------------------------------------------
 
     def release(self):
         if self._cap.isOpened():

@@ -89,7 +89,7 @@ def main(args=None):
     try:
         executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
-        node.get_logger().error("[ACN-][main----]: Shutdown Node")
+        node.get_logger().error("[VN--][main----]: Shutdown Node")
 
     finally:
         executor.shutdown()
