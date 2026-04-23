@@ -62,13 +62,16 @@ class Axis:
 
         Parameters
         ---
-        target_position: float [m]
+        target_position: float [m] position with respect to home
         """
         self._planner.set_target(target_position)
 
     def update(self, current_position: float, dt: float) -> float:
         """"
         Zycliclly called function to update the acceleration accourding to the current_position trough trajectoryPlanner and Controller.
+        Input:
+        current_position: float [m] position with respect to home
+        dt: float [s] time since last update call
         """
         if dt <= 0.0:
             raise ValueError(f"Axis '{self._name}': dt must be positive {dt}.")
