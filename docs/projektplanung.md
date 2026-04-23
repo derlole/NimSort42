@@ -25,6 +25,7 @@
 
 5. Prädizierte Positionen im Weltkoordiantensystem Ausgeben **(14.04) bis (20.04)**
 - Berechnung / Bestimmung durch Koordinatentransformation von allen Koordinatensystemen ins Weltkooridnatensystem
+- Weitergabe der koordinaten bis zur main node und anschließende konstante ausgabe der Prädizierten Koordinaten eines Objekts.
 
 6. Initiale Kalibrierung des Gesamtsystems **(21.04) bis (27.04)**
 - Die gesamte Anlage hat eine funktionierende initiale Kalibrierung der Achsen.
