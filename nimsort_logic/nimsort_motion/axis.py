@@ -68,7 +68,7 @@ class Axis:
 
     def update(self, current_position: float, dt: float) -> float:
         """"
-        Zycliclly called function to update the acceleration accourding to the current_position trough trajectoryPlanner and Controller.
+        Zycliclly called function to update the acceleration according to the current_position trough trajectoryPlanner and Controller.
         Input:
         current_position: float [m] position with respect to home
         dt: float [s] time since last update call

@@ -5,13 +5,13 @@ from nimsort_vision.plausibilty_check import PlausibilityCheck
 
 DT = 0.1            # Timer-Intervall in Sekunden
 X_THRESHOLD = 40.0   # Schwellwert anpassen #TODO define threshold and document it. According issue: #63
-
+DEFAULT_CONVEYOR_BELT_SPEED = 0.1 # Standard, delet when measurement is done 
 
 class PositionPrediction(PositionPredictionInterface):
 
     def __init__(self):
         super().__init__()
-        self._conveyor_belt_speed: float = 0.0
+        self._conveyor_belt_speed: float = DEFAULT_CONVEYOR_BELT_SPEED
         self._objects: dict[int, MagicObject] = {}
         self._object_id_counter: int = 0
         self._plausibility_check = PlausibilityCheck()
