@@ -47,7 +47,7 @@ class InitProcess(InitProcessInterface):
         elif self.counter < 20:
             return ZERO_ACCELERATION
         else:
-            if abs(dx) < 0.001 and abs(dy) < 0.001 and abs(dz) < 0.001:
+            if abs(dx) < 1e-6 and abs(dy) < 1e-6 and abs(dz) < 1e-6:
                 if self.finish_counter < 10:
                     self.finish_counter += 1
                 else:

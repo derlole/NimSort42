@@ -2,10 +2,38 @@ import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 
+from nimsort_motion.axis import Axis
+from nimsort_motion.controller import Controller
+from nimsort_motion.trajectroy_planner import TrajectoryPlanner
 from nimsort_msgs.msg import NimSortMotionState, NimSortTarget
 from nimsort_motion.axis_controller_states import AxisControllerStates
 from nimsort_motion.init_process import InitProcess
 from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
+
+MAX_VELOCITY_X = 0.5
+MAX_VELOCITY_Y = 0.5
+MAX_VELOCITY_Z = 0.5
+MAX_ACCELERATION_X = 0.01
+MAX_ACCELERATION_Y = 0.01
+MAX_ACCELERATION_Z = 0.01
+POSITION_TOLERANCE_X = 0.0001
+POSITION_TOLERANCE_Y = 0.0001
+POSITION_TOLERANCE_Z = 0.0001
+VELOCITY_TOLERANCE_X = 0.001
+VELOCITY_TOLERANCE_Y = 0.001
+VELOCITY_TOLERANCE_Z = 0.001
+KP_X = 1.0
+KP_Y = 1.0
+KP_Z = 1.0
+KD_X = 0.1
+KD_Y = 0.1
+KD_Z = 0.1
+D_FILTER_ALPHA_X = 0.5
+D_FILTER_ALPHA_Y = 0.5
+D_FILTER_ALPHA_Z = 0.5
+TF_X = 0.1
+TF_Y = 0.1
+TF_Z = 0.1
 
 class AxisController(Node):
     def __init__(self):
@@ -15,6 +43,9 @@ class AxisController(Node):
         self.last_nimsort_target = None
         self.main_state = AxisControllerStates.EMPTY
         self.init_process = InitProcess()
+        self.offset_x = 0.0
+        self.offset_y = 0.0
+        self.offset_z = 0.0
 
         self.axis_x = None
         self.axis_y = None
@@ -81,6 +112,7 @@ class AxisController(Node):
         self.get_logger().info(f"Received RobotPos: {msg}")
 
     def ax_state_empty(self):
+        #TODO wait for main node to execute init process
         self.init_process.start()
         self.main_state = AxisControllerStates.INITIALIZING_AXIS_HW
 
@@ -92,7 +124,27 @@ class AxisController(Node):
 
 
     def ax_state_initializing_axis_sw(self):
-        pass
+        trajectrory_planner_x = TrajectoryPlanner(MAX_VELOCITY_X, MAX_ACCELERATION_X, POSITION_TOLERANCE_X, VELOCITY_TOLERANCE_X)
+        trajectrory_planner_y = TrajectoryPlanner(MAX_VELOCITY_Y, MAX_ACCELERATION_Y, POSITION_TOLERANCE_Y, VELOCITY_TOLERANCE_Y)
+        trajectrory_planner_z = TrajectoryPlanner(MAX_VELOCITY_Z, MAX_ACCELERATION_Z, POSITION_TOLERANCE_Z, VELOCITY_TOLERANCE_Z)
+
+        controller_x = Controller(KP_X, KD_X, D_FILTER_ALPHA_X, TF_X, MAX_ACCELERATION_X, -MAX_ACCELERATION_X, True, True)
+        controller_y = Controller(KP_Y, KD_Y, D_FILTER_ALPHA_Y, TF_Y, MAX_ACCELERATION_Y, -MAX_ACCELERATION_Y, True, True)
+        controller_z = Controller(KP_Z, KD_Z, D_FILTER_ALPHA_Z, TF_Z, MAX_ACCELERATION_Z, -MAX_ACCELERATION_Z, True, True)
+
+        self.axis_x = Axis("X", controller_x, trajectrory_planner_x)
+        self.axis_y = Axis("Y", controller_y, trajectrory_planner_y)
+        self.axis_z = Axis("Z", controller_z, trajectrory_planner_z)
+
+        self.offset_x = self.last_robot_pos.pos_x
+        self.offset_y = self.last_robot_pos.pos_y
+        self.offset_z = self.last_robot_pos.pos_z
+        
+        self.get_logger().info(f"[ACN-][ax_in_sw]: X Axis: {self.axis_x}")
+        self.get_logger().info(f"[ACN-][ax_in_sw]: Y Axis: {self.axis_y}")
+        self.get_logger().info(f"[ACN-][ax_in_sw]: Z Axis: {self.axis_z}")
+
+        self.main_state = AxisControllerStates.RUNNING
 
     def ax_state_running(self):
         pass
