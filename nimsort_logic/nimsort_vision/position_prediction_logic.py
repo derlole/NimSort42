@@ -1,6 +1,6 @@
 from nimsort_vision.magic_object import MagicObject
 from nimsort_vision.position_prediction_interface import PositionPredictionInterface
-from nimsort_vision.plausibilty_check import PlausibilityCheck
+from nimsort_vision.plausibility_check import PlausibilityCheck
 
 
 DT = 0.1            # Timer-Intervall in Sekunden
