@@ -56,6 +56,7 @@
 ### Axis
 - hold axis data (position, velocity, acceleration)
 - calculate acceleration form position
+- calculate in the RCS (RobotCoordinateSystem)
 
 ### Controller
 - controll acceleration
