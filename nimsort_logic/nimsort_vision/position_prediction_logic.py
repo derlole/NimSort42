@@ -5,6 +5,7 @@ from nimsort_vision.plausibility_check import PlausibilityCheck
 
 DT = 0.1            # Timer-Intervall in Sekunden
 X_THRESHOLD = 40.0   # Schwellwert anpassen #TODO define threshold and document it. According issue: #63
+DUPLICATE_THRESHOLD = 0.03  # X-Position Differenz um Duplikate zu erkennen
 DEFAULT_CONVEYOR_BELT_SPEED = 0.01 # Standard, delet when measurement is done 
 
 class PositionPrediction(PositionPredictionInterface):
@@ -20,13 +21,27 @@ class PositionPrediction(PositionPredictionInterface):
     def set_conveyor_belt_speed(self, speed_mps: float) -> None:
         self._conveyor_belt_speed = speed_mps
 
-    def set_object_data(self, object_id: int, object_type: int, position: list[float], ts: int, speed: float = 1.0) -> None:
-        self._objects[object_id] = MagicObject(
+    def set_object_data(self, object_type: int, position: list[float], ts: int, speed: float = 1.0) -> None:
+        """
+        Speichert ein Objekt mit eindeutiger ID.
+        Duplikate werden anhand der X-Position erkannt und ignoriert.
+        """
+       
+        if self._is_duplicate(position[0]):
+            print(f"[PoPr][ROOT----][WARN]: Duplikat erkannt bei X={position[0]:.2f} – wird ignoriert.")
+            return
+        
+  
+        new_id = self._object_id_counter
+        self._object_id_counter += 1
+        
+        self._objects[new_id] = MagicObject(
             object_type=object_type,
             position=position,
             ts=float(ts),
             speed=speed,
         )
+        print(f"[PoPr][ROOT----][INFO]: Objekt mit ID {new_id} bei X={position[0]:.2f} gespeichert.")
 
     def calculate_next_object_position(self) -> tuple[float, float, float, int]:
         if not self._objects:
@@ -65,22 +80,16 @@ class PositionPrediction(PositionPredictionInterface):
         
         return next_obj
 
-    def _update_positions(self) -> None: 
+    def _update_positions(self) -> None:
         """X-Position aller Objekte um speed * dt erhöhen."""
-        updated_objects = {}
-        for obj in self._objects.values():
+        for obj_id, obj in self._objects.items():  # ← ID beibehalten
             x_new = obj.position[0] + self._conveyor_belt_speed * DT
-            updated_obj = MagicObject(
+            self._objects[obj_id] = MagicObject(
                 object_type=obj.object_type,
                 position=[x_new, obj.position[1], obj.position[2]],
                 ts=obj.ts,
                 speed=obj.speed,
-            )
-            object_id = self._object_id_counter
-            self._object_id_counter += 1
-            updated_objects[object_id] = updated_obj
-        self._objects = updated_objects
-
+        )
     def _remove_objects_over_threshold(self) -> None:
         """Objekte deren X-Position den Schwellwert überschreitet entfernen."""
         to_remove = [
@@ -91,3 +100,12 @@ class PositionPrediction(PositionPredictionInterface):
         for object_type in to_remove:
             print(f"[PoPr][ROOT----][INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") 
             del self._objects[object_type]
+
+    def _is_duplicate(self, x_position: float) -> bool:
+        """
+        Prüft ob bereits ein Objekt mit ähnlicher X-Position existiert.
+        """
+        for obj in self._objects.values():
+            if abs(obj.position[0] - x_position) < DUPLICATE_THRESHOLD:
+                return True
+        return False
