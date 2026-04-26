@@ -70,7 +70,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         ret, self._raw_frame = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
 
-        print(f"[OcvP][captureImage]: Frame captured at {self.time_stamp_ms} ms")
+        #print(f"[OcvP][captureImage]: Frame captured at {self.time_stamp_ms} ms")
 
         if not ret or self._raw_frame is None:
             raise RuntimeError("Bildaufnahme fehlgeschlagen.")
@@ -83,7 +83,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         Returns:
             (X_c: float, Y_c: float, Z_c: float, timestamp: int, roi_image: np.ndarray)
         """
-        print(f"[OcvP][getImageData]: Processing image")
+        #print(f"[OcvP][getImageData]: Processing image")
         if self._raw_frame is None:
             raise RuntimeError("Kein Bild – zuerst captureImage() aufrufen.")
 

@@ -13,3 +13,40 @@ The question who, the prediction logic or the vision pipeline, should do a plaus
 
 ### 4. Axis offset is stored in the AxisControllerNode not in the Axis logic.
 For responsibility of axis-values of the Axis class, the sensor-offset of each axis got excluded. This decision was made, because the Axis class should work for coordinates in the RCS, therefor the AxisControllerNode should be responsible for translating the coordinates into RCS, which includes the adaption of sensor-values.
+
+
+### Kamera-Ausrichtung mit digitalem Overlay
+
+Dieses Skript zeigt ein digitales Overlay über dem Live-Kamerabild und dient dazu,
+die Kamera reproduzierbar auf eine definierte Position auszurichten.
+
+![Digital Overlay](../misc/pictures/digital_overlay_camera.png)
+
+Durch fest einprogrammierte Referenzlinien kann die Kamera nach einer Verdrehung oder
+Verschiebung wieder exakt so positioniert werden, dass bestimmte Objekte oder Bereiche
+im Bild immer an der gleichen Stelle erscheinen. Das Overlay selbst verändert das
+Kamerabild nicht, es wird nur zur Anzeige darübergelegt.
+
+## Anleitung
+
+1. Skript starten:
+```bash
+   python3 vision/camera/camera_alignment.py
+```
+
+2. Das Kamerafenster öffnet sich mit den eingeblendeten Referenzlinien.
+
+3. Kamera physisch ausrichten, bis die relevanten Objekte mit den Referenzlinien
+   übereinstimmen:
+   - Das **rote Kästchen** (oben im Bild) markiert die Zielzone für ein bestimmtes Objekt
+   - Die **blauen Linien** definieren zwei horizontale Referenzlienien im Bild
+
+4. Sobald alles passt, Kamera fixieren — die Position ist damit dokumentiert und
+   jederzeit wiederherstellbar.
+
+## Steuerung
+
+| Taste | Funktion                        |
+|-------|---------------------------------|
+| `ESC` | Programm beenden                |
+| `F`   | Vollbild / Fenstermodus wechseln |
