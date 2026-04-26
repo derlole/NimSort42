@@ -23,7 +23,7 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 ![Digital Overlay](../misc/pictures/digital_overlay_camera.png)
 
 Durch fest einprogrammierte Referenzlinien kann die Kamera nach einer Verdrehung oder
-Verschiebung wieder exakt so positioniert werden, dass bestimmte Objekte oder Bereiche
+Verschiebung wieder exakt so positioniert werden, dass bestimmte Objekte / Bereiche
 im Bild immer an der gleichen Stelle erscheinen. Das Overlay selbst verändert das
 Kamerabild nicht, es wird nur zur Anzeige darübergelegt.
 
@@ -38,11 +38,11 @@ Kamerabild nicht, es wird nur zur Anzeige darübergelegt.
 
 3. Kamera physisch ausrichten, bis die relevanten Objekte mit den Referenzlinien
    übereinstimmen:
-   - Das **rote Kästchen** (oben im Bild) markiert die Zielzone für ein bestimmtes Objekt
-   - Die **blauen Linien** definieren zwei horizontale Referenzlienien im Bild
+   - Das **rote Kästchen** (oben im Bild) markiert die Zielzone des 2D-Codes.
+   - Die **blauen Linien** definieren die Ausrichtung zum Förderband.
 
-4. Sobald alles passt, Kamera fixieren — die Position ist damit dokumentiert und
-   jederzeit wiederherstellbar.
+4. Sobald alles passt, Kamera fixieren.  
+   Die Position ist damit dokumentiert und jederzeit wiederherstellbar.
 
 #### Steuerung
 
@@ -50,3 +50,4 @@ Kamerabild nicht, es wird nur zur Anzeige darübergelegt.
 |-------|---------------------------------|
 | `ESC` | Programm beenden                |
 | `F`   | Vollbild / Fenstermodus wechseln |
+
