@@ -10,7 +10,7 @@ class MainNode(Node):
         super().__init__('nimsort_main_node')
         
         self.nimsort_main = NimSortMain()
-        self.publisher= self.create_publisher(NimSortTarget, 'target', 10)
+        self.publisher= self.create_publisher(NimSortTarget, '/NimSortTarget', 10)
         
         self.subscription_motion = self.create_subscription(
             NimSortMotionState,
