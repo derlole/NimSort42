@@ -59,7 +59,7 @@ class OpencvPipeline(OpencvPipelineInterface):
 
         self._raw_frame: np.ndarray | None = None
 
-    def _pixel_to_camera(self, u: float, v: float, Z: float = 1.0):
+    def _pixel_to_camera(self, u, v, Z = 1.0):
         """Konvertiert Pixelkoordinaten in normierte Kamerakoordinaten."""
         X_c = (u - self._cx) / self._fx * Z
         Y_c = (v - self._cy) / self._fy * Z
