@@ -32,14 +32,9 @@ class MainNode(Node):
     
     def listener_callback_prediction(self, msg):
         """Verarbeitet Prediction Nachricht und veröffentlicht Target"""
-        self.get_logger().info(f'Prediction empfangen. X: {msg.predicted_position_wcs.x:.2f}, Y: {msg.predicted_position_wcs.y:.2f}, Z: {msg.predicted_position_wcs.z:.2f}, Objekt-Typ: {msg.object_type}')
-        target = self.nimsort_main.process_prediction(msg)
+        target = self.nimsort_main.get_next_target_to_pick(x=msg.predicted_position_wcs.x, y=msg.predicted_position_wcs.y, z=msg.predicted_position_wcs.z, object_type=msg.object_type)
+    
         
-        if target is not None:
-            self.publisher_.publish(target)
-            self.get_logger().info(f'Target veröffentlicht. State: {self.nimsort_main.get_current_state()}')
-        else:
-            self.get_logger().debug(f'Keine Target für Prediction. State: {self.nimsort_main.get_current_state()}')
 
     def publish_target(self, x, y, z, process_id):
         msg=NimSortTarget()
