@@ -25,15 +25,15 @@ VELOCITY_TOLERANCE_Z = 0.001
 KP_X = 0.419
 KP_Y = 0.419
 KP_Z = 0.519
-KD_X = 1.22
-KD_Y = 1.22
-KD_Z = 1.85
+KD_X = 6.92
+KD_Y = 6.92
+KD_Z = 6.92
 D_FILTER_ALPHA_X = 0.5
 D_FILTER_ALPHA_Y = 0.5
 D_FILTER_ALPHA_Z = 0.5
-TF_X = 0.875
-TF_Y = 0.875
-TF_Z = 0.875
+TF_X = 0.00875
+TF_Y = 0.00875
+TF_Z = 0.00875
 
 class AxisController(Node):
     def __init__(self):
@@ -128,9 +128,9 @@ class AxisController(Node):
         trajectrory_planner_y = TrajectoryPlanner(MAX_VELOCITY_Y, MAX_ACCELERATION_Y, POSITION_TOLERANCE_Y, VELOCITY_TOLERANCE_Y)
         trajectrory_planner_z = TrajectoryPlanner(MAX_VELOCITY_Z, MAX_ACCELERATION_Z, POSITION_TOLERANCE_Z, VELOCITY_TOLERANCE_Z)
 
-        controller_x = Controller(KP_X, KD_X, D_FILTER_ALPHA_X, TF_X, MAX_ACCELERATION_X, -MAX_ACCELERATION_X, False, True)
-        controller_y = Controller(KP_Y, KD_Y, D_FILTER_ALPHA_Y, TF_Y, MAX_ACCELERATION_Y, -MAX_ACCELERATION_Y, False, True)
-        controller_z = Controller(KP_Z, KD_Z, D_FILTER_ALPHA_Z, TF_Z, MAX_ACCELERATION_Z, -MAX_ACCELERATION_Z, False, True)
+        controller_x = Controller(KP_X, KD_X, D_FILTER_ALPHA_X, TF_X, MAX_ACCELERATION_X, -MAX_ACCELERATION_X, False, False)
+        controller_y = Controller(KP_Y, KD_Y, D_FILTER_ALPHA_Y, TF_Y, MAX_ACCELERATION_Y, -MAX_ACCELERATION_Y, False, False)
+        controller_z = Controller(KP_Z, KD_Z, D_FILTER_ALPHA_Z, TF_Z, MAX_ACCELERATION_Z, -MAX_ACCELERATION_Z, False, False)
 
         self.axis_x = Axis("X", controller_x, trajectrory_planner_x)
         self.axis_y = Axis("Y", controller_y, trajectrory_planner_y)
