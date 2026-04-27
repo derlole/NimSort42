@@ -112,7 +112,7 @@ class AxisController(Node):
         self.get_logger().info(f"Received RobotPos: {msg}")
 
     def ax_state_empty(self):
-        if self.last_nimsort_target.process_id == 1:
+        if self.last_nimsort_target is not None and self.last_nimsort_target.process_id == 1:
             self.init_process.start()
             self.main_state = AxisControllerStates.INITIALIZING_AXIS_HW
 
