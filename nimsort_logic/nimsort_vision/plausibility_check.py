@@ -3,7 +3,7 @@
 X_MIN = 0.0
 X_MAX = 0.4 #TODO define limit and document it. According issue: #69
 
-Y_MIN = 0.04
+Y_MIN = 0.02
 Y_MAX = 0.13 
 
 

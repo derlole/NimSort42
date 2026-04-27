@@ -14,13 +14,13 @@ class MainNode(Node):
         
         self.subscription_motion = self.create_subscription(
             NimSortMotionState,
-            'motion_state',
+            '/NimSortMotionState',
             self.listener_callback_motion,
             10)
         
         self.subscription_prediction = self.create_subscription(
             NimSortPrediction,
-            'prediction',
+            '/NimSortPrediction',
             self.listener_callback_prediction,
             10)
 
@@ -31,6 +31,7 @@ class MainNode(Node):
     
     def listener_callback_prediction(self, msg):
         """Verarbeitet Prediction Nachricht und veröffentlicht Target"""
+        self.get_logger().info(f'Prediction empfangen. X: {msg.predicted_position_wcs.x:.2f}, Y: {msg.predicted_position_wcs.y:.2f}, Z: {msg.predicted_position_wcs.z:.2f}, Objekt-Typ: {msg.object_type}')
         target = self.nimsort_main.process_prediction(msg)
         
         if target is not None:
