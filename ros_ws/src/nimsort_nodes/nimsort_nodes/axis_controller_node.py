@@ -10,30 +10,30 @@ from nimsort_motion.axis_controller_states import AxisControllerStates
 from nimsort_motion.init_process import InitProcess
 from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
 
-MAX_VELOCITY_X = 0.5
-MAX_VELOCITY_Y = 0.5
-MAX_VELOCITY_Z = 0.5
-MAX_ACCELERATION_X = 0.01
-MAX_ACCELERATION_Y = 0.01
-MAX_ACCELERATION_Z = 0.01
+MAX_VELOCITY_X = 0.05
+MAX_VELOCITY_Y = 0.05
+MAX_VELOCITY_Z = 0.05
+MAX_ACCELERATION_X = 0.02
+MAX_ACCELERATION_Y = 0.02
+MAX_ACCELERATION_Z = 0.02
 POSITION_TOLERANCE_X = 0.0001
 POSITION_TOLERANCE_Y = 0.0001
 POSITION_TOLERANCE_Z = 0.0001
 VELOCITY_TOLERANCE_X = 0.001
 VELOCITY_TOLERANCE_Y = 0.001
 VELOCITY_TOLERANCE_Z = 0.001
-KP_X = 1.0
-KP_Y = 1.0
-KP_Z = 1.0
-KD_X = 0.1
-KD_Y = 0.1
-KD_Z = 0.1
+KP_X = 0.419
+KP_Y = 0.419
+KP_Z = 0.519
+KD_X = 1.22
+KD_Y = 1.22
+KD_Z = 1.85
 D_FILTER_ALPHA_X = 0.5
 D_FILTER_ALPHA_Y = 0.5
 D_FILTER_ALPHA_Z = 0.5
-TF_X = 0.1
-TF_Y = 0.1
-TF_Z = 0.1
+TF_X = 0.875
+TF_Y = 0.875
+TF_Z = 0.875
 
 class AxisController(Node):
     def __init__(self):
@@ -112,9 +112,9 @@ class AxisController(Node):
         self.get_logger().info(f"Received RobotPos: {msg}")
 
     def ax_state_empty(self):
-        #TODO wait for main node to execute init process
-        self.init_process.start()
-        self.main_state = AxisControllerStates.INITIALIZING_AXIS_HW
+        if self.last_nimsort_target.process_id == 1:
+            self.init_process.start()
+            self.main_state = AxisControllerStates.INITIALIZING_AXIS_HW
 
     def ax_state_initializing_axis_hw(self):
         x_acc, y_acc, z_acc = self.init_process.robot_values((self.last_robot_pos.pos_x, self.last_robot_pos.pos_y, self.last_robot_pos.pos_z))
@@ -147,7 +147,15 @@ class AxisController(Node):
         self.main_state = AxisControllerStates.RUNNING
 
     def ax_state_running(self):
-        pass
+        self.axis_x.set_target(self.last_nimsort_target.target_pos_x + self.offset_x)
+        self.axis_y.set_target(self.last_nimsort_target.target_pos_y + self.offset_y)
+        self.axis_z.set_target(self.last_nimsort_target.target_pos_z + self.offset_z)
+
+        acc_x = self.axis_x.update(self.last_robot_pos.pos_x, 0.1) #TODO dt as timestamp difference actually calculated
+        acc_y = self.axis_y.update(self.last_robot_pos.pos_y, 0.1)
+        acc_z = self.axis_z.update(self.last_robot_pos.pos_z, 0.1)
+
+        self.send_acceleration(acc_x, acc_y, acc_z)
 
 def main(args=None):
     rclpy.init(args=args)
