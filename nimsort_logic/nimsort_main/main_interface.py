@@ -8,17 +8,24 @@ class MainInterface(ABC):
     """
     
     @abstractmethod
-    def process_motion_state(self, motion_state) -> None:
+    def set_motion_state(self, reached: bool, gripper_active: bool) -> None:
         """
         Verarbeitet den Zustand der Motion und aktualisiert internen Zustand.
         """
         pass
-    
     @abstractmethod
-    def process_prediction(self, prediction) -> object:
+    def set_prediction(self, prediction) -> None:
         """
         Verarbeitet Prediction von Vision.
         """
+        pass
+    @abstractmethod
+    def get_prediction(self):
+        """Gibt die aktuelle Prediction zurück."""
+        pass
+    @abstractmethod
+    def state_machine(self) -> tuple[float, float, float, int]:
+        """State Machine Logik, die basierend auf aktuellen Zuständen entscheidet."""
         pass
     
     @abstractmethod

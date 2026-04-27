@@ -29,8 +29,6 @@ class PositionPrediction(PositionPredictionInterface):
         if self._is_duplicate(position[0]):
             print(f"[WARN][PoPr][ROOT----]: Duplikat erkannt bei X={position[0]:.2f} – wird ignoriert.")
             return
-        
-  
         new_id = self._object_id_counter
         self._object_id_counter += 1
         

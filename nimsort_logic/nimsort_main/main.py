@@ -1,6 +1,11 @@
 import threading
 from enum import Enum
 from nimsort_main.main_interface import MainInterface
+from nimsort_vision.plausibility_check import PlausibilityCheck
+
+POSTION_UNCORN= []
+POSTION_CAT= []
+
 
 
 class NimSortState(Enum):
@@ -29,77 +34,67 @@ class NimSortMain(MainInterface):
         self.current_motion_state = None
         self.current_state = NimSortState.START
         self.lock = threading.Lock()
-    
-    def process_motion_state(self, motion_state) -> None:
-        """
-        Aktualisiert die aktuelle Bewegungsposition.
-        
-        Args:
-            motion_state: Aktuelle Position des Roboters
-        """
-        with self.lock:
-            self.current_motion_state = motion_state
-            if self.current_state == NimSortState.START:
-                self.current_state = NimSortState.INIT_CALL
-    
-    def process_prediction(self, prediction) -> object:
-        """
-        Verarbeitet die Prediction von Vision.
-        Gibt das Target zurück wenn die Prediction zu aktueller Position passt.
-        
-        Args:
-            prediction: Vorhersage der Vision
-            
-        Returns:
-            Target wenn valide, None sonst
-        """
-        with self.lock:
-            if self.current_motion_state is None:
-                self.current_state = NimSortState.ERROR_STATE
-                return None
-            
-            # Prüfe ob Prediction zur aktuellen Position passt
-            if self._is_prediction_valid(prediction):
-                self.current_state = NimSortState.READY_FOR_PICK
-                return self._create_target(prediction)
-            else:
-                self.current_state = NimSortState.ERROR_STATE
-                return None
-    
-    
-    def _create_target(self, prediction) -> object:
-        """
-        Erstellt Target aus Prediction.
-        
-        Args:
-            prediction: Die Prediction
-            
-        Returns:
-            Target Nachricht
-        """
-      
-        return prediction
-    
+    def set_current_state(self, motion_state: NimSortState) -> None:
+        """Setzt den aktuellen Bewegungszustand der State Machine."""
+        self.current_state = motion_state
+
     def get_current_state(self) -> NimSortState:
-        """
-        Gibt aktuellen State-Machine-Zustand zurück.
+        """Gibt den aktuellen Bewegungszustand der State Machine zurück."""
+        return self.current_state
         
-        Returns:
-            NimSortState Enum mit aktuellem Zustand
-        """
-        with self.lock:
-            return self.current_state
+    def set_motion_state(self, reached: bool, gripper_active: bool) -> None:
+        """Setzt den aktuellen Bewegungszustand der State Machine."""
+        self.reached = reached
+        self.gripper_active = gripper_active
+
+    def get_next_target_to_pick(self)-> tuple[float, float, float, int]:
+        """Gibt die Zielposition und Objekt-Typ zurück, wenn die Prediction gültig ist."""
+        if self.current_prediction is not None and self.plausibility_check.check_prediction(self.current_prediction):
+            return (self.current_prediction.position[0], self.current_prediction.position[1], self.current_prediction.position[2], self.current_prediction.object_type)
+        else:
+            return None
+   
     
-    def transition_to(self, next_state: NimSortState) -> None:
-        """
-        Wechselt zu einem neuen Zustand.
-        
-        Args:
-            next_state: Der nächste Zustand (NimSortState Enum)
-        """
-        with self.lock:
-            print(f"[INFO]: State Transition: {self.current_state.value} -> {next_state.value}")
-            self.current_state = next_state
+    def state_machine(self) -> tuple[float, float, float, int]:
+        match self.current_state:
+            case NimSortState.START:
+                self.current_state = NimSortState.INIT_CALL
+                return (0.0, 0.0, 0.0, 0)      
+            
+            case NimSortState.INIT_CALL:
+                self.current_process_id = 1
+                self.current_state = NimSortState.WAIT_FOR_INIT  
+                return (0.0, 0.0, 0.0, 1)
+            
+            case NimSortState.WAIT_FOR_INIT:
+                if self.reached:
+                    self.current_state = NimSortState.READY_FOR_PICK
+                return (0.0, 0.0, 0.0, 1)  
+                 
+            case NimSortState.READY_FOR_PICK:
+                if self.get_next_target_to_pick() is not None:
+                    self.current_state = NimSortState.GO_TO_PICKPREPOSITION
+                return (0.0, 0.0, 0.0, 2)
+
+            case NimSortState.GO_TO_PICKPREPOSITION:
+                # Zielposition für Pick vorbereiten, z.B. Annäherung an Objek
+               pass
+            
+            case NimSortState.PICK:
+                # Pick-Operation durchführen, z.B. Greifer schließen
+                pass    
+
+    
+            case NimSortState.GO_TO_PICKPOSTPOSITION:
+                # Nach dem Pick, Zielposition für Pick-Postion vorbereiten
+                pass
+
+            case NimSortState.GO_TO_DROP:
+                # Zielposition für Drop vorbereiten, z.B. Annäherung an Sortierbehälter
+                pass 
+            
+            case NimSortState.DROP:
+                pass
     
     def reset(self) -> None:
         """Setzt State Machine zurück auf START"""
