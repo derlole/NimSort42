@@ -69,15 +69,15 @@ class Vision(Node):
         print(f"[VN--][main_ord]: Starting main order{time.time()}")
         try:
             self.pipeline.captureImage()
-            x_ccs, y_ccs, z_ccs, ts, image = self.pipeline.getImageData()
+            x_w, y_w, z_w, ts, image = self.pipeline.getImageData()
 
         except ValueError as e:
             self.get_logger.error("[VN--][main_ord]:" + str(e))
 
         # TODO insert trained_model_here to calculate the correct object_type
-        point_wcs = self.tf_camera_to_world(x_ccs, y_ccs, z_ccs)
+        #point_wcs = self.tf_camera_to_world(x_ccs, y_ccs, z_ccs)
 
-        self.publish_image_data(point_wcs.point.x, point_wcs.point.y, point_wcs.point.z, ts, 1, 0.01) # TODO repalce the consants at the time zou have them
+        self.publish_image_data(x_w, y_w, z_w, ts, 1, 0.01) # TODO repalce the consants at the time zou have them
 
 def main(args=None):
     rclpy.init(args=args)

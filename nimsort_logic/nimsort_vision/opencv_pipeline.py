@@ -1,23 +1,59 @@
 import cv2 as cv
 import time
 import numpy as np
+
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 
 CAMERA_INDEX = 4
-CAMERA_MATRIX = np.array([
-    [2710.666860974311,    0.0,             367.8525523358933],
-    [   0.0,           2766.057464263328,   245.68063913559047],
-    [   0.0,              0.0,               1.0],
-], dtype=np.float64)
-DIST_COEFFS = np.array(
-    [-1.4668410355213393, -19.46254234953102,
-     -0.0022364037989029096, -0.03440200232868026,
-     450.2793784546618],
-    dtype=np.float64,
-)
-ROI = (10, 113, 615, 194)  # (x, y, width, height)
 MIN_CONTOUR_AREA = 4500
+ROI = (10, 113, 615, 194)  # (x, y, width, height)
+Z_W_CONSTANT = 6.0
 
+PIXEL_PUNKTE = np.array([
+    [69, 62],   # Ecke 1 oben-links
+    [113, 62],   # Ecke 2 oben-rechts
+    [114, 109],   # Ecke 3 unten-rechts
+    [70, 109],   # 1. Quadrat Ecke 4 unten-links
+    [159, 61],
+    [202, 61],
+    [204, 107],
+    [160, 108],  # 2. Quadrant unten-links
+    [248, 61],
+    [289, 62],
+    [291, 106],
+    [249, 106], # 3. Quadrant unten-links
+    [493, 63],
+    [529, 63],
+    [529, 106],
+    [494, 106],   # 6. Quadrant unten-links
+    [567, 65],
+    [600, 65],
+    [601, 106],
+    [567, 106],   # 7. Quadrant unten-links
+], dtype=np.float32)
+
+WELT_PUNKTE = np.array([
+    [58, 25],   # Ecke 1 oben-links  [X_mm, Y_mm]
+    [78, 25],   # Ecke 2 oben-rechts
+    [78, 5],   # Ecke 3 unten-rechts
+    [58, 5],   # 1. Quadrat Ecke 4 unten-links
+    [98, 25],
+    [118, 25], 
+    [118, 5],
+    [98, 5],   # 2. Quadrant unten-links
+    [138, 25],
+    [158, 25],
+    [158, 5],
+    [135, 5],   # 3. Quadrant unten-links
+    [258, 25],
+    [278, 25],
+    [278, 5],
+    [258, 5],   # 6. Quadrant unten-links
+    [298, 25],
+    [318, 25],
+    [318, 5],
+    [298, 5],   # 7. Quadrant unten-links
+], dtype=np.float32)
 
 class OpencvPipeline(OpencvPipelineInterface):
 
@@ -29,21 +65,8 @@ class OpencvPipeline(OpencvPipelineInterface):
         if not self._cap.isOpened():
             raise RuntimeError(f"Kamera {CAMERA_INDEX} konnte nicht geöffnet werden.")
 
-        # Einmalig einen Frame lesen, um die Auflösung zu ermitteln
-        ret, test_image = self._cap.read()
-        if not ret or test_image is None:
-            raise RuntimeError("Kein Test-Frame von der Kamera erhalten.")
-
-        h, w = test_image.shape[:2]
-
-        # Neue Kameramatrix + Remap-Maps vorberechnen
-        new_cam_matrix, _ = cv.getOptimalNewCameraMatrix(
-            CAMERA_MATRIX, DIST_COEFFS, (w, h), alpha=1, newImgSize=(w, h)
-        )
-        self._map1, self._map2 = cv.initUndistortRectifyMap(
-            CAMERA_MATRIX, DIST_COEFFS, None,
-            new_cam_matrix, (w, h), cv.CV_16SC2
-        )
+        # Homographie berechnen
+        self.H, _ = cv.findHomography(PIXEL_PUNKTE, WELT_PUNKTE)
 
         # ROI-Slice + Offset einmalig vorberechnen
         x, y, rw, rh = ROI
@@ -51,28 +74,20 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._ry = y
         self._roi_slice = (slice(y, y + rh), slice(x, x + rw))
 
-        # Kameramatrix-Werte als Skalare cachen für _pixel_to_camera
-        self._fx = float(CAMERA_MATRIX[0, 0])
-        self._fy = float(CAMERA_MATRIX[1, 1])
-        self._cx = float(CAMERA_MATRIX[0, 2])
-        self._cy = float(CAMERA_MATRIX[1, 2])
-
-        self._raw_frame: np.ndarray | None = None
-
-    def _pixel_to_camera(self, u, v, Z = 1.0):
-        """Konvertiert Pixelkoordinaten in normierte Kamerakoordinaten."""
-        X_c = (u - self._cx) / self._fx * Z
-        Y_c = (v - self._cy) / self._fy * Z
-        return X_c, Y_c, Z
-
+    def pixel_zu_welt(self, u, v):
+        p = np.array([u, v, 1.0])
+        w = self.H @ p
+        w /= w[2]
+        return w[0], w[1]
+    
     def captureImage(self):
         """Liest exklusiv den Rohframe – minimale Laufzeit."""
-        ret, self._raw_frame = self._cap.read()
+        ret, self._raw_image = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
 
         #print(f"[OcvP][captureImage]: Frame captured at {self.time_stamp_ms} ms")
 
-        if not ret or self._raw_frame is None:
+        if not ret or self._raw_image is None:
             raise RuntimeError("Bildaufnahme fehlgeschlagen.")
 
     def getImageData(self):
@@ -84,12 +99,10 @@ class OpencvPipeline(OpencvPipelineInterface):
             (X_c: float, Y_c: float, Z_c: float, timestamp: int, roi_image: np.ndarray)
         """
         #print(f"[OcvP][getImageData]: Processing image")
-        if self._raw_frame is None:
+        if self._raw_image is None:
             raise RuntimeError("Kein Bild – zuerst captureImage() aufrufen.")
-
-        undistorted = cv.remap(self._raw_frame, self._map1, self._map2, cv.INTER_LINEAR)
-
-        roi = undistorted[self._roi_slice]
+        
+        roi = self._raw_image[self._roi_slice]
 
         gray = cv.cvtColor(roi, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
@@ -115,9 +128,9 @@ class OpencvPipeline(OpencvPipelineInterface):
         cx_px = cx_roi + self._rx
         cy_px = cy_roi + self._ry
 
-        X_c, Y_c, Z_c = self._pixel_to_camera(cx_px, cy_px)
-
-        result = (X_c, Y_c, Z_c, self.time_stamp_ms, roi)
+        X_w, Y_w = self.pixel_zu_welt(cx_px, cy_px)
+        print(f"[OcvP][getImageData]: Detected object at pixel ({cx_px:.1f}, {cy_px:.1f}) -> world ({X_w:.1f}, {Y_w:.1f})")
+        result = (X_w, -Y_w, Z_W_CONSTANT, self.time_stamp_ms, roi) #ACHTUNG: Y-Wert wird negiert, da in Weltkoordinaten die positive Y-Achse einen Vorzeichen wechsel hat.
         self._last_result = result
         return result
 
