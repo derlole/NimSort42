@@ -106,10 +106,17 @@ class Controller(ControllerInterface):
             ff_term = 0.0
 
         acceleration = p_term + d_term + ff_term
+        
+        # DEBUG Log: Show controller components
+        print(f"[DEBUG][Ctrl-][comput]: P={p_term:+.6f}, D={d_term:+.6f}, FF={ff_term:+.6f}, raw_a={acceleration:+.6f}")
 
         if self.max_acceleration is not None:
             acceleration = min(acceleration, self.max_acceleration)
         if self.min_acceleration is not None:
             acceleration = max(acceleration, self.min_acceleration)
+        
+        # Log clipping if happened
+        if acceleration != (p_term + d_term + ff_term):
+            print(f"[WARN][Ctrl-][comput]: CLIPPED! before={p_term + d_term + ff_term:+.6f}, after={acceleration:+.6f}")
 
         return acceleration
