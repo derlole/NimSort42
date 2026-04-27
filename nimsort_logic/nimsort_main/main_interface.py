@@ -13,13 +13,13 @@ class MainInterface(ABC):
         Verarbeitet den Zustand der Motion und aktualisiert internen Zustand.
         """
         pass
-    @abstractmethod
+
     def set_prediction(self, prediction) -> None:
         """
         Verarbeitet Prediction von Vision.
         """
         pass
-    @abstractmethod
+
     def get_prediction(self):
         """Gibt die aktuelle Prediction zurück."""
         pass
