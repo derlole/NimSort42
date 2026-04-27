@@ -146,7 +146,17 @@ class AxisController(Node):
 
         self.main_state = AxisControllerStates.RUNNING
 
+    def publish_motion_state(self, reached, gripper_active):
+        msg = NimSortMotionState()
+        msg.reached = reached
+        msg.gripper_active = gripper_active
+        self.motion_state_pub.publish(msg)
+
     def ax_state_running(self):
+        print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis_x.target_reached}, {self.axis_y.target_reached}, {self.axis_z.target_reached}")
+        if (self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached) and self.last_nimsort_target is not None:
+            self.publish_motion_state(True, False)
+            
         self.axis_x.set_target(self.last_nimsort_target.target_pos_x + self.offset_x)
         self.axis_y.set_target(self.last_nimsort_target.target_pos_y + self.offset_y)
         self.axis_z.set_target(self.last_nimsort_target.target_pos_z + self.offset_z)
