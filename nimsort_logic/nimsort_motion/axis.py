@@ -64,6 +64,7 @@ class Axis:
         ---
         target_position: float [m] position with respect to home
         """
+        print(f"[INFO][AXIS][set_targe]: Setting new target for Axis {self._name}: {target_position:.4f} m")
         self._planner.set_target(target_position)
 
     def update(self, current_position: float, dt: float) -> float:
@@ -77,6 +78,7 @@ class Axis:
             raise ValueError(f"Axis '{self._name}': dt must be positive {dt}.")
 
         self._velocity = (current_position - self._prev_position) / dt
+        print(f"[INFO][Axis][update--]: Current position: {current_position:.4f} m, Velocity: {self._velocity:.4f} m/s, Prev position: {self._prev_position:.4f} m")
         self._position = current_position
         self._prev_position = current_position
 
@@ -86,8 +88,12 @@ class Axis:
             dt = dt
         )
 
+        print(f"[INFO][Axis][update--]: Target position: {target_pos:.4f} m, Target velocity: {target_vel:.4f} m/s, Target acceleration: {target_accel:.4f} m/s²")
+
         position_err = target_pos - self._position
         velocity_err = target_vel - self._velocity
+
+        print(f"[INFO][Axis][update--]: Position error: {position_err:.4f} m, Velocity error: {velocity_err:.4f} m/s")
 
         self._acceleration = self._controller.compute(
             position_error=position_err,
@@ -95,7 +101,7 @@ class Axis:
             dt=dt,
             target_acceleration=target_accel
         )
-
+        print(f"[INFO][Axis][update--]: Computed acceleration: {self._acceleration:.4f} m/s²")
         return self._acceleration
     
     def reset(self) -> None:

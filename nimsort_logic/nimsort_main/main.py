@@ -79,7 +79,7 @@ class NimSortMain(MainInterface):
             case NimSortState.READY_FOR_PICK:
                 if self.get_next_target_to_pick() is not None:
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
-                return (-0.1, -0.1, 0.05, 2)
+                return (-0.01, -0.01, 0.01, 2)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
                 # Zielposition für Pick vorbereiten, z.B. Annäherung an Objek
