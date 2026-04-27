@@ -34,6 +34,8 @@ class NimSortMain(MainInterface):
         self.current_motion_state = None
         self.current_state = NimSortState.START
         self.lock = threading.Lock()
+        self.reached = False
+        self.gripper_active = False
     def set_current_state(self, motion_state: NimSortState) -> None:
         """Setzt den aktuellen Bewegungszustand der State Machine."""
         self.current_state = motion_state

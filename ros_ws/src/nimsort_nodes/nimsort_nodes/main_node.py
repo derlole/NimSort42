@@ -23,11 +23,12 @@ class MainNode(Node):
             '/NimSortPrediction',
             self.listener_callback_prediction,
             10)
+        self.timer = self.create_timer(0.1, self.main_order)
 
     def listener_callback_motion(self, msg):
         """Verarbeitet MotionState Nachricht"""
         self.nimsort_main.set_motion_state(msg.reached,msg.gripper_active)
-        self.get_logger().debug(f'MotionState verarbeitet. State: {self.nimsort_main.get_current_state()}')
+       
     
     def listener_callback_prediction(self, msg):
         """Verarbeitet Prediction Nachricht und veröffentlicht Target"""
@@ -53,6 +54,8 @@ class MainNode(Node):
     def main_order(self):
         """State Machine Logik, die basierend auf aktuellen Zuständen entscheidet."""
         x, y, z, process_id = self.nimsort_main.state_machine()
+        self.publish_target(x, y, z, process_id)
+    
         
 def main(args=None):
     rclpy.init(args=args)
