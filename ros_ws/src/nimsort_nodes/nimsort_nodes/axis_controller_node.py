@@ -157,13 +157,13 @@ class AxisController(Node):
         if (self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached) and self.last_nimsort_target is not None:
             self.publish_motion_state(True, False)
 
-        self.axis_x.set_target(self.last_nimsort_target.target_point.x + self.offset_x)
-        self.axis_y.set_target(self.last_nimsort_target.target_point.y + self.offset_y)
-        self.axis_z.set_target(self.last_nimsort_target.target_point.z + self.offset_z)
+        self.axis_x.set_target(self.last_nimsort_target.target_point.x)
+        self.axis_y.set_target(self.last_nimsort_target.target_point.y)
+        self.axis_z.set_target(self.last_nimsort_target.target_point.z)
 
-        acc_x = self.axis_x.update(self.last_robot_pos.pos_x, 0.1) #TODO dt as timestamp difference actually calculated
-        acc_y = self.axis_y.update(self.last_robot_pos.pos_y, 0.1)
-        acc_z = self.axis_z.update(self.last_robot_pos.pos_z, 0.1)
+        acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, 0.1) #TODO dt as timestamp difference actually calculated
+        acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, 0.1)
+        acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, 0.1)
 
         self.send_acceleration(acc_x, acc_y, acc_z)
 
