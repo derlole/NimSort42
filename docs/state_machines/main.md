@@ -10,3 +10,10 @@
 9. drop
 
 error_state
+
+
+#### Defintion of Cases in Process ID 
+1:init 
+2:go to Postion 
+3:activate gripper
+4:deactivate gripper

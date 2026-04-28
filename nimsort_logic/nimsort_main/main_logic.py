@@ -3,10 +3,10 @@ from enum import Enum
 from nimsort_main.main_interface import MainInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 
-POSTION_UNCORN= []
-POSTION_CAT= []
-
-
+POSITION_UNCORN= []
+POSITION_CAT= []
+Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition
+Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
 
 class NimSortState(Enum):
     """Enum für alle Zustände der NimSort State Machine"""
@@ -82,17 +82,17 @@ class NimSortMain(MainInterface):
                 return (-0.01, -0.01, 0.01, 2)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
-                # Zielposition für Pick vorbereiten, z.B. Annäherung an Objek
-               pass
-            
+                if self.get_next_target_to_pick() is not None:
+                    self.current_state = NimSortState.PICK 
+                    return self. self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 2  
+                       
             case NimSortState.PICK:
-                # Pick-Operation durchführen, z.B. Greifer schließen
-                pass    
-
-    
+                if self.reached and not self.gripper_active:
+                    self.current_state = NimSortState.GO_TO_PICKPOSTPOSITION
+                    return self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 3
+             
             case NimSortState.GO_TO_PICKPOSTPOSITION:
-                # Nach dem Pick, Zielposition für Pick-Postion vorbereiten
-                pass
+               pass
 
             case NimSortState.GO_TO_DROP:
                 # Zielposition für Drop vorbereiten, z.B. Annäherung an Sortierbehälter
