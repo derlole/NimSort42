@@ -4,7 +4,7 @@ import numpy as np
 
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 
-CAMERA_INDEX = 4
+CAMERA_INDEX = 0 #TODO auf 4 ändern
 MIN_CONTOUR_AREA = 4500
 ROI = (10, 113, 615, 194)  # (x, y, width, height)
 Z_W_CONSTANT = 6.0
@@ -60,10 +60,15 @@ class OpencvPipeline(OpencvPipelineInterface):
     def __init__(self):
         self.time_stamp_ms = None
         self._last_result = None
+        self._test_counter = 0
         
         self._cap = cv.VideoCapture(CAMERA_INDEX)
         if not self._cap.isOpened():
             raise RuntimeError(f"Kamera {CAMERA_INDEX} konnte nicht geöffnet werden.")
+        
+        print(f"[OcvP][__init__]: Kamera {CAMERA_INDEX} geöffnet, warte auf Stabilisierung...")
+        time.sleep(2.0) # Wartezeit für die Kamera, um sich zu stabilisieren
+
 
         # Homographie berechnen
         self.H, _ = cv.findHomography(PIXEL_PUNKTE, WELT_PUNKTE)
@@ -82,8 +87,10 @@ class OpencvPipeline(OpencvPipelineInterface):
     
     def captureImage(self):
         """Liest exklusiv den Rohframe – minimale Laufzeit."""
+        self._test_counter += 1
         ret, self._raw_image = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
+        cv.imwrite(f"/home/louis/Louis/Temp/image_{self._test_counter}.png", self._raw_image)
 
         #print(f"[OcvP][captureImage]: Frame captured at {self.time_stamp_ms} ms")
 

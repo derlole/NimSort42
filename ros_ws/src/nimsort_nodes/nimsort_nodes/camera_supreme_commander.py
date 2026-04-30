@@ -28,28 +28,6 @@ class Vision(Node):
         self.timer = self.create_timer(0.1, self.main_order)
 
         self.pipeline = OpencvPipeline()
-
-    def tf_camera_to_world(self, x: float, y: float, z: float) -> PointStamped | None:
-        """ transforms one point from camera-coordinatesystem into worl-coordinatesystem"""
-        point = PointStamped()
-        point.header.frame_id = CAMERA_FRAME
-        point.header.stamp = self.get_clock().now().to_msg()
-
-        point.point.x = x
-        point.point.y = y
-        point.point.z = z
-
-        try:
-            transformed = self.tf_buffer.transform(
-                point,
-                WORLD_FRAME,
-                timeout = rclpy.duration.Duration(seconds = 0.05)
-            )
-            return transformed
-        
-        except(LookupException, ConnectivityException, ExtrapolationException) as e:
-            self.get_logger().warn(f"{str(e)}")
-            return None
         
     def publish_image_data(self, x_wcs, y_wcs, z_wcs, ts, object_type, conveyor_belt_speed):
         msg = NimSortImageData()
@@ -75,7 +53,7 @@ class Vision(Node):
             self.get_logger.error("[VN--][main_ord]:" + str(e))
 
         # TODO insert trained_model_here to calculate the correct object_type
-        #point_wcs = self.tf_camera_to_world(x_ccs, y_ccs, z_ccs)
+
 
         self.publish_image_data(x_w, y_w, z_w, ts, 1, 0.01) # TODO repalce the consants at the time zou have them
 
