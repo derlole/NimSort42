@@ -4,7 +4,7 @@ import numpy as np
 
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 
-CAMERA_INDEX = 4 #TODO auf 4 ändern
+CAMERA_INDEX = 4
 MIN_CONTOUR_AREA = 4500
 ROI = (10, 113, 615, 194)  # (x, y, width, height)
 Z_W_CONSTANT = 6.0
