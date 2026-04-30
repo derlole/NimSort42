@@ -15,6 +15,10 @@ nimsort_motion/init_process_interface.py
 nimsort_motion/kalman_filter.py
 nimsort_motion/trajectory_planner_interface.py
 nimsort_motion/trajectroy_planner.py
+nimsort_motion/test/__init__.py
+nimsort_motion/test/test_axis.py
+nimsort_motion/test/test_controller.py
+nimsort_motion/test/test_trajectory_planner.py
 nimsort_vision/__init__.py
 nimsort_vision/feature_detection_interface.py
 nimsort_vision/magic_object.py

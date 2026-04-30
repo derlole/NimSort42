@@ -41,24 +41,32 @@ class Controller(ControllerInterface):
         self.kff = kff
 
         self._min, self._max = -output_limit, output_limit
+        self._last_error = 0.0
+        self._first = True
 
         self.kalman = KalmanFilterPosVel(q_pos, q_vel, r)
         
     def reset(self):
-        self.kalman.reset()
+        self._last_error = 0.0
+        self._first = True
 
-    def compute(self, error:float, dt: float, accel_ff: float = 0.0):
+    def compute(self, error: float, dt: float, accel_ff: float = 0.0):
         if dt <= 0.0:
-           raise ValueError("dt must be positive")
-       
-        pos, vel = self.kalman.update(error, dt)
+            raise ValueError("dt must be positive")
 
-        p = self.kp * pos
-        d = self.kd * vel
+        p = self.kp * error
+
+        if self._first:
+            d = 0.0
+            self._first = False
+        else:
+            d = self.kd * (error - self._last_error) / dt
+
+        self._last_error = error
+
         output = p + d + self.kff * accel_ff
 
         return self._clamp(output)
-
     def _clamp(self, value):
         if self._min is not None:
             value = max(self._min, value)
