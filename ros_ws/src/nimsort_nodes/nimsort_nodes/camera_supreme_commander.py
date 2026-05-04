@@ -9,9 +9,6 @@ import time
 from nimsort_msgs.msg import NimSortImageData
 from nimsort_vision.opencv_pipeline import OpencvPipeline
 
-WORLD_FRAME = "world"
-ROBOT_FRAME = "robot"
-CAMERA_FRAME = "camera"
 
 class Vision(Node):
     
@@ -23,8 +20,6 @@ class Vision(Node):
             '/NimSortImageData', 
             10
         )
-        self.tf_buffer = Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self)
         self.timer = self.create_timer(0.1, self.main_order)
 
         self.pipeline = OpencvPipeline()
