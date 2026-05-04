@@ -4,7 +4,7 @@ from nimsort_vision.plausibility_check import PlausibilityCheck
 
 DT = 0.1            # Timer-Intervall in Sekunden
 X_THRESHOLD = 0.4   # Schwellwert anpassen #TODO define threshold and document it. According issue: #63
-DUPLICATE_THRESHOLD = 0.03  # Maximaler Abstand in X, um Objekte als Duplikate zu betrachten
+DUPLICATE_THRESHOLD = 0.06  # Maximaler Abstand in X, um Objekte als Duplikate zu betrachten
 
 
 class PositionPrediction(PositionPredictionInterface):
