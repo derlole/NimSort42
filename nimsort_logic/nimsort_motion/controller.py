@@ -67,6 +67,7 @@ class Controller(ControllerInterface):
         output = p + d + self.kff * accel_ff
 
         return self._clamp(output)
+    
     def _clamp(self, value):
         if self._min is not None:
             value = max(self._min, value)

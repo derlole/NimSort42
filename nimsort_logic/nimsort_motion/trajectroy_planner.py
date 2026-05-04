@@ -8,7 +8,7 @@ class TrajectoryPlanner:
     max_acceleration : float [m/s²]
     """
 
-    def __init__(self, max_velocity: float, max_acceleration: float):
+    def __init__(self, max_velocity: float, max_acceleration: float, position_tolerance: float, velocity_tolerance: float):
         if max_velocity <= 0:
             raise ValueError("max_velocity has to be positive")
         if max_acceleration <= 0:
@@ -17,6 +17,8 @@ class TrajectoryPlanner:
         self.max_velocity = max_velocity
         self.max_acceleration = max_acceleration
         self._reached = False
+        self._position_tolerance = position_tolerance
+        self._velocity_tolerance = velocity_tolerance
 
     # ─────────────────────────────────────────────
 
@@ -56,7 +58,7 @@ class TrajectoryPlanner:
         else:
             acc = 0.0
 
-        if abs(distance) < 0.0001 and abs(current_velocity) < 0.001:
+        if abs(distance) < abs(self._position_tolerance) and abs(current_velocity) < abs(self._velocity_tolerance):
             self._reached = True
         else:
             self._reached = False

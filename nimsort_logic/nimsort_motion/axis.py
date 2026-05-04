@@ -88,7 +88,7 @@ class Axis(AxisInterface):
         )
 
         position_err = self._target_position - self._position
-        print(f"[DEBUG][Axis][update--]: pos={self._position:.4f}m, vel={self._velocity:.4f}m/s, tgt={self._target_position:.4f}m, err_p={position_err:.4f}m")
+        print(f"[DEBUG][Axis][update--]: pos={self._position:.4f}m, vel={self._velocity:.4f}m/s, tgt={self._target_position:.4f}m, err_p={position_err:.5f}m")
 
         self._acceleration = self._controller.compute(
             error=position_err,

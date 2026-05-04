@@ -1,7 +1,7 @@
 from nimsort_motion.init_process_interface import InitProcessInterface
 
 ZERO_ACCELERATION = (0.0, 0.0, 0.0)
-HOMING_ACCELERATION = (0.004, 0.004, -0.004)
+HOMING_ACCELERATION = (0.005, 0.005, -0.01)
 
 class InitProcess(InitProcessInterface):
     def __init__(self):

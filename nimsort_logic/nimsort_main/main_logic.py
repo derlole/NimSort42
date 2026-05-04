@@ -3,8 +3,9 @@ from enum import Enum
 from nimsort_main.main_interface import MainInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 
-POSITION_UNCORN= [-0.19,-0.13, 0.07]
-POSITION_CAT= []
+POSITION_UNCORN= [-0.16,-0.14, 0.07]
+POSITION_CAT= [-0.06, -0.14, 0.07]
+
 Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition
 Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
 
@@ -79,7 +80,7 @@ class NimSortMain(MainInterface):
             case NimSortState.READY_FOR_PICK:
                 if self.get_next_target_to_pick() is not None:
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
-                return (POSITION_UNCORN[0], POSITION_UNCORN[1], POSITION_UNCORN[2], 2)
+                return (POSITION_CAT[0], POSITION_CAT[1], POSITION_CAT[2], 2)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
                 if self.get_next_target_to_pick() is not None:
