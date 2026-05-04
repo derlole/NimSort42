@@ -22,12 +22,12 @@ POSITION_TOLERANCE_Z = 0.0001
 VELOCITY_TOLERANCE_X = 0.001
 VELOCITY_TOLERANCE_Y = 0.001
 VELOCITY_TOLERANCE_Z = 0.001
-KP_X = 1.419
-KP_Y = 1.419
-KP_Z = 1.519
-KD_X = 4.92
-KD_Y = 4.92
-KD_Z = 4.92
+KP_X = 1.2
+KP_Y = 1.2
+KP_Z = 1.2
+KD_X = 2.3
+KD_Y = 2.3
+KD_Z = 2.3
 D_FILTER_ALPHA_X = 0.5
 D_FILTER_ALPHA_Y = 0.5
 D_FILTER_ALPHA_Z = 0.5
@@ -124,13 +124,13 @@ class AxisController(Node):
 
 
     def ax_state_initializing_axis_sw(self):
-        trajectrory_planner_x = TrajectoryPlanner(MAX_VELOCITY_X, MAX_ACCELERATION_X, POSITION_TOLERANCE_X, VELOCITY_TOLERANCE_X)
-        trajectrory_planner_y = TrajectoryPlanner(MAX_VELOCITY_Y, MAX_ACCELERATION_Y, POSITION_TOLERANCE_Y, VELOCITY_TOLERANCE_Y)
-        trajectrory_planner_z = TrajectoryPlanner(MAX_VELOCITY_Z, MAX_ACCELERATION_Z, POSITION_TOLERANCE_Z, VELOCITY_TOLERANCE_Z)
+        trajectrory_planner_x = TrajectoryPlanner(MAX_VELOCITY_X, MAX_ACCELERATION_X)
+        trajectrory_planner_y = TrajectoryPlanner(MAX_VELOCITY_Y, MAX_ACCELERATION_Y)
+        trajectrory_planner_z = TrajectoryPlanner(MAX_VELOCITY_Z, MAX_ACCELERATION_Z)
 
-        controller_x = Controller(KP_X, KD_X, D_FILTER_ALPHA_X, TF_X, MAX_ACCELERATION_X, -MAX_ACCELERATION_X, False, False)
-        controller_y = Controller(KP_Y, KD_Y, D_FILTER_ALPHA_Y, TF_Y, MAX_ACCELERATION_Y, -MAX_ACCELERATION_Y, False, False)
-        controller_z = Controller(KP_Z, KD_Z, D_FILTER_ALPHA_Z, TF_Z, MAX_ACCELERATION_Z, -MAX_ACCELERATION_Z, False, False)
+        controller_x = Controller(KP_X, KD_X, MAX_ACCELERATION_X, TF_X)
+        controller_y = Controller(KP_Y, KD_Y, MAX_ACCELERATION_Y, TF_Y)
+        controller_z = Controller(KP_Z, KD_Z, MAX_ACCELERATION_Z, TF_Z)
 
         self.axis_x = Axis("X", controller_x, trajectrory_planner_x)
         self.axis_y = Axis("Y", controller_y, trajectrory_planner_y)
@@ -157,13 +157,13 @@ class AxisController(Node):
         if (self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached) and self.last_nimsort_target is not None:
             self.publish_motion_state(True, False)
 
-        self.axis_x.set_target(self.last_nimsort_target.target_point.x + self.offset_x)
-        self.axis_y.set_target(self.last_nimsort_target.target_point.y + self.offset_y)
-        self.axis_z.set_target(self.last_nimsort_target.target_point.z + self.offset_z)
+        self.axis_x.set_target(self.last_nimsort_target.target_point.x)
+        self.axis_y.set_target(self.last_nimsort_target.target_point.y)
+        self.axis_z.set_target(self.last_nimsort_target.target_point.z)
 
-        acc_x = self.axis_x.update(self.last_robot_pos.pos_x, 0.1) #TODO dt as timestamp difference actually calculated
-        acc_y = self.axis_y.update(self.last_robot_pos.pos_y, 0.1)
-        acc_z = self.axis_z.update(self.last_robot_pos.pos_z, 0.1)
+        acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, 0.1) #TODO dt as timestamp difference actually calculated
+        acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, 0.1)
+        acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, 0.1)
 
         self.send_acceleration(acc_x, acc_y, acc_z)
 
