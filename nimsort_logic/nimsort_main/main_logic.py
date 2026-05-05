@@ -11,7 +11,7 @@ Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
 
 class NimSortState(Enum):
     """Enum für alle Zustände der NimSort State Machine"""
-    START = "START"
+    START = "START"# Maybe nicht nötig
     INIT_CALL = "INIT_CALL"
     WAIT_FOR_INIT = "WAIT_FOR_INIT"
     GO_TO_PICKPREPOSITION = "GO_TO_PICKPREPOSITION"
