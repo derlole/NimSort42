@@ -2,10 +2,10 @@ from nimsort_vision.magic_object import MagicObject
 from nimsort_vision.position_prediction_interface import PositionPredictionInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 
-DT = 0.1            # Timer-Intervall in Sekunden
-X_THRESHOLD = 0.4   # Schwellwert anpassen #TODO define threshold and document it. According issue: #63
+DT = 0.1
+X_THRESHOLD = 0.4
 DUPLICATE_THRESHOLD = 0.06  # Maximaler Abstand in X, um Objekte als Duplikate zu betrachten
-ROBOT_REACH_X = 0.3  #X-Position, ab der der Roboter das Objekt erreichen kann. #TODO define threshold and document it. According issue: #63
+ROBOT_REACH_X = 0.3  #X-Position, ab der der Roboter das Objekt erreichen kann.
 class PositionPrediction(PositionPredictionInterface):
 
     def __init__(self):
@@ -51,7 +51,7 @@ class PositionPrediction(PositionPredictionInterface):
             
         print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {new_id} bei X={position[0]:.2f} gespeichert.")
 
-    def calculate_next_object_position(self) -> list[tuple[float, float, float, int]] | int:
+    def calculate_next_object_position(self) -> list[tuple[float, float, float, int]] | int: #TODO der return passt nicht zu dem was du in der node verwendest, außerdem wird der Unit test wahrscheinlich failen
         """
         Berechnet die nächsten Positionen der zwei führenden Objekte.
 
@@ -66,10 +66,10 @@ class PositionPrediction(PositionPredictionInterface):
         self._remove_objects_over_threshold()
 
         if not self._objects:
-            return (-1.0, -1.0, -1.0, -1)
+            return (-1.0, -1.0, -1.0, -1) #TODO magic numbers
         
         if self.obj.postion[0]< ROBOT_REACH_X:
-            return (-1.0, -1.0, -1.0, -1)
+            return (-1.0, -1.0, -1.0, -1) #TODO magic numbers
 
         next_objects = self.get_next_object_to_publish()
         return [
@@ -77,20 +77,20 @@ class PositionPrediction(PositionPredictionInterface):
             for obj in next_objects
         ]
     
-    def calculate_second_object_position(self) -> tuple[float, float, float, int]:
+    def calculate_second_object_position(self) -> tuple[float, float, float, int]: #TODO entweder musst du dich entscheiden oben eine list zu returnen oder mehrere funktionen zu schreiben... ich denke, weder noch von deinen Ansätzen wäre das beste, aber die funktionieren beide... dennoch musst du dich für einen entscheiden
         """Zweites Objekt – ohne Update, da calculate_next_object_position das bereits erledigt."""
         if not self._objects:
-            return -1.0, -1.0, -1.0, -1
+            return -1.0, -1.0, -1.0, -1 #TODO magic numbers
         
         self._update_positions()
         self._remove_objects_over_threshold()
         
-        top_two = self.get_next_object_to_publish()
+        top_two = self.get_next_object_to_publish() #TODO hier kommt immer nur ein objekt, du bekommst nei zwei, da müsstest du die andere Funktion auch noch umschreiben, das musst du evtl soweiso, wenn wir das umsetzten wollen
         if len(top_two) < 2:
-            return -1.0, -1.0, -1.0, -1
+            return -1.0, -1.0, -1.0, -1 #TODO magic numbers
         
-        if self.obj.top_two[1].position[0] < ROBOT_REACH_X:
-            return (-1.0, -1.0, -1.0, -1)
+        if self.obj.top_two[1].position[0] < ROBOT_REACH_X: #TODO ist ROBOT_REACH und X_THRESHOLD nicht äquivalent zu verwenden.
+            return (-1.0, -1.0, -1.0, -1) #TODO magic numbers
         
         obj = top_two[1]
         return obj.position[0], obj.position[1], obj.position[2], obj.object_type
