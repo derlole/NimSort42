@@ -17,3 +17,4 @@ error_state
 2:go to Postion 
 3:activate gripper
 4:deactivate gripper
+5: 
