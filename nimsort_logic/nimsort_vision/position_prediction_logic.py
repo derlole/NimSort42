@@ -5,7 +5,8 @@ from nimsort_vision.plausibility_check import PlausibilityCheck
 DT = 0.1            # Timer-Intervall in Sekunden
 X_THRESHOLD = 0.4   # Schwellwert anpassen #TODO define threshold and document it. According issue: #63
 DUPLICATE_THRESHOLD = 0.06  # Maximaler Abstand in X, um Objekte als Duplikate zu betrachten
-ROBOT_REACH_X = 0.3  #X-Position, ab der der Roboter das Objekt erreichen kann. #TODO define threshold and document it. According issue: #63
+
+
 class PositionPrediction(PositionPredictionInterface):
 
     def __init__(self):
@@ -38,62 +39,23 @@ class PositionPrediction(PositionPredictionInterface):
                 f"Y: {old_y:.3f} → {existing.position[1]:.3f}"
             )
             return
-        if position[0] >= DUPLICATE_THRESHOLD:
-            new_id = self._object_id_counter
-            self._object_id_counter += 1
-            self._objects[new_id] = MagicObject(
-                object_type=object_type,
-                position=position,
-                ts=float(ts),
+
+        new_id = self._object_id_counter
+        self._object_id_counter += 1
+        self._objects[new_id] = MagicObject(
+            object_type=object_type,
+            position=position,
+            ts=float(ts),
         )
-       
-            
-            
         print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {new_id} bei X={position[0]:.2f} gespeichert.")
 
-    def calculate_next_object_position(self) -> list[tuple[float, float, float, int]] | int:
-        """
-        Berechnet die nächsten Positionen der zwei führenden Objekte.
-
-        Returns:
-            Liste mit bis zu zwei Tupeln (x, y, z, object_type),
-            oder -1 wenn keine Objekte auf dem Förderband sind.
-        """
+    def calculate_next_object_position(self) -> tuple[float, float, float, int]:
         if self._conveyor_belt_speed is None or self._conveyor_belt_speed < 0:
             raise ValueError("[WARN]: Förderband-Geschwindigkeit ungültig – keine Prädiktion möglich.")
-
         self._update_positions()
         self._remove_objects_over_threshold()
-
-        if not self._objects:
-            return (-1.0, -1.0, -1.0, -1)
-        
-        if self.obj.postion[0]< ROBOT_REACH_X:
-            return (-1.0, -1.0, -1.0, -1)
-
-        next_objects = self.get_next_object_to_publish()
-        return [
-            (obj.position[0], obj.position[1], obj.position[2], obj.object_type)
-            for obj in next_objects
-        ]
-    
-    def calculate_second_object_position(self) -> tuple[float, float, float, int]:
-        """Zweites Objekt – ohne Update, da calculate_next_object_position das bereits erledigt."""
-        if not self._objects:
-            return -1.0, -1.0, -1.0, -1
-        
-        self._update_positions()
-        self._remove_objects_over_threshold()
-        
-        top_two = self.get_next_object_to_publish()
-        if len(top_two) < 2:
-            return -1.0, -1.0, -1.0, -1
-        
-        if self.obj.top_two[1].position[0] < ROBOT_REACH_X:
-            return (-1.0, -1.0, -1.0, -1)
-        
-        obj = top_two[1]
-        return obj.position[0], obj.position[1], obj.position[2], obj.object_type
+        next_obj = self.get_next_object_to_publish()
+        return (next_obj.position[0], next_obj.position[1], next_obj.position[2], next_obj.object_type)
 
     @property
     def get_stored_objects(self) -> list[MagicObject]:

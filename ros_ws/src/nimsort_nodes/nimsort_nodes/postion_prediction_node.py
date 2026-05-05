@@ -51,14 +51,11 @@ class PositionPredictionNode(Node):
     def main_order(self):
         try:
             x, y, z, obj_type = self.logic.calculate_next_object_position()
-            x2, y2, z2, obj_type2 = self.logic.calculate_second_object_position()
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
-        self.get_logger().debug(f"Objekt {obj_type} | XY: ({x:.3f}, {y:.3f})"
-                                f"Objekt {obj_type2} | XY: ({x2:.3f}, {y2:.3f})")
+        self.get_logger().debug(f"Objekt {obj_type} | XY: ({x:.3f}, {y:.3f})")
         self.send_prediction([x, y, z], obj_type)
-        self.send_prediction([x2, y2, z2], obj_type2)
 
 
 def main(args=None):
