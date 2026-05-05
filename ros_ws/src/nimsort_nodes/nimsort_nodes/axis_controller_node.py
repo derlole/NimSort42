@@ -5,7 +5,7 @@ from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from nimsort_motion.axis import Axis
 from nimsort_motion.controller import Controller
 from nimsort_motion.trajectroy_planner import TrajectoryPlanner
-from nimsort_msgs.msg import NimSortMotionState, NimSortTarget
+from nimsort_msgs.msg import NimSortMotionState, NimSortTarget, NimSortConveyorbeltSpeed
 from nimsort_motion.axis_controller_states import AxisControllerStates
 from nimsort_motion.init_process import InitProcess
 from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
@@ -41,6 +41,7 @@ class AxisController(Node):
 
         self.last_robot_pos = None
         self.last_nimsort_target = None
+        self.last_conveyorbelt_speed = None
         self.main_state = AxisControllerStates.EMPTY
         self.init_process = InitProcess()
         self.offset_x = 0.0
@@ -55,6 +56,12 @@ class AxisController(Node):
             NimSortTarget,
             '/NimSortTarget',
             self.nimsort_target_callback,
+            10
+        )
+        self.nimsort_conveyorbelt_speed_sub = self.create_subscription(
+            NimSortConveyorbeltSpeed,
+            '/NimSortConveyorbeltSpeed',
+            self.nimsort_conveyorbelt_speed_callback,
             10
         )
         self.robot_pos_sub = self.create_subscription(
@@ -106,6 +113,9 @@ class AxisController(Node):
     def nimsort_target_callback(self, msg):
         self.last_nimsort_target = msg
         self.get_logger().info(f"Received NimSortTarget: {msg}")
+
+    def nimsort_conveyorbelt_speed_callback(self, msg):
+        self.last_conveyorbelt_speed = msg.conveyorbelt_speed
 
     def robot_pos_callback(self, msg):
         self.last_robot_pos = msg
