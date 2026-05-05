@@ -7,7 +7,7 @@ from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 CAMERA_INDEX = 4
 MIN_CONTOUR_AREA = 4500
 ROI = (10, 113, 615, 194)  # (x, y, width, height)
-Z_W_CONSTANT = 6.0
+Z_W_CONSTANT = 2.0
 
 PIXEL_PUNKTE = np.array([
     [69, 62],   # Ecke 1 oben-links
