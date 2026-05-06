@@ -50,51 +50,48 @@ class PositionPrediction(PositionPredictionInterface):
             
             
         print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {new_id} bei X={position[0]:.2f} gespeichert.")
+        
+    def get_next_objects_to_publish(self, n: int = 2) -> list[MagicObject]:
+        """Gibt die n Objekte mit der größten X-Position zurück."""
+        if not self._objects:
+            raise ValueError("[WARN]: Keine Objekte verfügbar.")
+        
+        sorted_objs = sorted(
+            self._objects.values(),
+            key=lambda obj: obj.position[0],
+            reverse=True
+        )[:n]
+        
+        for obj in sorted_objs:
+            if not self._plausibility_check.check_position(obj.position):
+                raise ValueError("[WARN]: Ausgabe-Position hat Plausibilitätsprüfung nicht bestanden.")
+        
+        return sorted_objs
 
-    def calculate_next_object_position(self) -> list[tuple[float, float, float, int]] | int: #TODO der return passt nicht zu dem was du in der node verwendest, außerdem wird der Unit test wahrscheinlich failen
+
+    def calculate_next_object_positions(self) -> list[tuple[float, float, float, int]]:
         """
-        Berechnet die nächsten Positionen der zwei führenden Objekte.
-
-        Returns:
-            Liste mit bis zu zwei Tupeln (x, y, z, object_type),
-            oder -1 wenn keine Objekte auf dem Förderband sind.
+        Berechnet die nächsten Positionen der führenden Objekte.
+        Update und Threshold-Entfernung passiert genau einmal hier.
         """
         if self._conveyor_belt_speed is None or self._conveyor_belt_speed < 0:
-            raise ValueError("[WARN]: Förderband-Geschwindigkeit ungültig – keine Prädiktion möglich.")
+            raise ValueError("[WARN]: Förderband-Geschwindigkeit ungültig.")
 
         self._update_positions()
         self._remove_objects_over_threshold()
 
         if not self._objects:
-            return (-1.0, -1.0, -1.0, -1) #TODO magic numbers
-        
-        if self.obj.postion[0]< ROBOT_REACH_X:
-            return (-1.0, -1.0, -1.0, -1) #TODO magic numbers
+            return []
 
-        next_objects = self.get_next_object_to_publish()
+        candidates = self.get_next_objects_to_publish(n=2)
+        
+        # Nur Objekte zurückgeben, die der Roboter erreichen kann
+        reachable = [obj for obj in candidates if obj.position[0] >= ROBOT_REACH_X]
+        
         return [
             (obj.position[0], obj.position[1], obj.position[2], obj.object_type)
-            for obj in next_objects
+            for obj in reachable
         ]
-    
-    def calculate_second_object_position(self) -> tuple[float, float, float, int]: #TODO entweder musst du dich entscheiden oben eine list zu returnen oder mehrere funktionen zu schreiben... ich denke, weder noch von deinen Ansätzen wäre das beste, aber die funktionieren beide... dennoch musst du dich für einen entscheiden
-        """Zweites Objekt – ohne Update, da calculate_next_object_position das bereits erledigt."""
-        if not self._objects:
-            return -1.0, -1.0, -1.0, -1 #TODO magic numbers
-        
-        self._update_positions()
-        self._remove_objects_over_threshold()
-        
-        top_two = self.get_next_object_to_publish() #TODO hier kommt immer nur ein objekt, du bekommst nei zwei, da müsstest du die andere Funktion auch noch umschreiben, das musst du evtl soweiso, wenn wir das umsetzten wollen
-        if len(top_two) < 2:
-            return -1.0, -1.0, -1.0, -1 #TODO magic numbers
-        
-        if self.obj.top_two[1].position[0] < ROBOT_REACH_X: #TODO ist ROBOT_REACH und X_THRESHOLD nicht äquivalent zu verwenden.
-            return (-1.0, -1.0, -1.0, -1) #TODO magic numbers
-        
-        obj = top_two[1]
-        return obj.position[0], obj.position[1], obj.position[2], obj.object_type
-
     @property
     def get_stored_objects(self) -> list[MagicObject]:
         return list(self._objects.values())

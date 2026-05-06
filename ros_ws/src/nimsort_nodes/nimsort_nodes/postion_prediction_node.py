@@ -38,28 +38,34 @@ class PositionPredictionNode(Node):
         )
         self.logic.set_conveyor_belt_speed(msg.conveyor_belt_speed)
 
-    def send_prediction(self, position: list[float], object_type: int):
+    def send_prediction(self, position: tuple[float, float, float, int]) -> None:
+        x, y, z, obj_type = position
         msg = NimSortPrediction()
-        msg.predicted_position_wcs = Point(
-            x=position[0],
-            y=position[1],
-            z=position[2],
-        )
-        msg.object_type = object_type
+        msg.predicted_position_wcs = Point(x=x, y=y, z=z)
+        msg.object_type = obj_type
         self.prediction_pub.publish(msg)
+
+    def publish_predictions(self, positions: list[tuple[float, float, float, int]]) -> None:
+        for position in positions:
+            _, _, _, obj_type = position
+            if obj_type == -1:  # SENTINEL überspringen
+                continue
+            self.send_prediction(position)
 
     def main_order(self):
         try:
-            x, y, z, obj_type = self.logic.calculate_next_object_position()
-            x2, y2, z2, obj_type2 = self.logic.calculate_second_object_position()
+            first, second = self.logic.calculate_next_object_positions()
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
-        self.get_logger().debug(f"Objekt {obj_type} | XY: ({x:.3f}, {y:.3f})"
-                                f"Objekt {obj_type2} | XY: ({x2:.3f}, {y2:.3f})")
-        self.send_prediction([x, y, z], obj_type)
-        self.send_prediction([x2, y2, z2], obj_type2)
 
+        self.get_logger().debug(
+            f"Objekt {first[3]}  | XY: ({first[0]:.3f}, {first[1]:.3f})\n"
+            f"Objekt {second[3]} | XY: ({second[0]:.3f}, {second[1]:.3f})"
+        )
+
+        self.publish_predictions([first, second])
+      
 
 def main(args=None):
     rclpy.init(args=args)
