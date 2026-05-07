@@ -3,13 +3,12 @@ from enum import Enum
 from nimsort_main.main_interface import MainInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 
-POSITION_UNCORN= [-0.16,-0.14, 0.07]
+POSITION_UNCORN= [-0.16,-0.14, 0.07] #TODO: Werte in Weltkoordinaten anpassen
 POSITION_CAT= [-0.06, -0.14, 0.07]
-POSTION_INITIAL= [-0.01, -0.1, 0.02]
-SENTINAL = [-1.0, -1.0, -1.0, -1]
-
+INITIAL_POSITION = [-0.01,-0.05, 0.02]
 Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition
 Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
+SENTINEL = [-1.0, -1.0, -1.0,-1] 
 
 class NimSortState(Enum):
     """Enum für alle Zustände der NimSort State Machine"""
@@ -57,11 +56,16 @@ class NimSortMain(MainInterface):
 
     def get_next_target_to_pick(self)-> tuple[float, float, float, int]:
         """Gibt die Zielposition und Objekt-Typ zurück, wenn die Prediction gültig ist."""
-        if self.current_prediction is not None and self.plausibility_check.check_prediction(self.current_prediction):
-            return (self.current_prediction.position[0], self.current_prediction.position[1], self.current_prediction.position[2], self.current_prediction.object_type)
+        if (self.current_prediction is not None and self.current_prediction.position[0] != -1.0
+    and self.plausibility_check.check_prediction(self.current_prediction)):
+            return (
+                self.current_prediction.position[0],
+                self.current_prediction.position[1],
+                self.current_prediction.position[2],
+                self.current_prediction.object_type
+            )
         else:
             return None
-   
     
     def state_machine(self) -> tuple[float, float, float, int]:
         match self.current_state:
@@ -82,29 +86,33 @@ class NimSortMain(MainInterface):
             case NimSortState.READY_FOR_PICK:
                 if self.get_next_target_to_pick() is not None:
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
-                return (POSTION_INITIAL[0], POSTION_INITIAL[1], POSTION_INITIAL[2], 2)
+                return (INITIAL_POSITION[0], INITIAL_POSITION[1], INITIAL_POSITION[2], 2)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
-                if self.get_next_target_to_pick() is not SENTINAL:
-                    self.current_state = NimSortState.PICK 
-                    return self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 2 
-                else: 
-                    self.current_state= NimSortState.READY_FOR_PICK
-                       
-            case NimSortState.PICK:
-                if self.reached and not self.gripper_active:
+                if self.get_next_target_to_pick()[4] == 1 or self.get_next_target_to_pick()[4] == 2:
                     self.current_state = NimSortState.GO_TO_PICKPOSTPOSITION
-                    return self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 3
+                    return self. self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 2  
+                       
              
             case NimSortState.GO_TO_PICKPOSTPOSITION:
-               pass
+               if self.reached and self.gripper_active:
+                    self.current_state = NimSortState.GO_TO_DROP
+                    return self.current_prediction.position[0],self.current_prediction.position[1],Z_PICK, 3
 
             case NimSortState.GO_TO_DROP:
-                # Zielposition für Drop vorbereiten, z.B. Annäherung an Sortierbehälter
-                pass 
+                    if self.reached and self.gripper_active and self.get_next_target_to_pick(self.current_prediction[4]) ==1:
+                        self.current_state = NimSortState.DROP
+                        return POSITION_UNCORN[0], POSITION_UNCORN[1], POSITION_UNCORN[2], 2
+                    
+                    elif self.reached and self.gripper_active and self.get_next_target_to_pick(self.current_prediction[4]) ==2:
+                          self.current_state = NimSortState.DROP
+                          return POSITION_CAT[0], POSITION_CAT[1], POSITION_CAT[2], 2 
+               
             
             case NimSortState.DROP:
-                pass
+                if self.reached and not self.gripper_active:
+                    self.current_state = NimSortState.READY_FOR_PICK
+                return (INITIAL_POSITION[0], INITIAL_POSITION[1], INITIAL_POSITION[2], 2)
     
     def reset(self) -> None:
         """Setzt State Machine zurück auf START"""
