@@ -18,26 +18,27 @@ ROI_TRAPEZ = np.array([
 Z_W_CONSTANT = 2.0
 
 PIXEL_PUNKTE = np.array([
-    [69, 62],   # Ecke 1 oben-links
-    [113, 62],  # Ecke 2 oben-rechts
-    [114, 109], # Ecke 3 unten-rechts
-    [70, 109],  # 1. Quadrat Ecke 4 unten-links
-    [159, 61],
-    [202, 61],
-    [204, 107],
-    [160, 108], # 2. Quadrant unten-links
-    [248, 61],
-    [289, 62],
-    [291, 106],
-    [249, 106], # 3. Quadrant unten-links
-    [493, 63],
-    [529, 63],
-    [529, 106],
-    [494, 106], # 6. Quadrant unten-links
-    [567, 65],
-    [600, 65],
-    [601, 106],
-    [567, 106], # 7. Quadrant unten-links
+    [66, 131],   # Ecke 1 oben-links
+    [109, 131],  # Ecke 2 oben-rechts
+    [109, 178],  # Ecke 3 unten-rechts
+    [66, 178],   # Ecke 4 unten-links
+    [153, 129],  # 2. Quadrat oben-links
+    [195, 129],
+    [195, 175],
+    [153, 176], 
+    [238, 128],  # 3. Quadrat oben-links
+    [178, 127],
+    [297, 173],
+    [239, 174], 
+    [321, 127],   # 4. Quadrat oben-links
+    [359, 127],
+    [360, 172],
+    [321, 172],  
+    [400, 126],   # 5. Quadrat oben-links
+    [437, 126],
+    [438, 170],
+    [401, 172],  
+                  # 6. Quadrat oben-links
 ], dtype=np.float32)
 
 WELT_PUNKTE = np.array([
@@ -126,6 +127,7 @@ class OpencvPipeline(OpencvPipelineInterface):
 
         # Außerhalb der Maske entstandene Artefakte aus Otsu entfernen
         thresh = cv.bitwise_and(thresh, self._trapez_mask)
+        cv.imwrite(f"/home/louis/Louis/Temp/bin/image_{self._test_counter}.png", thresh)
 
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
@@ -155,7 +157,7 @@ class OpencvPipeline(OpencvPipelineInterface):
             objects.append((X_w, Y_w, Z_W_CONSTANT))
             print(f"[OcvP][getImageData]: Detected object at pixel world ({X_w:.1f}, {Y_w:.1f})")
 
-        result = (objects, self.time_stamp_ms, roi_masked)
+        result = (objects, self.time_stamp_ms, thresh)
         self._last_result = result
         return result
 

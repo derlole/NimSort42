@@ -7,13 +7,7 @@ class FeatureDetectionInterface(ABC):
         """Initialize the Feature Detection."""
         pass
 
-    def setImage(self, image):
-        """Set the image."""
-        pass
-
-    @property
-    @abstractmethod
-    def getfeature():
+    def getfeature(self, image):
         """Get the feature of the image."""
         pass
 
