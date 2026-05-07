@@ -27,6 +27,7 @@ class PositionPredictionNode(Node):
         self.timer = self.create_timer(0.1, self.main_order)
 
     def image_data_callback(self, msg: NimSortImageData):
+        #TODO return if magic numbers appear
         self.logic.set_object_data(
             object_type=msg.object_type,
             position=[
@@ -54,7 +55,8 @@ class PositionPredictionNode(Node):
 
     def main_order(self):
         try:
-            first, second = self.logic.calculate_next_object_positions()
+            first, second = self.logic.calculate_next_object_positions() #TODO hoier kommt kien tuple, sondern eine list
+            #TODO mit magic number füllen, falls die liste leer ist
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
