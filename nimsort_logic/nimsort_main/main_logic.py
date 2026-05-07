@@ -91,7 +91,7 @@ class NimSortMain(MainInterface):
             case NimSortState.GO_TO_PICKPREPOSITION:
                 if self.get_next_target_to_pick()[4] == 1 or self.get_next_target_to_pick()[4] == 2:
                     self.current_state = NimSortState.GO_TO_PICKPOSTPOSITION
-                    return self. self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 2  
+                    return self. self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 3  
                        
              
             case NimSortState.GO_TO_PICKPOSTPOSITION:
