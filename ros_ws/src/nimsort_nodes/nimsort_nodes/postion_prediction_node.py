@@ -6,13 +6,17 @@ from geometry_msgs.msg import Point
 from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
 
 DEFAULT_CONVEYOR_BELT_SPEED = 0.01  # TODO: durch echte Messung ersetzen
+SENTINEL = (-1.0, -1.0, -1.0, -1)
+
 
 class PositionPredictionNode(Node):
+
     def __init__(self):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
         self.logic.set_conveyor_belt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
-        self.bool_no_objects_logged = False  
+        self.bool_no_objects_logged = False
+
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
             '/NimSortImageData',
@@ -27,7 +31,13 @@ class PositionPredictionNode(Node):
         self.timer = self.create_timer(0.1, self.main_order)
 
     def image_data_callback(self, msg: NimSortImageData):
-        #TODO return if magic numbers appear
+        if msg.current_position_wcs.x == -1 and msg.current_position_wcs.y == -1 and msg.current_position_wcs.z == -1:
+            self.bool_no_objects_logged = True
+            return
+        elif self.bool_no_objects_logged:
+            self.get_logger().info("[INFO][PoPr][IDCB----]: Neue Objekte erkannt, Positionen werden aktualisiert.")
+            self.bool_no_objects_logged = False
+
         self.logic.set_object_data(
             object_type=msg.object_type,
             position=[
@@ -37,11 +47,6 @@ class PositionPredictionNode(Node):
             ],
             ts=msg.ts
         )
-        if msg.current_position_wcs.x == -1 and msg.current_position_wcs.y == -1 and msg.current_position_wcs.z == -1:
-            self.bool_no_objects_logged = True
-        elif self.bool_no_objects_logged:
-            self.get_logger().info("[INFO][PoPr][IDCB----]: Neue Objekte erkannt, Positionen werden aktualisiert.")
-            self.bool_no_objects_logged = False 
         self.logic.set_conveyor_belt_speed(msg.conveyor_belt_speed)
 
     def send_prediction(self, position: tuple[float, float, float, int]) -> None:
@@ -51,14 +56,14 @@ class PositionPredictionNode(Node):
         msg.object_type = obj_type
         self.prediction_pub.publish(msg)
 
-
     def publish_predictions(self, positions: list[tuple[float, float, float, int]]) -> None:
-        for position in positions:
-            _, _, _, obj_type = position
-            if obj_type == -1:  # SENTINEL überspringen
-                continue
-        
-            self.send_prediction(position)
+        real_objects = [p for p in positions if p[3] != -1]
+
+        if real_objects:
+            for position in real_objects:
+                self.send_prediction(position)
+        elif self.bool_no_objects_logged:
+            self.send_prediction(SENTINEL)
 
     def main_order(self):
         try:
@@ -71,9 +76,8 @@ class PositionPredictionNode(Node):
             f"Objekt {next_objects[0][3]}  | XY: ({next_objects[0][0]:.3f}, {next_objects[0][1]:.3f})\n"
             f"Objekt {next_objects[1][3]} | XY: ({next_objects[1][0]:.3f}, {next_objects[1][1]:.3f})"
         )
-
         self.publish_predictions(next_objects)
-      
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -87,6 +91,7 @@ def main(args=None):
     finally:
         executor.shutdown()
         rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
