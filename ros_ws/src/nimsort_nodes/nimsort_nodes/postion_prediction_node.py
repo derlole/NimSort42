@@ -12,7 +12,7 @@ class PositionPredictionNode(Node):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
         self.logic.set_conveyor_belt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
-
+        self.bool_no_objects_logged = False  
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
             '/NimSortImageData',
@@ -37,6 +37,11 @@ class PositionPredictionNode(Node):
             ],
             ts=msg.ts
         )
+        if msg.current_position_wcs.x == -1 and msg.current_position_wcs.y == -1 and msg.current_position_wcs.z == -1:
+            self.bool_no_objects_logged = True
+        elif self.bool_no_objects_logged:
+            self.get_logger().info("[INFO][PoPr][IDCB----]: Neue Objekte erkannt, Positionen werden aktualisiert.")
+            self.bool_no_objects_logged = False 
         self.logic.set_conveyor_belt_speed(msg.conveyor_belt_speed)
 
     def send_prediction(self, position: tuple[float, float, float, int]) -> None:
@@ -46,11 +51,13 @@ class PositionPredictionNode(Node):
         msg.object_type = obj_type
         self.prediction_pub.publish(msg)
 
+
     def publish_predictions(self, positions: list[tuple[float, float, float, int]]) -> None:
         for position in positions:
             _, _, _, obj_type = position
             if obj_type == -1:  # SENTINEL überspringen
                 continue
+        
             self.send_prediction(position)
 
     def main_order(self):
