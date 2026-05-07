@@ -1,6 +1,7 @@
 import cv2 as cv
 import time
 import numpy as np
+import os
 
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 
@@ -73,6 +74,12 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._last_result = None
         self._test_counter = 0
 
+        # Basisverzeichnis für Bilder relativ zum Skript-Verzeichnis
+        self._base_images_dir = os.path.join(os.path.dirname(__file__), "..", "images_live")
+        os.makedirs(os.path.join(self._base_images_dir, "raw"), exist_ok=True)
+        os.makedirs(os.path.join(self._base_images_dir, "roi"), exist_ok=True)
+        os.makedirs(os.path.join(self._base_images_dir, "bin"), exist_ok=True)
+
         self._cap = cv.VideoCapture(CAMERA_INDEX)
         if not self._cap.isOpened():
             raise RuntimeError(f"Kamera {CAMERA_INDEX} konnte nicht geöffnet werden.")
@@ -104,7 +111,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._test_counter += 1
         ret, self._raw_image = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
-        cv.imwrite(f"/home/louis/Louis/Temp/raw/image_{self._test_counter}.png", self._raw_image)
+        cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image)
 
         if not ret or self._raw_image is None:
             raise RuntimeError("Bildaufnahme fehlgeschlagen.")
@@ -120,7 +127,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         # Bounding-Box-Ausschnitt + Trapezmaske anwenden
         roi = self._raw_image[self._roi_slice].copy()
         roi_masked = cv.bitwise_and(roi, roi, mask=self._trapez_mask)
-        cv.imwrite(f"/home/louis/Louis/Temp/roi/image_{self._test_counter}.png", roi_masked)
+        cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked)
 
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
@@ -128,7 +135,7 @@ class OpencvPipeline(OpencvPipelineInterface):
 
         # Außerhalb der Maske entstandene Artefakte aus Otsu entfernen
         thresh = cv.bitwise_and(thresh, self._trapez_mask)
-        cv.imwrite(f"/home/louis/Louis/Temp/bin/image_{self._test_counter}.png", thresh)
+        cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh)
 
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
