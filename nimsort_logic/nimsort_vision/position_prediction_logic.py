@@ -17,7 +17,7 @@ class PositionPrediction(PositionPredictionInterface):
         self._object_id_counter: int = 0
         self._plausibility_check = PlausibilityCheck()
 
-    def set_conveyor_belt_speed(self, conveyor_belt_speed: float) -> None:
+    def set_conveyorbelt_speed(self, conveyor_belt_speed: float) -> None:
         self._conveyor_belt_speed = conveyor_belt_speed
 
     def set_object_data(self, object_type: int, position: list[float], ts: int) -> None:

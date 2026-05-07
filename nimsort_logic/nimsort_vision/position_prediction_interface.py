@@ -12,7 +12,7 @@ class PositionPredictionInterface(ABC):
         pass
  
     @abstractmethod
-    def set_conveyor_belt_speed(self, speed_mps: float) -> None:
+    def set_conveyorbelt_speed(self, speed_mps: float) -> None:
         """Set the conveyor belt speed in meters per second."""
         pass
  

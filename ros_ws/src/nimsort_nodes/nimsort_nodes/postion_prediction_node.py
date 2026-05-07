@@ -11,7 +11,7 @@ class PositionPredictionNode(Node):
     def __init__(self):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
-        self.logic.set_conveyor_belt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
+        self.logic.set_conveyorbelt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
@@ -44,7 +44,7 @@ class PositionPredictionNode(Node):
         )
 
     def conveyorbelt_speed_callback(self, msg: NimSortConveyorbeltSpeed):
-        self.logic.set_conveyor_belt_speed(msg.conveyor_belt_speed)
+        self.logic.set_conveyorbelt_speed(msg.conveyorbelt_speed)
 
     def send_prediction(self, position: list[float], object_type: int):
         msg = NimSortPrediction()
