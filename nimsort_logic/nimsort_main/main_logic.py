@@ -9,6 +9,7 @@ INITIAL_POSITION = [-0.01,-0.05, 0.02]
 Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition
 Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
 SENTINEL = [-1.0, -1.0, -1.0,-1] 
+ROBOT_REACH=-0.3 #maximale Reichweite des Roboters in x-Richtung, Werte in Weltkoordinaten anpassen
 
 class NimSortState(Enum):
     """Enum für alle Zustände der NimSort State Machine"""
@@ -57,7 +58,7 @@ class NimSortMain(MainInterface):
     def get_next_target_to_pick(self)-> tuple[float, float, float, int]:
         """Gibt die Zielposition und Objekt-Typ zurück, wenn die Prediction gültig ist."""
         if (self.current_prediction is not None and self.current_prediction.position[0] != -1.0
-    and self.plausibility_check.check_prediction(self.current_prediction)):
+    and self.plausibility_check.check_prediction(self.current_prediction)) and self.current_prediction.postion[0]<(ROBOT_REACH):
             return (
                 self.current_prediction.position[0],
                 self.current_prediction.position[1],
@@ -65,7 +66,9 @@ class NimSortMain(MainInterface):
                 self.current_prediction.object_type
             )
         else:
+            print("[INFO][Main][GNTTP---]: Kein Target zum Greifen verfügbar.")
             return None
+                  
     
     def state_machine(self) -> tuple[float, float, float, int]:
         match self.current_state:
