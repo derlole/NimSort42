@@ -42,26 +42,27 @@ PIXEL_PUNKTE = np.array([
 ], dtype=np.float32)
 
 WELT_PUNKTE = np.array([
-    [58, 25],   # Ecke 1 oben-links  [X_mm, Y_mm]
-    [78, 25],   # Ecke 2 oben-rechts
-    [78, 5],    # Ecke 3 unten-rechts
-    [58, 5],    # 1. Quadrat Ecke 4 unten-links
-    [98, 25],
-    [118, 25],
-    [118, 5],
-    [98, 5],    # 2. Quadrant unten-links
-    [138, 25],
-    [158, 25],
-    [158, 5],
-    [135, 5],   # 3. Quadrant unten-links
-    [258, 25],
-    [278, 25],
-    [278, 5],
-    [258, 5],   # 6. Quadrant unten-links
-    [298, 25],
-    [318, 25],
-    [318, 5],
-    [298, 5],   # 7. Quadrant unten-links
+    [59, 0],      # Ecke 1 oben-links  [X_mm, Y_mm]
+    [78.40, 0],   # Ecke 2 oben-rechts
+    [78.40, -20], # Ecke 3 unten-rechts
+    [59, -20],    # Ecke 4 unten-links
+    [97.7, 0],    # 2. Quadrat oben-links
+    [117.18, 0],
+    [117.18, -20],
+    [97.7, -20],   
+    [136.3, 0],   # 3. Quadrant oben-links
+    [155.8, 0],
+    [155.8, -20],
+    [136.3, -20], 
+    [175.1, 0],    # 4. Quadrant oben-links
+    [194.3, 0],
+    [194.3, -20],
+    [175.1, -20],  
+    [213.8, 0],    # 5. Quadrant oben-links
+    [233.3, 0],
+    [233.3, -20],
+    [213.8, -20],  
+                  # 6. Quadrant oben-links
 ], dtype=np.float32)
 
 
