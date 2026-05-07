@@ -27,8 +27,12 @@ class Vision(Node):
         )
         self.timer = self.create_timer(0.1, self.main_order)
 
-        self.pipeline = OpencvPipeline()
-        
+        try:
+            self.pipeline = OpencvPipeline()
+        except RuntimeError as e:
+            self.get_logger().error("[VN--][__init__]:" + str(e))
+            raise
+
     def publish_image_data(self, x_wcs, y_wcs, z_wcs, ts, object_type):
         msg = NimSortImageData()
         msg.current_position_wcs = Point()
