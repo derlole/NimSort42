@@ -15,6 +15,9 @@ class Vision(Node):
     def __init__(self):
         super().__init__('camera_supreme_commander')
 
+        self.declare_parameter('camera_index', 4)
+        self.camera_index = self.get_parameter('camera_index').get_parameter_value().integer_value
+
         self.image_data_publisher = self.create_publisher(
             NimSortImageData, 
             '/NimSortImageData', 
@@ -27,7 +30,7 @@ class Vision(Node):
         )
         self.timer = self.create_timer(0.1, self.main_order)
 
-        self.pipeline = OpencvPipeline()
+        self.pipeline = OpencvPipeline(self.camera_index)
         
     def publish_image_data(self, x_wcs, y_wcs, z_wcs, ts, object_type):
         msg = NimSortImageData()
