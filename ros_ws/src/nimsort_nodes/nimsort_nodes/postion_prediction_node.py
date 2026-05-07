@@ -55,18 +55,17 @@ class PositionPredictionNode(Node):
 
     def main_order(self):
         try:
-            first, second = self.logic.calculate_next_object_positions() #TODO hoier kommt kien tuple, sondern eine list
-            #TODO mit magic number füllen, falls die liste leer ist
+            next_objects = self.logic.calculate_next_object_positions()
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
 
         self.get_logger().debug(
-            f"Objekt {first[3]}  | XY: ({first[0]:.3f}, {first[1]:.3f})\n"
-            f"Objekt {second[3]} | XY: ({second[0]:.3f}, {second[1]:.3f})"
+            f"Objekt {next_objects[0][3]}  | XY: ({next_objects[0][0]:.3f}, {next_objects[0][1]:.3f})\n"
+            f"Objekt {next_objects[1][3]} | XY: ({next_objects[1][0]:.3f}, {next_objects[1][1]:.3f})"
         )
 
-        self.publish_predictions([first, second])
+        self.publish_predictions(next_objects)
       
 
 def main(args=None):
