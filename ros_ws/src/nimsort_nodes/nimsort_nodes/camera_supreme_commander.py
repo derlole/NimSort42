@@ -54,7 +54,11 @@ class Vision(Node):
             self.pipeline.captureImage()
             objects, ts, image = self.pipeline.getImageData()
 
+        except RuntimeError as e:
+            self.get_logger.error("[VN--][main_ord]:" + str(e))
+
         except ValueError as e:
+            self.publish_image_data(-1.0, -1.0, -1.0, -1.0, -1) # publish dummy data to indicate error
             self.get_logger.error("[VN--][main_ord]:" + str(e))
 
         # TODO insert trained_model_here to calculate the correct object_type

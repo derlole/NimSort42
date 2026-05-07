@@ -146,7 +146,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         )
 
         if not contours:
-            raise RuntimeError("Keine Konturen im ROI gefunden.")
+            raise ValueError("Keine Konturen im ROI gefunden.")
 
         objects = []
 
