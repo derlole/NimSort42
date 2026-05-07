@@ -9,7 +9,7 @@ from nimsort_vision.plausibility_check import PlausibilityCheck
 CAMERA_INDEX = 4
 MIN_CONTOUR_AREA = 4500
 Z_W_CONSTANT_IN_MM = 2.0
-THRESHOLD = 130.05
+THRESHOLD = 105
 
 # Trapez-ROI: vier Eckpunkte im Uhrzeigersinn (oben-links, oben-rechts, unten-rechts, unten-links)
 ROI_TRAPEZ = np.array([
