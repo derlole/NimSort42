@@ -4,6 +4,7 @@ from random import uniform
 from nimsort_vision.position_prediction_logic import PositionPrediction
 from nimsort_vision.magic_object import MagicObject
 
+SENTINEL = (-1.0, -1.0, -1.0, -1)
 
 class TestPositionPrediction:
 
@@ -86,48 +87,48 @@ class TestPositionPrediction:
             assert obj.position[1] == pytest.approx(original_pos[1])
             assert obj.position[2] == pytest.approx(original_pos[2])
 
-    def test_no_objects_stored_error(self, predictor):
-        """Test: ValueError wenn keine Objekte verfügbar sind."""
+    def test_no_objects_stored_returns_sentinel(self, predictor):
+        """Test: Sentinel wird zurückgegeben wenn keine Objekte verfügbar sind."""
         predictor.set_conveyor_belt_speed(1.0)
 
-        with pytest.raises(ValueError, match=r"\[WARN\]: Keine Objekte verfügbar\."):
-            predictor.calculate_object_positions()
+        result = predictor.calculate_next_object_positions()
+        assert result == (SENTINEL, SENTINEL)
 
     def test_zero_conveyor_speed_allowed(self, predictor):
         """Test: Geschwindigkeit 0.0 ist erlaubt – keine Exception."""
         predictor.set_conveyor_belt_speed(0.0)
         predictor.set_object_data(0, [0.1, 0.04, 0.0], 1000)
 
-        first, second = predictor.calculate_object_positions()
+        first, second = predictor.calculate_next_object_positions()
         x, y, z, obj_type = first
         assert x == pytest.approx(0.1)
         assert y == pytest.approx(0.04)
         assert z == pytest.approx(0.0)
         assert obj_type == 0
-        assert second == (-1.0, -1.0, -1.0, -1)
+        assert second == SENTINEL
 
     def test_negative_conveyor_speed_error(self, predictor):
         """Test: ValueError bei negativer Förderband-Geschwindigkeit."""
         predictor.set_conveyor_belt_speed(-0.5)
         predictor.set_object_data(0, [0.1, 0.04, 0], 1000)
 
-        with pytest.raises(ValueError, match=r"\[WARN\]: Förderband-Geschwindigkeit ungültig"):
-            predictor.calculate_object_positions()
+        with pytest.raises(ValueError, match=r"\[WARN\]\[PoPr\]\[CNOP----\]: Förderband-Geschwindigkeit ungültig"):
+            predictor.calculate_next_object_positions()
 
     def test_none_conveyor_speed_error(self, predictor):
         """Test: ValueError wenn Förderband-Geschwindigkeit nicht gesetzt wurde."""
         predictor.set_object_data(0, [0.1, 0.04, 0], 1000)
 
-        with pytest.raises(ValueError, match=r"\[WARN\]: Förderband-Geschwindigkeit ungültig"):
-            predictor.calculate_object_positions()
+        with pytest.raises(ValueError, match=r"\[WARN\]\[PoPr\]\[CNOP----\]: Förderband-Geschwindigkeit ungültig"):
+            predictor.calculate_next_object_positions()
 
-    def test_all_objects_over_threshold_error(self, predictor):
-        """Test: ValueError wenn alle Objekte den Schwellwert überschritten haben."""
+    def test_all_objects_over_threshold_returns_sentinel(self, predictor):
+        """Test: Sentinel wird zurückgegeben wenn alle Objekte den Schwellwert überschritten haben."""
         predictor.set_conveyor_belt_speed(10.0)
         predictor.set_object_data(0, [0.41, 0.04, 0], 1000)
 
-        with pytest.raises(ValueError, match=r"\[WARN\]: Keine Objekte verfügbar\."):
-            predictor.calculate_object_positions()
+        result = predictor.calculate_next_object_positions()
+        assert result == (SENTINEL, SENTINEL)
 
     def test_highest_x_position_returned(self, predictor):
         """Test: Objekt mit höchster X-Position wird zuerst zurückgegeben."""
@@ -137,7 +138,7 @@ class TestPositionPrediction:
         predictor.set_object_data(1, [0.25, 0.04, 0], 1000)
         predictor.set_object_data(2, [0.15, 0.04, 0], 1000)
 
-        first, second = predictor.calculate_object_positions()
+        first, second = predictor.calculate_next_object_positions()
         x, y, z, obj_type = first
         assert x == pytest.approx(0.35)
         assert y == pytest.approx(0.04)
@@ -151,7 +152,7 @@ class TestPositionPrediction:
         predictor.set_object_data(0, [0.1, 0.04, 0], 1000)
         predictor.set_object_data(1, [0.25, 0.04, 0], 1000)
 
-        first, second = predictor.calculate_object_positions()
+        first, second = predictor.calculate_next_object_positions()
         x2, y2, z2, obj_type2 = second
         assert x2 == pytest.approx(0.1)
         assert y2 == pytest.approx(0.04)
