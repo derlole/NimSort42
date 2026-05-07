@@ -50,16 +50,18 @@ class Vision(Node):
 
     def main_order(self):
         print(f"[VN--][main_ord]: Starting main order{time.time()}")
+
+        objects = []
+
         try:
             self.pipeline.captureImage()
             objects, ts, image = self.pipeline.getImageData()
 
         except RuntimeError as e:
-            self.get_logger.error("[VN--][main_ord]:" + str(e))
+            self.get_logger().error("[VN--][main_ord]:" + str(e))
 
         except ValueError as e:
-            self.publish_image_data(-1.0, -1.0, -1.0, -1.0, -1) # publish dummy data to indicate error
-            self.get_logger.error("[VN--][main_ord]:" + str(e))
+            self.publish_image_data(-1.0, -1.0, -1.0, -1, -1) # publish dummy data to indicate error
 
         # TODO insert trained_model_here to calculate the correct object_type
 

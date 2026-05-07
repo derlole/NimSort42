@@ -4,9 +4,12 @@ import numpy as np
 import os
 
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
+from nimsort_vision.plausibility_check import PlausibilityCheck
 
 CAMERA_INDEX = 4
 MIN_CONTOUR_AREA = 4500
+Z_W_CONSTANT_IN_MM = 2.0
+THRESHOLD = 130.05
 
 # Trapez-ROI: vier Eckpunkte im Uhrzeigersinn (oben-links, oben-rechts, unten-rechts, unten-links)
 ROI_TRAPEZ = np.array([
@@ -15,8 +18,6 @@ ROI_TRAPEZ = np.array([
     [602, 272],   # unten-rechts
     [14,  304],   # unten-links
 ], dtype=np.int32)
-
-Z_W_CONSTANT = 2.0
 
 PIXEL_PUNKTE = np.array([
     [66, 131],   # Ecke 1 oben-links
@@ -73,6 +74,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         self.time_stamp_ms = None
         self._last_result = None
         self._test_counter = 0
+        self._plausi = PlausibilityCheck()
 
         # Basisverzeichnis für Bilder relativ zum Skript-Verzeichnis
         self._base_images_dir = os.path.join(os.path.dirname(__file__), "..", "images_live")
@@ -105,6 +107,12 @@ class OpencvPipeline(OpencvPipelineInterface):
         w = self.H @ p
         w /= w[2]
         return w[0], w[1]
+    
+    def convert(self, x_mm, y_mm, z_mm):
+        x_m = x_mm / 1000.0
+        y_m = y_mm / 1000.0
+        z_m = z_mm / 1000.0
+        return x_m, y_m, z_m
 
     def captureImage(self):
         """Liest exklusiv den Rohframe – minimale Laufzeit."""
@@ -131,7 +139,7 @@ class OpencvPipeline(OpencvPipelineInterface):
 
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
-        _, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+        _, thresh = cv.threshold(blur, THRESHOLD, 255, cv.THRESH_BINARY)
 
         # Außerhalb der Maske entstandene Artefakte aus Otsu entfernen
         thresh = cv.bitwise_and(thresh, self._trapez_mask)
@@ -162,8 +170,14 @@ class OpencvPipeline(OpencvPipelineInterface):
             cy_px = cy_roi + self._ry
 
             X_w, Y_w = self.pixel_zu_welt(cx_px, cy_px)
-            objects.append((X_w, Y_w, Z_W_CONSTANT))
-            print(f"[OcvP][getImageData]: Detected object at pixel world ({X_w:.1f}, {Y_w:.1f})")
+            X_w_m, Y_w_m, Z_w_m = self.convert(X_w, Y_w, Z_W_CONSTANT_IN_MM)
+
+            if not self._plausi.check_position([X_w_m, Y_w_m, Z_w_m]):
+                raise ValueError(f"Unplausible Koordinaten: ({X_w_m:.2f}, {Y_w_m:.2f}, {Z_w_m:.2f})")
+            
+
+            objects.append((X_w_m, Y_w_m, Z_w_m))
+            print(f"[OcvP][getImageData]: Detected object at pixel world ({X_w_m:.1f}, {Y_w_m:.1f})")
 
         result = (objects, self.time_stamp_ms, thresh)
         self._last_result = result
