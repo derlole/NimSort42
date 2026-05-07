@@ -16,7 +16,6 @@ For responsibility of axis-values of the Axis class, the sensor-offset of each a
 
 
 ### 5. Kamera-Ausrichtung mit digitalem Overlay
-
 Dieses Skript zeigt ein digitales Overlay über dem Live-Kamerabild und dient dazu,
 die Kamera reproduzierbar auf eine definierte Position auszurichten.
 
@@ -27,27 +26,11 @@ Verschiebung wieder exakt so positioniert werden, dass bestimmte Objekte / Berei
 im Bild immer an der gleichen Stelle erscheinen. Das Overlay selbst verändert das
 Kamerabild nicht, es wird nur zur Anzeige darübergelegt.
 
-#### Anleitung
+### 6. DUPLICATE_THRESHOLD constant
+Defined with 0.06 (6cm). As every object apperas to be as much as 5cm big and the provided min distance between objects has to be 5cm the 6cm aer a safe value between the theoretical minimum of 10cm(5cm min distance between object. 2x2.5cm to get to the center of the object) for th constant. So if the distance come as 8cm we declare it as two different objects, if the distance come as 5 cm we declare it as same object. Important to know is that the distance is calculated between the predicted position and the currently measured one. A distance of 7cm in this case on the same object is very unlikely therefore 6cm should be fine
 
-1. Skript starten:
-```bash
-   python3 vision/camera/camera_alignment.py
-```
+### 7. feat: extra conveyorbelt_speed
+We decided thhat the conveyorbelt_speed is going to be an extra mesage not like previously planed within the ImageData.
+Because of the neeed the conveyorbelt_speed in the AxisController to drive the same speed.
 
-2. Das Kamerafenster öffnet sich mit den eingeblendeten Referenzlinien.
-
-3. Kamera physisch ausrichten, bis die relevanten Objekte mit den Referenzlinien
-   übereinstimmen:
-   - Das **rote Kästchen** (oben im Bild) markiert die Zielzone des 2D-Codes.
-   - Die **blauen Linien** definieren die Ausrichtung zum Förderband.
-
-4. Sobald alles passt, Kamera fixieren.  
-   Die Position ist damit dokumentiert und jederzeit wiederherstellbar.
-
-#### Steuerung
-
-| Taste | Funktion                        |
-|-------|---------------------------------|
-| `ESC` | Programm beenden                |
-| `F`   | Vollbild / Fenstermodus wechseln |
 
