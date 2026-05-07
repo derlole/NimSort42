@@ -5,6 +5,8 @@ from nimsort_vision.plausibility_check import PlausibilityCheck
 
 POSITION_UNCORN= [-0.16,-0.14, 0.07]
 POSITION_CAT= [-0.06, -0.14, 0.07]
+POSTION_INITIAL= [-0.01, -0.1, 0.02]
+SENTINAL = [-1.0, -1.0, -1.0, -1]
 
 Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition
 Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
@@ -80,12 +82,14 @@ class NimSortMain(MainInterface):
             case NimSortState.READY_FOR_PICK:
                 if self.get_next_target_to_pick() is not None:
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
-                return (POSITION_CAT[0], POSITION_CAT[1], POSITION_CAT[2], 2)
+                return (POSTION_INITIAL[0], POSTION_INITIAL[1], POSTION_INITIAL[2], 2)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
-                if self.get_next_target_to_pick() is not None:
+                if self.get_next_target_to_pick() is not SENTINAL:
                     self.current_state = NimSortState.PICK 
-                    return self. self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 2  
+                    return self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 2 
+                else: 
+                    self.current_state= NimSortState.READY_FOR_PICK
                        
             case NimSortState.PICK:
                 if self.reached and not self.gripper_active:
