@@ -39,7 +39,7 @@ class PositionPredictionInterface(ABC):
  
     @property
     @abstractmethod
-    def get_conveyor_belt_speed(self) -> float:
+    def get_conveyorbelt_speed(self) -> float:
         """Get the current conveyor belt speed."""
         pass
  
