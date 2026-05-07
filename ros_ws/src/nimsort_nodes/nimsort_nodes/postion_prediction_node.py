@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
-from nimsort_msgs.msg import NimSortPrediction, NimSortImageData
+from nimsort_msgs.msg import NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed
 from geometry_msgs.msg import Point
 from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
 
@@ -11,12 +11,18 @@ class PositionPredictionNode(Node):
     def __init__(self):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
-        self.logic.set_conveyor_belt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
+        self.logic.set_conveyorbelt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
             '/NimSortImageData',
             self.image_data_callback,
+            10
+        )
+        self.conveyorbelt_speed_sub = self.create_subscription(
+            NimSortConveyorbeltSpeed,
+            '/NimSortConveyorbeltSpeed',
+            self.conveyorbelt_speed_callback,
             10
         )
         self.prediction_pub = self.create_publisher(
@@ -36,7 +42,9 @@ class PositionPredictionNode(Node):
             ],
             ts=msg.ts
         )
-        self.logic.set_conveyor_belt_speed(msg.conveyor_belt_speed)
+
+    def conveyorbelt_speed_callback(self, msg: NimSortConveyorbeltSpeed):
+        self.logic.set_conveyorbelt_speed(msg.conveyorbelt_speed)
 
     def send_prediction(self, position: list[float], object_type: int):
         msg = NimSortPrediction()

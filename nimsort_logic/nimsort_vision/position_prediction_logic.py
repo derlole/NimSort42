@@ -11,14 +11,14 @@ class PositionPrediction(PositionPredictionInterface):
 
     def __init__(self):
         super().__init__()
-        self._conveyor_belt_speed = None
+        self._conveyorbelt_speed = None
         self._objects: dict[int, MagicObject] = {}
         self._over_threshold_objects: list[MagicObject] = []
         self._object_id_counter: int = 0
         self._plausibility_check = PlausibilityCheck()
 
-    def set_conveyor_belt_speed(self, conveyor_belt_speed: float) -> None:
-        self._conveyor_belt_speed = conveyor_belt_speed
+    def set_conveyorbelt_speed(self, conveyor_belt_speed: float) -> None:
+        self._conveyorbelt_speed = conveyor_belt_speed
 
     def set_object_data(self, object_type: int, position: list[float], ts: int) -> None:
         """
@@ -50,7 +50,7 @@ class PositionPrediction(PositionPredictionInterface):
         print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {new_id} bei X={position[0]:.2f} gespeichert.")
 
     def calculate_next_object_position(self) -> tuple[float, float, float, int]:
-        if self._conveyor_belt_speed is None or self._conveyor_belt_speed < 0:
+        if self._conveyorbelt_speed is None or self._conveyorbelt_speed < 0:
             raise ValueError("[WARN]: Förderband-Geschwindigkeit ungültig – keine Prädiktion möglich.")
         self._update_positions()
         self._remove_objects_over_threshold()
@@ -67,8 +67,8 @@ class PositionPrediction(PositionPredictionInterface):
         return list(self._over_threshold_objects)
 
     @property
-    def get_conveyor_belt_speed(self) -> float:
-        return self._conveyor_belt_speed
+    def get_conveyorbelt_speed(self) -> float:
+        return self._conveyorbelt_speed
 
     def get_next_object_to_publish(self) -> MagicObject:
         """Gibt das Objekt mit der größten X-Position zurück."""
@@ -82,7 +82,7 @@ class PositionPrediction(PositionPredictionInterface):
     def _update_positions(self) -> None:
         """X-Position aller Objekte um speed * dt erhöhen."""
         for obj in self._objects.values():
-            obj.position[0] += self._conveyor_belt_speed * DT
+            obj.position[0] += self._conveyorbelt_speed * DT
 
     def _remove_objects_over_threshold(self) -> None:
         """
