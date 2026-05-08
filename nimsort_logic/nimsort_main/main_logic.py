@@ -19,7 +19,7 @@ class NimSortState(Enum):
     GO_TO_PICKPREPOSITION = "GO_TO_PICKPREPOSITION"
     READY_FOR_PICK = "READY_FOR_PICK"
     PICK = "PICK"
-    GO_TO_PICKPOSTPOSITION = "GO_TO_PICKPOSTPOSITION"
+    GO_TO_PICKPOSITION = "GO_TO_PICKPOSITION"
     GO_TO_DROP = "GO_TO_DROP"
     DROP = "DROP"
     ERROR_STATE = "ERROR_STATE"
@@ -55,19 +55,35 @@ class NimSortMain(MainInterface):
         self.reached = reached
         self.gripper_active = gripper_active
 
-    def get_next_target_to_pick(self)-> tuple[float, float, float, int]:
-        """Gibt die Zielposition und Objekt-Typ zurück, wenn die Prediction gültig ist."""
-        if (self.current_prediction is not None and self.current_prediction.position[0] != -1.0
-    and self.plausibility_check.check_prediction(self.current_prediction)) and self.current_prediction.postion[0]<(ROBOT_REACH):
-            return (
-                self.current_prediction.position[0],
-                self.current_prediction.position[1],
-                self.current_prediction.position[2],
-                self.current_prediction.object_type
-            )
-        else:
-            print("[INFO][Main][GNTTP---]: Kein Target zum Greifen verfügbar.")
+    def get_next_target_to_pick(self) -> tuple[float, float, float, int] | None:
+        """Filtert Buffer, wählt bei mehreren gültigen Targets das mit kleinstem x."""
+        if not self._prediction_buffer:
+            print("[INFO][Main][GNTTP---]: Buffer leer, kein Target verfügbar.")
             return None
+
+        # Nur Predictions innerhalb der Reichweite
+        valid = [
+            p for p in self._prediction_buffer
+            if p.position[0] < ROBOT_REACH and p.position[0] > 0.0
+            and self.plausibility_check.check_prediction(p)
+        ]
+
+        if not valid:
+            print("[INFO][Main][GNTTP---]: Kein Target im Greifbereich.")
+            self._prediction_buffer.clear()
+            return None
+
+        # Kleinstes x zuerst greifen
+        best = min(valid, key=lambda p: p.position[0])
+        self._prediction_buffer.clear()
+        self.current_prediction = best
+
+        return (
+            self.current_prediction.position[0],
+            self.current_prediction.position[1],
+            self.current_prediction.position[2],
+            self.current_prediction.object_type,
+        )
                   
     
     def state_machine(self) -> tuple[float, float, float, int]:
@@ -92,22 +108,22 @@ class NimSortMain(MainInterface):
                 return (INITIAL_POSITION[0], INITIAL_POSITION[1], INITIAL_POSITION[2], 2)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
-                if self.get_next_target_to_pick()[4] == 1 or self.get_next_target_to_pick()[4] == 2:
+                if self.get_next_target_to_pick()[3] == 1 or self.get_next_target_to_pick()[3] == 2:
                     self.current_state = NimSortState.GO_TO_PICKPOSTPOSITION
-                    return self. self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 3  
+                    return self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 3  
                        
              
-            case NimSortState.GO_TO_PICKPOSTPOSITION:
+            case NimSortState.GO_TO_PICKPOSITION:
                if self.reached and self.gripper_active:
                     self.current_state = NimSortState.GO_TO_DROP
                     return self.current_prediction.position[0],self.current_prediction.position[1],Z_PICK, 3
 
             case NimSortState.GO_TO_DROP:
-                    if self.reached and self.gripper_active and self.get_next_target_to_pick(self.current_prediction[4]) ==1:
+                    if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] ==1:
                         self.current_state = NimSortState.DROP
-                        return POSITION_UNCORN[0], POSITION_UNCORN[1], POSITION_UNCORN[2], 2
+                        return POSITION_UNCORN[0], POSITION_UNCORN[1], POSITION_UNCORN[2], 4
                     
-                    elif self.reached and self.gripper_active and self.get_next_target_to_pick(self.current_prediction[4]) ==2:
+                    elif self.reached and self.gripper_active and self.get_next_target_to_pick()[3] ==2:
                           self.current_state = NimSortState.DROP
                           return POSITION_CAT[0], POSITION_CAT[1], POSITION_CAT[2], 2 
                
