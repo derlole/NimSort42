@@ -9,7 +9,7 @@ from nimsort_vision.plausibility_check import PlausibilityCheck
 CAMERA_INDEX = 4
 MIN_CONTOUR_AREA = 4500
 Z_W_CONSTANT_IN_MM = 2.0
-THRESHOLD = 105
+MIN_OTSU_THRESHOLD = 105
 
 # Trapez-ROI: vier Eckpunkte im Uhrzeigersinn (oben-links, oben-rechts, unten-rechts, unten-links)
 ROI_TRAPEZ = np.array([
@@ -102,7 +102,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._trapez_mask = np.zeros((h, w), dtype=np.uint8)
         cv.fillPoly(self._trapez_mask, [trapez_shifted], 255)
 
-    def pixel_zu_welt(self, u, v):
+    def pixelToWorld(self, u, v):
         p = np.array([u, v, 1.0])
         w = self.H @ p
         w /= w[2]
@@ -119,7 +119,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._test_counter += 1
         ret, self._raw_image = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
-        cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image)
+        cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image) #TODO remove after testing
 
         if not ret or self._raw_image is None:
             raise RuntimeError("Bildaufnahme fehlgeschlagen.")
@@ -135,23 +135,22 @@ class OpencvPipeline(OpencvPipelineInterface):
         # Bounding-Box-Ausschnitt + Trapezmaske anwenden
         roi = self._raw_image[self._roi_slice].copy()
         roi_masked = cv.bitwise_and(roi, roi, mask=self._trapez_mask)
-        cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked)
+        cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked) #TODO remove after testing
 
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
-        _, thresh = cv.threshold(blur, THRESHOLD, 255, cv.THRESH_BINARY)
+        otsu_val, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
+        print(f"[OcvP][getImageData]: Threshold {otsu_val}") #TODO remove debug print
 
-        # Außerhalb der Maske entstandene Artefakte aus Otsu entfernen
+        if otsu_val < MIN_OTSU_THRESHOLD:
+            thresh = np.zeros_like(blur)
+
         thresh = cv.bitwise_and(thresh, self._trapez_mask)
-        cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh)
+        cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh) #TODO remove after testing
 
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
-        contours = sorted(
-            contours,
-            key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"],
-            reverse=True
-        )
+        contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
 
         if not contours:
             raise ValueError("Keine Konturen im ROI gefunden.")
@@ -169,7 +168,7 @@ class OpencvPipeline(OpencvPipelineInterface):
             cx_px = cx_roi + self._rx
             cy_px = cy_roi + self._ry
 
-            X_w, Y_w = self.pixel_zu_welt(cx_px, cy_px)
+            X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
             X_w_m, Y_w_m, Z_w_m = self.convert(X_w, Y_w, Z_W_CONSTANT_IN_MM)
 
             if not self._plausi.check_position([X_w_m, Y_w_m, Z_w_m]):
