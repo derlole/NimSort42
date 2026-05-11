@@ -38,3 +38,6 @@ To safely stop the whole Software we procceded with just be able to stop the fea
 
 ### 9. Calculate Conveyorbelt Speed
 Despite the System requirement that the conveyorbelt has to have a consistent speed we decided to calculate the speed for more acuracy via. the Vison Node. To keep the value consistent but still stable we are going to search for various filter methods as e.g. removing negative values as they represent the change of the analysed object. Future filters could be filtering sharp corners because the values gets more accurate after round about 6-7 iterations of measurement.
+
+### 10. Adding a ID field in PositionPrediction
+The Decision to add an id field for every detected MagicObject. we decided that this labeling task bis fitting best in the PositionPrediction beacuse the Vision node is not responsible to classify object over any single iteration. Therefore the PositionPrediction which anyways has to store data from the last iteration. In this case the PositionPrediction also can compare his predicted value with the more actual value form the Vision Node.
