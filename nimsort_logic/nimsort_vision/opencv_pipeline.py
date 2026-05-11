@@ -70,7 +70,7 @@ WELT_PUNKTE = np.array([
 
 class OpencvPipeline(OpencvPipelineInterface):
 
-    def __init__(self):
+    def __init__(self, camera_index=CAMERA_INDEX):
         self.time_stamp_ms = None
         self._last_result = None
         self._test_counter = 0
@@ -82,11 +82,11 @@ class OpencvPipeline(OpencvPipelineInterface):
         os.makedirs(os.path.join(self._base_images_dir, "roi"), exist_ok=True)
         os.makedirs(os.path.join(self._base_images_dir, "bin"), exist_ok=True)
 
-        self._cap = cv.VideoCapture(CAMERA_INDEX)
+        self._cap = cv.VideoCapture(camera_index)
         if not self._cap.isOpened():
-            raise RuntimeError(f"Kamera {CAMERA_INDEX} konnte nicht geöffnet werden.")
+            raise RuntimeError(f"Kamera {camera_index} konnte nicht geöffnet werden.")
 
-        print(f"[OcvP][__init__]: Kamera {CAMERA_INDEX} geöffnet, warte auf Stabilisierung...")
+        print(f"[OcvP][__init__]: Kamera {camera_index} geöffnet, warte auf Stabilisierung...")
 
         # Homographie berechnen
         self.H, _ = cv.findHomography(PIXEL_PUNKTE, WELT_PUNKTE)
