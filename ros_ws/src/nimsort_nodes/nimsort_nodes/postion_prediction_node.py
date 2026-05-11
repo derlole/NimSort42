@@ -33,6 +33,7 @@ class PositionPredictionNode(Node):
         self.timer = self.create_timer(0.1, self.main_order)
 
     def image_data_callback(self, msg: NimSortImageData):
+        self.get_logger().debug(f"Received image data: ({msg.current_position_wcs.x:.3f}) with timestamp {msg.ts}")
         if msg.ts == -1:
             return
         
