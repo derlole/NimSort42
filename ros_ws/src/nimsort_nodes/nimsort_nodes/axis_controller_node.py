@@ -1,3 +1,4 @@
+import time
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
@@ -51,6 +52,8 @@ class AxisController(Node):
         self.axis_x = None
         self.axis_y = None
         self.axis_z = None
+        self.last_target_time = time.time()
+        self.target_timeout_s = 3.0
 
         self.nimsort_target_sub = self.create_subscription(
             NimSortTarget,
@@ -108,10 +111,17 @@ class AxisController(Node):
 
             case AxisControllerStates.RUNNING:
                 self.ax_state_running()
+
+            case AxisControllerStates.RETURNING_HOME:
+                self.ax_state_returning_home()
+
+            case AxisControllerStates.SHUTDOWN:
+                self.ax_state_shutdown()
             
 
     def nimsort_target_callback(self, msg):
         self.last_nimsort_target = msg
+        self.last_target_time = time.time()
         self.get_logger().info(f"Received NimSortTarget: {msg}")
 
     def nimsort_conveyorbelt_speed_callback(self, msg):
@@ -163,6 +173,19 @@ class AxisController(Node):
         self.motion_state_pub.publish(msg)
 
     def ax_state_running(self):
+        if self.last_nimsort_target is None:
+            self.get_logger().warn("[ACN-][ax_run]: No target received yet")
+            self.main_state = AxisControllerStates.RETURNING_HOME
+            return
+        
+        if time.time() - self.last_target_time > self.target_timeout_s:
+            self.get_logger().warn("[ACN-][ax_run]: Target timeout -> returning home")
+
+            self.init_process.reset()
+            self.init_process.start()
+            self.main_state = AxisControllerStates.RETURNING_HOME
+            return
+
         print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis_x.target_reached}, {self.axis_y.target_reached}, {self.axis_z.target_reached}")
         if (self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached) and self.last_nimsort_target is not None:
             self.publish_motion_state(True, False)
@@ -177,6 +200,24 @@ class AxisController(Node):
 
         self.send_acceleration(acc_x, acc_y, acc_z)
 
+    def ax_state_returning_home(self):
+
+        x_acc, y_acc, z_acc = self.init_process.robot_values(
+            (
+                self.last_robot_pos.pos_x,
+                self.last_robot_pos.pos_y,
+                self.last_robot_pos.pos_z
+            )
+        )
+
+        self.send_acceleration(x_acc, y_acc, z_acc)
+
+        if self.init_process.finished:
+            self.main_state = AxisControllerStates.SHUTDOWN
+
+    def ax_state_shutdown(self):
+        raise RuntimeError("[ACN-][shutdown]: Destroying node")
+
 def main(args=None):
     rclpy.init(args=args)
     node = AxisController()
@@ -188,6 +229,9 @@ def main(args=None):
         executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
         node.get_logger().error("[ACN-][main----]: Shutdown Node")
+    
+    except RuntimeError as e:
+        node.get_logger().error(f"[ACN-][main----]: {str(e)}")
 
     finally:
         executor.shutdown()

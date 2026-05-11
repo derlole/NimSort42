@@ -62,6 +62,9 @@ class InitProcess(InitProcessInterface):
         self.last_y = None
         self.last_z = None
         self.counter = 0
+        self.finish_counter = 0
+        self.finished = False
+        self.started = False
 
     def is_initialized(self) -> bool:
         """Check if the initialization process is complete."""
