@@ -84,11 +84,8 @@ class Vision(Node):
         try:
             if len(objects) > 0:
                 speed = self.speed_calc.update(objects[0][0], ts)
-                print(f"[VN--][main_ord]: speed {speed} m/s")
-                print(f"[VN--][main_ord]: last_speed {self.last_speed} m/s")
                 if speed is not None and speed > 0.0:
                     self.last_speed = speed
-                    print(f"[VN--][main_ord]: Estimated Last speed: {self.last_speed} m/s")
                 else:
                     speed = self.last_speed
                     
