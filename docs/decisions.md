@@ -33,4 +33,5 @@ Defined with 0.06 (6cm). As every object apperas to be as much as 5cm big and th
 We decided thhat the conveyorbelt_speed is going to be an extra mesage not like previously planed within the ImageData.
 Because of the neeed the conveyorbelt_speed in the AxisController to drive the same speed.
 
-
+### 8. feat: stop axis Controller with post init
+To safely stop the whole Software we procceded with just be able to stop the feature launch file, which then should kill the Nodes except from the AxisController Node. The AxisController node then safly stops itself by initializing again and killing itself after. The AxisController Node recognizes the missing NimsortTarget msg from the dead MainNode.

@@ -1,4 +1,4 @@
-#### Anleitung
+### Camera Alignment Script nutzen
 
 1. Skript starten:
 ```bash
