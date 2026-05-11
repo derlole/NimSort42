@@ -18,6 +18,7 @@ class Vision(Node):
 
         self.declare_parameter('camera_index', 4)
         self.camera_index = self.get_parameter('camera_index').get_parameter_value().integer_value
+        self.last_speed = None
 
         self.image_data_publisher = self.create_publisher(
             NimSortImageData, 
@@ -38,7 +39,7 @@ class Vision(Node):
             raise
 
         try:
-            self.speed = ConveyorSpeedEstimator()
+            self.speed_calc = ConveyorSpeedEstimator()
         except RuntimeError as e:
             self.get_logger().error("[VN--][__init__]:" + str(e))
             raise
@@ -78,10 +79,19 @@ class Vision(Node):
         except ValueError as e:
             self.publish_image_data(-1.0, -1.0, -1.0, -1, -1) # publish dummy data to indicate error / no objects found
 
+
         speed = None
         try:
             if len(objects) > 0:
-                speed = self.speed.update(objects[0][0], ts)
+                speed = self.speed_calc.update(objects[0][0], ts)
+                print(f"[VN--][main_ord]: speed {speed} m/s")
+                print(f"[VN--][main_ord]: last_speed {self.last_speed} m/s")
+                if speed is not None and speed > 0.0:
+                    self.last_speed = speed
+                    print(f"[VN--][main_ord]: Estimated Last speed: {self.last_speed} m/s")
+                else:
+                    speed = self.last_speed
+                    
                 self.get_logger().info(f"[VN--][main_ord]: Estimated speed: {speed} m/s")
 
         except RuntimeError as e:
