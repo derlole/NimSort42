@@ -33,6 +33,9 @@ class PositionPredictionNode(Node):
         self.timer = self.create_timer(0.1, self.main_order)
 
     def image_data_callback(self, msg: NimSortImageData):
+        if msg.ts == -1:
+            return
+        
         self.logic.set_object_data(
             object_type=msg.object_type,
             position=[
@@ -59,9 +62,14 @@ class PositionPredictionNode(Node):
     def main_order(self):
         try:
             x, y, z, obj_type = self.logic.calculate_next_object_position()
+
         except ValueError as e:
             self.get_logger().warn(str(e))
-            return
+            x = -1.0
+            y = -1.0
+            z = -1.0
+            obj_type = -1
+        
         self.get_logger().debug(f"Objekt {obj_type} | XY: ({x:.3f}, {y:.3f})")
         self.send_prediction([x, y, z], obj_type)
 

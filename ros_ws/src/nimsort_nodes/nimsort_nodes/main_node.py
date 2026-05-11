@@ -32,7 +32,10 @@ class MainNode(Node):
     
     def listener_callback_prediction(self, msg):
         """Verarbeitet Prediction Nachricht und veröffentlicht Target"""
-        target = self.nimsort_main.get_next_target_to_pick(x=msg.predicted_position_wcs.x, y=msg.predicted_position_wcs.y, z=msg.predicted_position_wcs.z, object_type=msg.object_type)
+        if msg.object_type == -1:
+            return
+        
+        self.nimsort_main.get_next_target_to_pick(x=msg.predicted_position_wcs.x, y=msg.predicted_position_wcs.y, z=msg.predicted_position_wcs.z, object_type=msg.object_type)
     
         
 

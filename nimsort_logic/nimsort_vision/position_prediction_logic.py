@@ -52,9 +52,11 @@ class PositionPrediction(PositionPredictionInterface):
     def calculate_next_object_position(self) -> tuple[float, float, float, int]:
         if self._conveyorbelt_speed is None or self._conveyorbelt_speed < 0:
             raise ValueError("[WARN]: Förderband-Geschwindigkeit ungültig – keine Prädiktion möglich.")
+        
         self._update_positions()
         self._remove_objects_over_threshold()
         next_obj = self.get_next_object_to_publish()
+
         return (next_obj.position[0], next_obj.position[1], next_obj.position[2], next_obj.object_type)
 
     @property
@@ -74,9 +76,11 @@ class PositionPrediction(PositionPredictionInterface):
         """Gibt das Objekt mit der größten X-Position zurück."""
         if not self._objects:
             raise ValueError("[WARN]: Keine Objekte verfügbar.")
+        
         next_obj = max(self._objects.values(), key=lambda obj: obj.position[0])
         if not self._plausibility_check.check_position(next_obj.position):
             raise ValueError("[WARN]: Ausgabe-Position hat Plausibilitätsprüfung nicht bestanden.")
+        
         return next_obj
 
     def _update_positions(self) -> None:
