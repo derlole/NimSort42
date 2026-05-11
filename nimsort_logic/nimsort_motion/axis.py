@@ -9,10 +9,10 @@ from typing import Optional
 
 from nimsort_motion.controller import Controller
 from nimsort_motion.trajectroy_planner import TrajectoryPlanner
-from nimsort_logic.nimsort_motion.axis_interface import AxisInterface 
+from nimsort_motion.axis_interface import AxisInterface 
 
 @dataclass
-class AxisState(AxisInterface):
+class AxisState:
     """
     Spnapshot of the axisstate for logging and debugging
     ---
@@ -28,7 +28,7 @@ class AxisState(AxisInterface):
     target_position: float = 0.0
     target_reached: bool = True
 
-class Axis:
+class Axis(AxisInterface):
     """
     Class for handling one Robotaxis.
     contains and handles the state of one axis
@@ -53,7 +53,7 @@ class Axis:
         self._position = initial_position
         self._velocity = 0.0
         self._acceleration = 0.0
-
+        self._target_position = None
         self._prev_position: float = initial_position
 
     def set_target(self, target_position: float):
@@ -62,37 +62,40 @@ class Axis:
 
         Parameters
         ---
-        target_position: float [m]
+        target_position: float [m] position with respect to home
         """
-        self._planner.set_target(target_position)
+        print(f"[INFO][Axis][setTarg]: Setting new target for Axis {self._name}: {target_position:.4f}m")
+        self._target_position = target_position
 
     def update(self, current_position: float, dt: float) -> float:
         """"
-        Zycliclly called function to update the acceleration accourding to the current_position trough trajectoryPlanner and Controller.
+        Zycliclly called function to update the acceleration according to the current_position trough trajectoryPlanner and Controller.
+        Input:
+        current_position: float [m] position with respect to home
+        dt: float [s] time since last update call
         """
         if dt <= 0.0:
-            raise ValueError(f"Axis '{self.name}': dt must be positive {dt}.")
+            raise ValueError(f"Axis '{self._name}': dt must be positive {dt}.")
 
         self._velocity = (current_position - self._prev_position) / dt
         self._position = current_position
         self._prev_position = current_position
 
-        target_pos, target_vel, target_accel = self._planner.step(
+        target_accel = self._planner.compute(
+            target_position = self._target_position,
             current_position = self._position,
-            current_velocity = self._velocity,
-            dt = dt
+            current_velocity = self._velocity
         )
 
-        position_err = target_pos - self._position
-        velocity_err = target_vel - self._velocity
+        position_err = self._target_position - self._position
+        print(f"[DEBUG][Axis][update--]: pos={self._position:.4f}m, vel={self._velocity:.4f}m/s, tgt={self._target_position:.4f}m, err_p={position_err:.5f}m")
 
         self._acceleration = self._controller.compute(
-            position_error=position_err,
-            velocity_error=velocity_err,
+            error=position_err,
             dt=dt,
-            target_acceleration=target_accel
+            accel_ff=target_accel
         )
-
+        print(f"[DEBUG][Axis][update--]: acc_out={self._acceleration:.4f}m/s², tgt_acc={target_accel:.4f}m/s², dt={dt:.6f}s")
         return self._acceleration
     
     def reset(self) -> None:
@@ -131,13 +134,13 @@ class Axis:
             position=self._position,
             velocity=self._velocity,
             acceleration=self._acceleration,
-            target_position=self._planner.target_position,
+            target_position=self._target_position,
             target_reached=self._planner.reached,
         )
     
     def __repr__(self) -> str:
         return (
-            f"Axis('{self.name}' | "
+            f"Axis('{self._name}' | "
             f"pos={self._position:.4f} m, "
             f"vel={self._velocity:.4f} m/s, "
             f"accel={self._acceleration:.4f} m/s²)"

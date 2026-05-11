@@ -15,7 +15,9 @@ msg/*Result.msg
 msg/_*.py
 build_isolated/
 devel_isolated/
-
+rosbag*/
+.kilo/
+*/images_live/
 ros_ws/build/*
 ros_ws/install/
 ros_ws/log/

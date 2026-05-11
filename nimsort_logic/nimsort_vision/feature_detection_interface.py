@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-import cv2 as cv
-import numpy as np
-import matplotlib.pyplot as plt
+
 
 class FeatureDetectionInterface(ABC):
 
@@ -9,14 +7,12 @@ class FeatureDetectionInterface(ABC):
         """Initialize the Feature Detection."""
         pass
 
-    def setImage(self, image):
-        """Set the image."""
+    def getfeature(self, image):
+        """Get the feature of the image."""
         pass
 
-    @property
-    @abstractmethod
-    def getfeature():
-        """Get the feature of the image."""
+    def getLastFeature():
+        """Get the last feature."""
         pass
 
     def resetFeatureDetection():

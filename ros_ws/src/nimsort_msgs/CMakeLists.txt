@@ -32,6 +32,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/NimSortPrediction.msg"
   "msg/NimSortTarget.msg"
   "msg/NimSortMotionState.msg"
+  "msg/NimSortConveyorbeltSpeed.msg"
   DEPENDENCIES geometry_msgs
 )
 

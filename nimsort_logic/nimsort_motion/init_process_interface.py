@@ -7,6 +7,7 @@ class InitProcessInterface(ABC):
         """Start the initialization process."""
         pass
 
+    @abstractmethod
     def robot_values(self, position: tuple[float, float, float]) -> tuple[float, float, float]:
         """Set the initial values for the process. and return the corresponding acceleration commands."""
         pass

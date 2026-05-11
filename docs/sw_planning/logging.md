@@ -39,3 +39,5 @@ e.g. for the update function -> [update--]
 
 lets pretend the ValueError in line 74 in the class Axis happens the log without launch file would look like this:
 [ERR-]: [Axis][update--]: Axis 'X': dt must be positive -10.0
+
+print(f"[PoPr][ROOT----][INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") 

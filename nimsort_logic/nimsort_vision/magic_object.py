@@ -4,5 +4,5 @@ from dataclasses import dataclass
 class MagicObject:
     """Class representing a detected object with its type and position."""
     object_type: int
-    position: tuple[float, float, float]
+    position: list[float]  # [x, y, z] in meters
     ts: float

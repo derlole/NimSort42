@@ -25,6 +25,7 @@
 
 5. Prädizierte Positionen im Weltkoordiantensystem Ausgeben **(14.04) bis (20.04)**
 - Berechnung / Bestimmung durch Koordinatentransformation von allen Koordinatensystemen ins Weltkooridnatensystem
+- Weitergabe der koordinaten bis zur main node und anschließende konstante ausgabe der Prädizierten Koordinaten eines Objekts.
 
 6. Initiale Kalibrierung des Gesamtsystems **(21.04) bis (27.04)**
 - Die gesamte Anlage hat eine funktionierende initiale Kalibrierung der Achsen.
@@ -55,12 +56,12 @@ Puffer **(01.06 bis 15.06)**
 Puffer **(30.06 bis 13.07)**
 
 ### Meilensteine
-1. Notwendige Koordinatensysteme festgelegt *1/2*
-2. Grundlagen realisieren. *3/4*
-3. Prädizierte Positionen im Weltkoordiantensystem Ausgeben *5/6*
-4. Regelung auf einen Punkt im Weltkoordinatensystem *7/8*
-5. Prozesslogik ist in Python Programmiert und getestet *9*
-6. Abschlusspräsentationen *10/11*
+1. Notwendige Koordinatensysteme festgelegt *1/2* (30.03)
+2. Grundlagen realisieren. *3/4* (13.04)
+3. Prädizierte Positionen im Weltkoordiantensystem Ausgeben *5/6* (27.04)
+4. Regelung auf einen Punkt im Weltkoordinatensystem *7/8* (25.05)
+5. Prozesslogik ist in Python Programmiert und getestet *9* (01.06)
+6. Abschlusspräsentationen *10/11* (29.06)
 
 ### Risikomanagement
 - Hardware versagt oder wird nicht früh genug bereit gestellt-> Zeitplan geht nicht auf
@@ -77,6 +78,6 @@ Puffer **(30.06 bis 13.07)**
 -> Iterativ
 
 ### Hauptverantwortlichkeiten (Wichtig nicht ausschließlicher Arbeitsbereich)
-- Louis: Vision Pipeline 
-- Yannick: Prozesslogik/Init
+- Louis: Vision Pipeline( Machine Learing Modell) 
+- Yannick: Prozesslogik(Main)/Postion Predition
 - Benjamin: Regelung/AxisController

@@ -1,8 +1,8 @@
 import rclpy
 from rclpy.node import MutuallyExclusiveCallbackGroup, Node 
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
-
-from nimsort_main.main import NimSortMain 
+from geometry_msgs.msg import Point
+from nimsort_main.main_logic import NimSortMain 
 from nimsort_msgs.msg import NimSortPrediction, NimSortMotionState, NimSortTarget
 
 class MainNode(Node):
@@ -10,35 +10,51 @@ class MainNode(Node):
         super().__init__('nimsort_main_node')
         
         self.nimsort_main = NimSortMain()
-        self.publisher_ = self.create_publisher(NimSortTarget, 'target', 10)
+        self.publisher= self.create_publisher(NimSortTarget, '/NimSortTarget', 10)
         
         self.subscription_motion = self.create_subscription(
             NimSortMotionState,
-            'motion_state',
+            '/NimSortMotionState',
             self.listener_callback_motion,
             10)
         
         self.subscription_prediction = self.create_subscription(
             NimSortPrediction,
-            'prediction',
+            '/NimSortPrediction',
             self.listener_callback_prediction,
             10)
+        self.timer = self.create_timer(0.1, self.main_order)
 
     def listener_callback_motion(self, msg):
         """Verarbeitet MotionState Nachricht"""
-        self.nimsort_main.process_motion_state(msg)
-        self.get_logger().debug(f'MotionState verarbeitet. State: {self.nimsort_main.get_current_state()}')
+        self.nimsort_main.set_motion_state(msg.reached,msg.gripper_active)
+       
     
     def listener_callback_prediction(self, msg):
         """Verarbeitet Prediction Nachricht und veröffentlicht Target"""
-        target = self.nimsort_main.process_prediction(msg)
+        if msg.object_type == -1:
+            return
         
-        if target is not None:
-            self.publisher_.publish(target)
-            self.get_logger().info(f'Target veröffentlicht. State: {self.nimsort_main.get_current_state()}')
-        else:
-            self.get_logger().debug(f'Keine Target für Prediction. State: {self.nimsort_main.get_current_state()}')
+        self.nimsort_main.get_next_target_to_pick(x=msg.predicted_position_wcs.x, y=msg.predicted_position_wcs.y, z=msg.predicted_position_wcs.z, object_type=msg.object_type)
+    
+        
 
+    def publish_target(self, x, y, z, process_id):
+        msg=NimSortTarget()
+        msg.target_point=Point(
+            x=x,
+            y=y,
+            z=z 
+        )
+        msg.process_id=process_id
+        self.publisher.publish(msg)
+
+    def main_order(self):
+        """State Machine Logik, die basierend auf aktuellen Zuständen entscheidet."""
+        x, y, z, process_id = self.nimsort_main.state_machine()
+        self.publish_target(x, y, z, process_id)
+    
+        
 def main(args=None):
     rclpy.init(args=args)
     main_node = MainNode()

@@ -45,7 +45,7 @@
 
 ### PositionPrediction
 - store received ImageData in any fitting datastructure
-- calculate positionPrediction for next possible Object
+- calculate positionPrediction for next possible MagicObject
 
 ### MainLogic
 - System statemachine
@@ -56,6 +56,7 @@
 ### Axis
 - hold axis data (position, velocity, acceleration)
 - calculate acceleration form position
+- calculate in the RCS (RobotCoordinateSystem)
 
 ### Controller
 - controll acceleration
