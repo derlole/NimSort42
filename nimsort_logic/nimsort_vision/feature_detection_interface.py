@@ -11,6 +11,10 @@ class FeatureDetectionInterface(ABC):
         """Get the feature of the image."""
         pass
 
+    def getLastFeature():
+        """Get the last feature."""
+        pass
+
     def resetFeatureDetection():
         """Reset the feature detection."""
         pass
