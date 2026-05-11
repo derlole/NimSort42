@@ -13,8 +13,10 @@ error_state
 
 
 #### Defintion of Cases in Process ID 
-1:init 
-2:go to Postion 
-3:go to Pickposition 
-4:got to postion with gripper active 
+0: pre-everything/self-init
+1: init-axis
+2: go to Postion, no limitations
+3: actual picking drive
+4: go to Position with gripper active 
+5: deactivate_gripper
 
