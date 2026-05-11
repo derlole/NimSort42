@@ -80,7 +80,8 @@ class Vision(Node):
 
 
         try:
-            speed = self.speed.update(objects[0][0], ts)
+            #speed = self.speed.update(objects[0][0], ts)
+            pass
 
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))
@@ -92,7 +93,7 @@ class Vision(Node):
         for x_w, y_w, z_w in objects:
             self.publish_image_data(x_w, y_w, z_w, ts, 1) # TODO repalce the consants at the time you have the real object type
             
-        self.publish_conveyorbelt_speed(speed) # TODO replace the constant at the time you have the real speed
+        self.publish_conveyorbelt_speed(0.01) # TODO replace the constant at the time you have the real speed
 
 def main(args=None):
     rclpy.init(args=args)

@@ -171,12 +171,12 @@ class OpencvPipeline(OpencvPipelineInterface):
             X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
             X_w_m, Y_w_m, Z_w_m = self.convert(X_w, Y_w, Z_W_CONSTANT_IN_MM)
 
-            if not self._plausi.check_position([X_w_m, Y_w_m, Z_w_m]):
+            if not self._plausi.check_position([X_w_m, -Y_w_m, Z_w_m]):
                 raise ValueError(f"Unplausible Koordinaten: ({X_w_m:.2f}, {Y_w_m:.2f}, {Z_w_m:.2f})")
             
 
             objects.append((X_w_m, Y_w_m, Z_w_m))
-            print(f"[OcvP][getImageData]: Detected object at pixel world ({X_w_m:.1f}, {Y_w_m:.1f})")
+            print(f"[OcvP][getImageData]: Detected object at pixel world ({X_w_m:.4f}, {Y_w_m:.4f})")
 
         result = (objects, self.time_stamp_ms, thresh)
         self._last_result = result
