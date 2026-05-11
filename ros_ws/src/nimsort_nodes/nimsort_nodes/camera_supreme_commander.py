@@ -78,10 +78,11 @@ class Vision(Node):
         except ValueError as e:
             self.publish_image_data(-1.0, -1.0, -1.0, -1, -1) # publish dummy data to indicate error / no objects found
 
-
+        speed = None
         try:
-            #speed = self.speed.update(objects[0][0], ts)
-            pass
+            if len(objects) > 0:
+                speed = self.speed.update(objects[0][0], ts)
+                self.get_logger().info(f"[VN--][main_ord]: Estimated speed: {speed} m/s")
 
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))
@@ -93,7 +94,10 @@ class Vision(Node):
         for x_w, y_w, z_w in objects:
             self.publish_image_data(x_w, y_w, z_w, ts, 1) # TODO repalce the consants at the time you have the real object type
             
-        self.publish_conveyorbelt_speed(0.01) # TODO replace the constant at the time you have the real speed
+        if speed is None:
+            speed = 0.01
+        self.publish_conveyorbelt_speed(speed)
+
 
 def main(args=None):
     rclpy.init(args=args)
