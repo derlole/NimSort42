@@ -35,3 +35,6 @@ Because of the neeed the conveyorbelt_speed in the AxisController to drive the s
 
 ### 8. feat: stop axis Controller with post init
 To safely stop the whole Software we procceded with just be able to stop the feature launch file, which then should kill the Nodes except from the AxisController Node. The AxisController node then safly stops itself by initializing again and killing itself after. The AxisController Node recognizes the missing NimsortTarget msg from the dead MainNode.
+
+### 9. Calculate Conveyorbelt Speed
+Despite the System requirement that the conveyorbelt has to have a consistent speed we decided to calculate the speed for more acuracy via. the Vison Node. To keep the value consistent but still stable we are going to search for various filter methods as e.g. removing negative values as they represent the change of the analysed object. Future filters could be filtering sharp corners because the values gets more accurate after round about 6-7 iterations of measurement.
