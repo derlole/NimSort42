@@ -20,12 +20,9 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 
-# ──────────────────────────────────────────────────────────────────────────────
-# ✏️  HIER DIE PFADE ANPASSEN (falls sich etwas ändert)
-# ──────────────────────────────────────────────────────────────────────────────
-CSV_PATH = "/home/louis/Louis/Studium/4._Semester/Robotik_Projekt_3/NimSort42/nimsort_logic/nimsort_vision/features.csv"
-OUT_PATH = "/home/louis/Louis/Studium/4._Semester/Robotik_Projekt_3/NimSort42/nimsort_logic/nimsort_vision/object_classifier.joblib"
 
+CSV_PATH = os.path.join(os.path.dirname(__file__), "features.csv")
+OUT_PATH = os.path.join(os.path.dirname(__file__), "object_classifier.joblib")
 # ──────────────────────────────────────────────────────────────────────────────
 # Konfiguration – muss mit FeatureDetection.LABEL_MAP übereinstimmen
 # ──────────────────────────────────────────────────────────────────────────────
