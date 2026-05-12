@@ -109,9 +109,15 @@ class Vision(Node):
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))
 
-        for x_w, y_w, z_w in objects:
-            for feature in features:
-                self.publish_image_data(x_w, y_w, z_w, ts, feature) # TODO repalce the consants at the time you have the real object type
+        if len(objects) != len(features):
+            raise ValueError(f"Anzahl der erkannten Objekte ({len(objects)}) stimmt nicht mit Anzahl der Features ({len(features)}) überein.")
+
+
+        for i in range(len(objects)):
+            x_w, y_w, z_w = objects[i]
+            feature = features[i]
+            self.publish_image_data(x_w, y_w, z_w, ts, feature)
+
             
         if speed is None:
             speed = 0.01
@@ -129,6 +135,9 @@ def main(args=None):
         executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
         node.get_logger().error("[VN--][main----]: Shutdown Node")
+        
+    except Exception as e:
+        node.get_logger().error(f"[VN--][main----]: Unexpected error occurred: {e}")
 
     finally:
         executor.shutdown()
