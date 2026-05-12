@@ -5,20 +5,20 @@ import os
 
 from nimsort_vision.feature_detection_interface import FeatureDetectionInterface
 
-# Klassen-Mapping – Index entspricht dem Rückgabewert
+# Klassen-Mapping
 # 0 = einhorn | 1 = katze | 2 = kreis | 3 = quadrat
 LABEL_MAP = {0: "einhorn", 1: "katze", 2: "kreis", 3: "quadrat"}
+
 _MODEL_PATH = os.path.join(os.path.dirname(__file__), "object_classifier.joblib")
 MIN_CONTOUR_AREA = 4500
 
 
 class FeatureDetection(FeatureDetectionInterface):
     """
-    Klassifiziert Objekte im Binärbild anhand von hu_0 + fourier_2
-    mit einem vortrainierten Decision-Tree-Modell (max_depth=5).
+    Klassifiziert ALLE Objekte im Binärbild anhand von hu_0 + fourier_2.
 
     Rückgabewert von getFeature():
-        0 = einhorn  |  1 = katze  |  2 = kreis  |  3 = quadrat  |  -1 = Fehler
+        List[int] → z.B. [0,2,3]
     """
 
     def __init__(self, model_path: str = _MODEL_PATH):
@@ -27,94 +27,104 @@ class FeatureDetection(FeatureDetectionInterface):
                 f"[FD][__init__]: Modell nicht gefunden: {model_path}\n"
                 "Bitte zuerst train_classifier.py ausführen."
             )
+
         self._model = joblib.load(model_path)
-        self._last_feature: int = -1
+        self._last_feature = []
         print(f"[FD][__init__]: Modell geladen von '{model_path}'")
 
     # ------------------------------------------------------------------
-    # Merkmals-Extraktion
+    # Feature-Extraktion für mehrere Konturen
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _extract_features(binary_image: np.ndarray):
+    def _extract_features_for_contours(binary_image: np.ndarray):
         """
-        Extrahiert hu_0 und fourier_2 aus der größten Kontur des Binärbildes.
-
-        hu_0     – erster Hu-Moment (normiertes zweites Moment, rotationsinvariant)
-        fourier_2 – dritter Fourier-Deskriptor der Kontur (Index 2)
+        Extrahiert Features für ALLE gültigen Konturen.
 
         Returns:
-            np.ndarray shape (1, 2) mit [hu_0, fourier_2] oder None bei Fehler.
+            List[(feature_vector, contour)]
         """
         contours, _ = cv.findContours(binary_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+        # Filter wie in Pipeline
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
-        contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
 
-        if not contours:
-            return None
+        # Sortierung wie in Pipeline (rechts → links)
+        contours = sorted(
+            contours,
+            key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"],
+            reverse=True
+        )
 
-        cnt = max(contours, key=cv.contourArea)
+        results = []
 
-        # ── hu_0 ──────────────────────────────────────────────────────
-        moments = cv.moments(cnt)
-        if moments["m00"] == 0:
-            return None
-        hu_raw = cv.HuMoments(moments).flatten()
-        # Log-Transformation (wie beim Training)
-        with np.errstate(divide="ignore"):
-            hu_log = -np.sign(hu_raw) * np.log10(np.abs(hu_raw) + 1e-10)
-        hu_0 = hu_log[0]
+        for cnt in contours:
+            moments = cv.moments(cnt)
+            if moments["m00"] == 0:
+                continue
 
-        # ── fourier_2 ─────────────────────────────────────────────────
-        # Konturpunkte als komplexe Zahlen
-        pts = cnt[:, 0, :].astype(np.float32)
-        z = pts[:, 0] + 1j * pts[:, 1]
+            # ── hu_0 ─────────────────────────────
+            hu_raw = cv.HuMoments(moments).flatten()
+            with np.errstate(divide="ignore"):
+                hu_log = -np.sign(hu_raw) * np.log10(np.abs(hu_raw) + 1e-10)
+            hu_0 = hu_log[0]
 
-        # DFT der Kontur
-        Z = np.fft.fft(z)
-        N = len(Z)
+            # ── fourier_2 ────────────────────────
+            pts = cnt[:, 0, :].astype(np.float32)
+            z = pts[:, 0] + 1j * pts[:, 1]
 
-        # Amplituden normiert auf den ersten Deskriptor (Größeninvarianz)
-        amplitudes = np.abs(Z) / (np.abs(Z[1]) + 1e-10)
+            Z = np.fft.fft(z)
+            N = len(Z)
 
-        # Index 2 (dritter Koeffizient)
-        fourier_2 = float(amplitudes[2]) if N > 2 else 0.0
+            amplitudes = np.abs(Z) / (np.abs(Z[1]) + 1e-10)
+            fourier_2 = float(amplitudes[2]) if N > 2 else 0.0
 
-        return np.array([[hu_0, fourier_2]], dtype=np.float32)
+            feature_vec = np.array([[hu_0, fourier_2]], dtype=np.float32)
+
+            results.append((feature_vec, cnt))
+
+        return results
 
     # ------------------------------------------------------------------
     # Interface-Methoden
     # ------------------------------------------------------------------
 
-    def getFeature(self, binary_image: np.ndarray) -> int:
+    def getFeature(self, binary_image: np.ndarray):
         """
-        Klassifiziert das Objekt im übergebenen Binärbild.
+        Klassifiziert ALLE Objekte im Binärbild.
 
         Args:
-            binary_image: 8-bit Binärbild (0/255) direkt aus der OpencvPipeline.
+            binary_image: Binärbild (0/255)
 
         Returns:
-            int: 0=einhorn | 1=katze | 2=kreis | 3=quadrat | -1=Fehler
+            List[int]: z.B. [0,2,3]
         """
-        features = self._extract_features(binary_image)
+        extracted = self._extract_features_for_contours(binary_image)
 
-        if features is None:
-            print("[FD][getFeature]: Keine Kontur gefunden – gebe -1 zurück.")
-            self._last_feature = -1
-            return -1
+        if not extracted:
+            print("[FD][getFeature]: Keine Konturen gefunden.")
+            self._last_feature = []
+            return []
 
-        prediction: int = int(self._model.predict(features)[0])
-        self._last_feature = prediction
-        print(
-            f"[FD][getFeature]: hu_0={features[0,0]:.4f}, fourier_2={features[0,1]:.4f}"
-            f" → {prediction} ({LABEL_MAP.get(prediction, 'unbekannt')})"
-        )
-        return prediction
+        features = []
 
-    def getLastFeature(self) -> int:
-        """Gibt das zuletzt klassifizierte Ergebnis zurück."""
+        for feature_vec, cnt in extracted:
+            prediction: int = int(self._model.predict(feature_vec)[0])
+            features.append(prediction)
+
+            print(
+                f"[FD]: hu_0={feature_vec[0,0]:.4f}, "
+                f"fourier_2={feature_vec[0,1]:.4f} "
+                f"→ {prediction} ({LABEL_MAP.get(prediction, 'unbekannt')})"
+            )
+
+        self._last_feature = features
+        return features
+
+    def getLastFeature(self):
+        """Gibt die letzte Feature-Liste zurück."""
         return self._last_feature
 
-    def resetFeatureDetection(self) -> None:
-        """Setzt den internen Zustand zurück."""
-        self._last_feature = -1
+    def resetFeatureDetection(self):
+        """Reset."""
+        self._last_feature = []
