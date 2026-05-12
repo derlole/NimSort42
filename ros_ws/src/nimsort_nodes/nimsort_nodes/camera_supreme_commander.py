@@ -9,6 +9,7 @@ import time
 from nimsort_msgs.msg import NimSortImageData, NimSortConveyorbeltSpeed
 from nimsort_vision.opencv_pipeline import OpencvPipeline
 from nimsort_vision.conveyor_speed import ConveyorSpeedEstimator
+from nimsort_vision.feature_detection import FeatureDetection
 
 
 class Vision(Node):
@@ -40,6 +41,12 @@ class Vision(Node):
 
         try:
             self.speed_calc = ConveyorSpeedEstimator()
+        except RuntimeError as e:
+            self.get_logger().error("[VN--][__init__]:" + str(e))
+            raise
+        
+        try:
+            self.feature_detector = FeatureDetection()
         except RuntimeError as e:
             self.get_logger().error("[VN--][__init__]:" + str(e))
             raise
@@ -94,9 +101,12 @@ class Vision(Node):
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))
 
-            
-        # TODO insert trained_model_here to calculate the correct object_type
 
+        try:
+            feature = self.feature_detector.getFeature(image)
+        
+        except RuntimeError as e:
+            self.get_logger().error("[VN--][main_ord]:" + str(e))
 
         for x_w, y_w, z_w in objects:
             self.publish_image_data(x_w, y_w, z_w, ts, 1) # TODO repalce the consants at the time you have the real object type
