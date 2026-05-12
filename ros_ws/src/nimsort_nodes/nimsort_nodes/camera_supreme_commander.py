@@ -76,6 +76,7 @@ class Vision(Node):
         print(f"[VN--][main_ord]: Starting main order{time.time()}")
 
         objects = []
+        features = []
         try:
             self.pipeline.captureImage()
             objects, ts, image = self.pipeline.getImageData()
@@ -103,13 +104,14 @@ class Vision(Node):
 
 
         try:
-            feature = self.feature_detector.getFeature(image)
+            features = self.feature_detector.getFeature(image)
         
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))
 
         for x_w, y_w, z_w in objects:
-            self.publish_image_data(x_w, y_w, z_w, ts, 1) # TODO repalce the consants at the time you have the real object type
+            for feature in features:
+                self.publish_image_data(x_w, y_w, z_w, ts, feature) # TODO repalce the consants at the time you have the real object type
             
         if speed is None:
             speed = 0.01
