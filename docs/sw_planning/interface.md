@@ -41,7 +41,7 @@ This interface defines the interaction between the Vision node and the FeatureDe
 ### PositionPrediction
 This interface defines the interaction between the PositionPredictionNode and the corresponding python logic.
 
-- `set_conveyor_belt_speed(speed_mps)` sets the handed Conveyorbelt Speed for position prediction in logic
+- `set_conveyorbelt_speed(speed_mps)` sets the handed Conveyorbelt Speed for position prediction in logic
 - `set_object_data(object_type, position, ts)` stores the data in a corresponding datastructure for detected and handed Objects.
 - `calculate_next_object_position() -> tuple[float, float, float]` returns the current position of the next tecnically grippable Object in the WCS
 - properties to see what values are stored in the datastructure and the conveyorbelt Speed.

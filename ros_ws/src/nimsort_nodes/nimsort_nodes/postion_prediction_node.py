@@ -14,7 +14,7 @@ class PositionPredictionNode(Node):
     def __init__(self):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
-        self.logic.set_conveyor_belt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
+        self.logic.set_conveyorbelt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
