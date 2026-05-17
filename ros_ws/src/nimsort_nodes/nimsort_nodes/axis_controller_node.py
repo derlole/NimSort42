@@ -54,6 +54,7 @@ class AxisController(Node):
         self.axis_z = None
         self.last_target_time = time.time()
         self.target_timeout_s = 3.0
+        self.last_update_time = time.monotonic()
 
         self.nimsort_target_sub = self.create_subscription(
             NimSortTarget,
@@ -173,6 +174,10 @@ class AxisController(Node):
         self.motion_state_pub.publish(msg)
 
     def ax_state_running(self):
+        current_time = time.monotonic()
+        dt = current_time - self.last_update_time
+        self.last_update_time = current_time
+
         if self.last_nimsort_target is None:
             self.get_logger().warn("[ACN-][ax_run]: No target received yet")
             self.main_state = AxisControllerStates.RETURNING_HOME
@@ -194,9 +199,9 @@ class AxisController(Node):
         self.axis_y.set_target(self.last_nimsort_target.target_point.y * 0.8)
         self.axis_z.set_target(self.last_nimsort_target.target_point.z * 0.8)
 
-        acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, 0.1) #TODO dt as timestamp difference actually calculated
-        acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, 0.1)
-        acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, 0.1)
+        acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, dt)
+        acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, dt)
+        acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, dt)
 
         self.send_acceleration(acc_x, acc_y, acc_z)
 
