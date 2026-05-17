@@ -6,5 +6,5 @@ class AxisControllerStates(Enum):
     INITIALIZING_AXIS_HW = 1
     INITIALIZING_AXIS_SW = 2
     RUNNING = 3
-
-    # TODO think about an error state
+    RETURNING_HOME = 4
+    SHUTDOWN = 5

@@ -12,4 +12,11 @@ This state can be left due to an field finished from the initialization logic. T
 This state is just for initialization of the Axis Objects with its controllers and TrajectoryPlanners. The Constants for the Values are passed with the init Process of the Objects. resulting are not Empty -> filled axis atrributes in the AxisControllerNode. This state always results in the RUNNING state.
 
 ### 4. RUNNING
-This state represents an initialized and ready state of the AxisControllerNode. at this the Axis-attributes cannot be None therefore points can be given to any axis. The axis handles the logic of TrajectoryPlanning and Controlling by revieving the position in RobotCoordinateSystem and providing accelerations for the axis. 
+This state represents an initialized and ready state of the AxisControllerNode. at this the Axis-attributes cannot be None therefore points can be given to any axis. The axis handles the logic of TrajectoryPlanning and Controlling by revieving the position in RobotCoordinateSystem and providing accelerations for the axis. This State is only left if fo 3 seconds no NimsortTarget is received.
+
+### 5. RETURNING_HOME
+This state handels an safe init drive after the RUNNING step is left due to missing NimsortTarget values. It calls the Init-proccess exactly the same as the `INITIALIZING_AXIS_HW` state after resetting and starting it again.
+This state is left after the self.init_process states finish.
+
+### 6. SHUTDOWN
+This State handles the Shudown of the Node by throwing an RunntimeError.

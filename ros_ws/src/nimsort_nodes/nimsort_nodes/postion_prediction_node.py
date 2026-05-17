@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
-from nimsort_msgs.msg import NimSortPrediction, NimSortImageData
+from nimsort_msgs.msg import NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed
 from geometry_msgs.msg import Point
 from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
 
@@ -15,12 +15,17 @@ class PositionPredictionNode(Node):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
         self.logic.set_conveyor_belt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
-        self.bool_no_objects_logged = False
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
             '/NimSortImageData',
             self.image_data_callback,
+            10
+        )
+        self.conveyorbelt_speed_sub = self.create_subscription(
+            NimSortConveyorbeltSpeed,
+            '/NimSortConveyorbeltSpeed',
+            self.conveyorbelt_speed_callback,
             10
         )
         self.prediction_pub = self.create_publisher(
@@ -31,13 +36,6 @@ class PositionPredictionNode(Node):
         self.timer = self.create_timer(0.1, self.main_order)
 
     def image_data_callback(self, msg: NimSortImageData):
-        if msg.current_position_wcs.x == -1 and msg.current_position_wcs.y == -1 and msg.current_position_wcs.z == -1:
-            self.bool_no_objects_logged = True
-            return
-        elif self.bool_no_objects_logged:
-            self.get_logger().info("[INFO][PoPr][IDCB----]: Neue Objekte erkannt, Positionen werden aktualisiert.")
-            self.bool_no_objects_logged = False
-
         self.logic.set_object_data(
             object_type=msg.object_type,
             position=[
@@ -47,7 +45,9 @@ class PositionPredictionNode(Node):
             ],
             ts=msg.ts
         )
-        self.logic.set_conveyor_belt_speed(msg.conveyor_belt_speed)
+
+    def conveyorbelt_speed_callback(self, msg: NimSortConveyorbeltSpeed):
+        self.logic.set_conveyorbelt_speed(msg.conveyorbelt_speed)
 
     def send_prediction(self, position: tuple[float, float, float, int]) -> None:
         x, y, z, obj_type = position
@@ -67,16 +67,15 @@ class PositionPredictionNode(Node):
 
     def main_order(self):
         try:
-            next_objects = self.logic.calculate_next_object_positions()
+            x, y, z, obj_type = self.logic.calculate_next_object_position()
+            x2, y2, z2, obj_type2 = self.logic.calculate_second_object_position()
         except ValueError as e:
             self.get_logger().warn(str(e))
             return
-
-        self.get_logger().debug(
-            f"Objekt {next_objects[0][3]}  | XY: ({next_objects[0][0]:.3f}, {next_objects[0][1]:.3f})\n"
-            f"Objekt {next_objects[1][3]} | XY: ({next_objects[1][0]:.3f}, {next_objects[1][1]:.3f})"
-        )
-        self.publish_predictions(next_objects)
+        self.get_logger().debug(f"Objekt {obj_type} | XY: ({x:.3f}, {y:.3f})"
+                                f"Objekt {obj_type2} | XY: ({x2:.3f}, {y2:.3f})")
+        self.send_prediction([x, y, z], obj_type)
+        self.send_prediction([x2, y2, z2], obj_type2)
 
 
 def main(args=None):

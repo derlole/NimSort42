@@ -6,7 +6,7 @@ from nimsort_main.process_id import ProcessId
 
 POSITION_UNCORN= [-0.16,-0.14, 0.07] #TODO: Werte in Weltkoordinaten anpassen
 POSITION_CAT= [-0.06, -0.14, 0.07]
-INITIAL_POSITION = [-0.01,-0.05, 0.02]
+
 Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition
 Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
 SENTINEL = [-1.0, -1.0, -1.0,-1] 
