@@ -6,12 +6,15 @@ from geometry_msgs.msg import Point
 from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
 
 DEFAULT_CONVEYOR_BELT_SPEED = 0.01  # TODO: durch echte Messung ersetzen
+SENTINEL = (-1.0, -1.0, -1.0, -1)
+
 
 class PositionPredictionNode(Node):
+
     def __init__(self):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
-        self.logic.set_conveyorbelt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
+        self.logic.set_conveyor_belt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
@@ -33,10 +36,6 @@ class PositionPredictionNode(Node):
         self.timer = self.create_timer(0.1, self.main_order)
 
     def image_data_callback(self, msg: NimSortImageData):
-        self.get_logger().debug(f"Received image data: ({msg.current_position_wcs.x:.3f}) with timestamp {msg.ts}")
-        if msg.ts == -1:
-            return
-        
         self.logic.set_object_data(
             object_type=msg.object_type,
             position=[
@@ -50,29 +49,33 @@ class PositionPredictionNode(Node):
     def conveyorbelt_speed_callback(self, msg: NimSortConveyorbeltSpeed):
         self.logic.set_conveyorbelt_speed(msg.conveyorbelt_speed)
 
-    def send_prediction(self, position: list[float], object_type: int):
+    def send_prediction(self, position: tuple[float, float, float, int]) -> None:
+        x, y, z, obj_type = position
         msg = NimSortPrediction()
-        msg.predicted_position_wcs = Point(
-            x=position[0],
-            y=position[1],
-            z=position[2],
-        )
-        msg.object_type = object_type
+        msg.predicted_position_wcs = Point(x=x, y=y, z=z)
+        msg.object_type = obj_type
         self.prediction_pub.publish(msg)
+
+    def publish_predictions(self, positions: list[tuple[float, float, float, int]]) -> None:
+        real_objects = [p for p in positions if p[3] != -1]
+
+        if real_objects:
+            for position in real_objects:
+                self.send_prediction(position)
+        elif self.bool_no_objects_logged:
+            self.send_prediction(SENTINEL)
 
     def main_order(self):
         try:
             x, y, z, obj_type = self.logic.calculate_next_object_position()
-
+            x2, y2, z2, obj_type2 = self.logic.calculate_second_object_position()
         except ValueError as e:
             self.get_logger().warn(str(e))
-            x = -1.0
-            y = -1.0
-            z = -1.0
-            obj_type = -1
-        
-        self.get_logger().debug(f"Objekt {obj_type} | XY: ({x:.3f}, {y:.3f})")
+            return
+        self.get_logger().debug(f"Objekt {obj_type} | XY: ({x:.3f}, {y:.3f})"
+                                f"Objekt {obj_type2} | XY: ({x2:.3f}, {y2:.3f})")
         self.send_prediction([x, y, z], obj_type)
+        self.send_prediction([x2, y2, z2], obj_type2)
 
 
 def main(args=None):
@@ -87,6 +90,7 @@ def main(args=None):
     finally:
         executor.shutdown()
         rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
