@@ -1,4 +1,4 @@
-import time
+﻿import time
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
@@ -177,11 +177,15 @@ class AxisController(Node):
         current_time = time.monotonic()
         dt = current_time - self.last_update_time
         self.last_update_time = current_time
+        currently_reached = self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached
+        gripper_should = False
 
         if self.last_nimsort_target is None:
             self.get_logger().warn("[ACN-][ax_run]: No target received yet")
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
+        
+        print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis_x.target_reached}, {self.axis_y.target_reached}, {self.axis_z.target_reached}")
         
         if time.time() - self.last_target_time > self.target_timeout_s:
             self.get_logger().warn("[ACN-][ax_run]: Target timeout -> returning home")
@@ -190,11 +194,13 @@ class AxisController(Node):
             self.init_process.start()
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
+        
+        # if (self.last_nimsort_target.process_id == 3) and currently_reached:
+        #     acc_y = self.axis_y.picking(self.last_conveyorbelt_speed ,dt)
+        #     acc_z = self.axis_z.picking(self.last_conveyorbelt_speed ,dt)
+        #     acc_x = self.axis_x.picking(self.last_conveyorbelt_speed ,dt)
 
-        print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis_x.target_reached}, {self.axis_y.target_reached}, {self.axis_z.target_reached}")
-        if (self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached) and self.last_nimsort_target is not None:
-            self.publish_motion_state(True, False)
-
+        # else:
         self.axis_x.set_target(self.last_nimsort_target.target_point.x * 0.8)
         self.axis_y.set_target(self.last_nimsort_target.target_point.y * 0.8)
         self.axis_z.set_target(self.last_nimsort_target.target_point.z * 0.8)
@@ -202,6 +208,12 @@ class AxisController(Node):
         acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, dt)
         acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, dt)
         acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, dt)
+        
+        if (self.last_nimsort_target.process_id == 3 or self.last_nimsort_target.process_id == 4):
+            gripper_should = True
+
+        if currently_reached and self.last_nimsort_target is not None:
+            self.publish_motion_state(True, gripper_should)
 
         self.send_acceleration(acc_x, acc_y, acc_z)
 
@@ -245,3 +257,4 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
