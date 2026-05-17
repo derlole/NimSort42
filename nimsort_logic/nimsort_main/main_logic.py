@@ -2,6 +2,7 @@ import threading
 from enum import Enum
 from nimsort_main.main_interface import MainInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
+from nimsort_main.process_id import ProcessId
 
 POSITION_UNCORN= [-0.16,-0.14, 0.07] #TODO: Werte in Weltkoordinaten anpassen
 POSITION_CAT= [-0.06, -0.14, 0.07]
@@ -18,7 +19,7 @@ class NimSortState(Enum):
     WAIT_FOR_INIT = "WAIT_FOR_INIT"
     GO_TO_PICKPREPOSITION = "GO_TO_PICKPREPOSITION"
     READY_FOR_PICK = "READY_FOR_PICK"
-    PICK = "PICK"
+    PICK = "PICK" # TODO this state ist not used...??
     GO_TO_PICKPOSITION = "GO_TO_PICKPOSITION"
     GO_TO_DROP_CAT = "GO_TO_DROP_CAT"
     GO_TO_DROP_UNCORN = "GO_TO_DROP_UNCORN"
@@ -93,56 +94,56 @@ class NimSortMain(MainInterface):
         match self.current_state:
             case NimSortState.START:
                 self.current_state = NimSortState.INIT_CALL
-                return (0.0, 0.0, 0.0, 0)      
+                return (0.0, 0.0, 0.0, ProcessId.SELF_INIT)      
             
             case NimSortState.INIT_CALL:
                 self.current_state = NimSortState.WAIT_FOR_INIT  
-                return (0.0, 0.0, 0.0, 1)
+                return (0.0, 0.0, 0.0, ProcessId.INIT_AXIS)
             
             case NimSortState.WAIT_FOR_INIT:
                 if self.reached:
                     self.current_state = NimSortState.READY_FOR_PICK
-                    return (0.0, 0.0, 0.0, 1)  
+                    return (0.0, 0.0, 0.0, ProcessId.INIT_AXIS)  
                  
             case NimSortState.READY_FOR_PICK:
                 if self.get_next_target_to_pick() is not None:
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
-                    return (INITIAL_POSITION[0], INITIAL_POSITION[1], INITIAL_POSITION[2], 2)
+                    return (*INITIAL_POSITION, ProcessId.GO_TO_POS)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
-                if self.get_next_target_to_pick()[3] == 1 or self.get_next_target_to_pick()[3] == 2:
+                if self.get_next_target_to_pick()[3] == 1 or self.get_next_target_to_pick()[3] == 2: # TODO isnt this 0 or 1?? # TODO idk, if this condition is good, we could go to the pickpre anyways, also if there is no object comming...
                     self.current_state = NimSortState.GO_TO_PICKPOSTPOSITION
-                    return (self.current_prediction.position[0],self.current_prediction.position[1],Z_PRE_POST_PICK, 3 ) 
+                    return (self.current_prediction.position[0], self.current_prediction.position[1], Z_PRE_POST_PICK, ProcessId.GO_TO_POS) # TODO here was a 3 should be a 2, right? with enum there was a Picking drive but this should be Goto position, aint??
                        
             case NimSortState.GO_TO_PICKPOSITION:
                if self.reached and self.gripper_active:
                     self.current_state = NimSortState.GO_TO_DROP
-                    return (self.current_prediction.position[0],self.current_prediction.position[1],Z_PICK, 3)
+                    return (self.current_prediction.position[0],self.current_prediction.position[1],Z_PICK, ProcessId.PICKING_DRIVE)
 
             case NimSortState.GO_TO_DROP_CAT:
-                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] ==1:
+                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] == 1: # TODO isnt this 0 or 1??
                     self.current_state = NimSortState.DROP
-                    return (POSITION_UNCORN[0], POSITION_UNCORN[1], POSITION_UNCORN[2], 3)
+                    return (*POSITION_UNCORN, ProcessId.GO_TO_POS_WITH_GRIPPER)
     
             case  NimSortState.GO_TO_DROP_UNCORN:
-                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] ==2:
+                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] == 2: # TODO isnt this 0 or 1??
                     self.current_state = NimSortState.DROP
-                    return (POSITION_CAT[0], POSITION_CAT[1], POSITION_CAT[2], 3)
+                    return (*POSITION_CAT, ProcessId.GO_TO_POS_WITH_GRIPPER)
                           
-            case NimSortState.DROP_CAT:
+            case NimSortState.DROP_CAT: # TODO what are these states for??
                 if self.reached and self.gripper_active:
                     self.current_state = NimSortState.READY_FOR_PICK
-                    return (POSITION_CAT[0], POSITION_CAT[1], POSITION_CAT[2], 4)
+                    return (*POSITION_CAT, ProcessId.DEACTIVATE_GRIPPER)
             
-            case NimSortState.DROP_UNICORN:
+            case NimSortState.DROP_UNICORN: # TODO what are these states for??
                 if self.reached and self.gripper_active:
                     self.current_state = NimSortState.READY_FOR_PICK
-                    return (POSITION_UNCORN[0], POSITION_UNCORN[1], POSITION_UNCORN[2], 4)
+                    return (*POSITION_UNCORN, ProcessId.DEACTIVATE_GRIPPER)
             
             case NimSortState.DROP:
                 if self.reached and not self.gripper_active:
                     self.current_state = NimSortState.READY_FOR_PICK
-                    return (INITIAL_POSITION[0], INITIAL_POSITION[1], INITIAL_POSITION[2], 2)
+                    return (*INITIAL_POSITION, ProcessId.DEACTIVATE_GRIPPER)
     
     def reset(self) -> None:
         """Setzt State Machine zurück auf START"""
