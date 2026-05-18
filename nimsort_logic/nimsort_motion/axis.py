@@ -124,4 +124,24 @@ class Axis(AxisInterface):
         return self._acceleration
 
     @property
-    def target_
+    def target_reached(self) -> bool:
+        """True wenn die Achse den Zielpunkt erreicht hat und steht."""
+        return self._planner.reached
+    
+    def get_state(self) -> AxisState:
+        """Gibt einen Schnappschuss des aktuellen Zustands zurück."""
+        return AxisState(
+            position=self._position,
+            velocity=self._velocity,
+            acceleration=self._acceleration,
+            target_position=self._target_position,
+            target_reached=self._planner.reached,
+        )
+    
+    def __repr__(self) -> str:
+        return (
+            f"Axis('{self._name}' | "
+            f"pos={self._position:.4f} m, "
+            f"vel={self._velocity:.4f} m/s, "
+            f"accel={self._acceleration:.4f} m/s²)"
+        )

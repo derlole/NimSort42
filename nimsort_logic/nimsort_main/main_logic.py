@@ -9,7 +9,7 @@ POSITION_UNCORN= [-0.16,-0.14, 0.07] #TODO: Werte in Weltkoordinaten anpassen
 POSITION_CAT= [-0.06, -0.14, 0.07]
 INITIAL_POSITION = [-0.01,-0.05, 0.02]
 Z_PRE_POST_PICK= 0.08 #z-Höhe über Objekt für Pick-Preposition
-Z_PICK=0.1 #z-Höhe über Objekt für Pick-Position
+Z_PICK=0.095 #z-Höhe über Objekt für Pick-Position
 GENERIC_PICK_PRE_POSITION = [-0.01, -0.05, Z_PRE_POST_PICK] #TODO: Werte in Weltkoordinaten anpassen
 SENTINEL = [-1.0, -1.0, -1.0,-1] 
 ROBOT_REACH=-0.3 #maximale Reichweite des Roboters in x-Richtung, Werte in Weltkoordinaten anpassen
@@ -83,7 +83,7 @@ class NimSortMain(MainInterface):
         # Nur Predictions innerhalb der Reichweite
         valid = [
             p for p in self._prediction_buffer
-            if p.position[0] < ROBOT_REACH and p.position[0] > 0.0
+            if p.position[0] < ROBOT_REACH # and p.position[0] > 0.0
             and self.plausibility_check.check_prediction(p)
         ]
 
@@ -129,6 +129,7 @@ class NimSortMain(MainInterface):
 
             case NimSortState.GO_TO_PICKPREPOSITION:
                 target = self.get_next_target_to_pick()
+                print(f"[INFO][Main][GTPPP---]: Aktuelles Target: {target}")
                 if target is not None and target[3] in (0, 1):
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
 
@@ -136,6 +137,7 @@ class NimSortMain(MainInterface):
                        
             case NimSortState.GO_TO_PICKPOSITION:
                 target = self.get_next_target_to_pick()
+                print(f"[INFO][Main][GTPP----]: Hallo ich bin hier {target}")
                 if self.reached and target is not None:
                     if target[3] == 0:
                         self.current_state = NimSortState.GO_TO_DROP_UNCORN
