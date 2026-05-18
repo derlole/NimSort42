@@ -1,3 +1,4 @@
+import time
 import rclpy
 from rclpy.node import MutuallyExclusiveCallbackGroup, Node 
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
@@ -24,6 +25,7 @@ class MainNode(Node):
             self.listener_callback_prediction,
             10)
         self.timer = self.create_timer(0.1, self.main_order)
+        self.last_prediction_time = time.time()
 
     def listener_callback_motion(self, msg):
         """Verarbeitet MotionState Nachricht"""
@@ -32,6 +34,7 @@ class MainNode(Node):
     
     def listener_callback_prediction(self, msg):
         """Verarbeitet Prediction Nachricht und veröffentlicht Target"""
+        self.last_prediction_time = time.time()
         if msg.object_type == -1:
             return
         
@@ -51,6 +54,10 @@ class MainNode(Node):
 
     def main_order(self):
         """State Machine Logik, die basierend auf aktuellen Zuständen entscheidet."""
+        if time.time() - self.last_prediction_time > 3.0:
+            self.get_logger().warning("[MAIN][main_ord]: Keine aktuellen Predictions, Killing myself.")
+            raise RuntimeError("Keine aktuellen Predictions, State Killing myself.")
+        
         x, y, z, process_id = self.nimsort_main.state_machine()
         self.publish_target(x, y, z, process_id)
     
@@ -67,6 +74,9 @@ def main(args=None):
     except (ExternalShutdownException, KeyboardInterrupt):
         main_node.get_logger().error("[MAIN][main----]: Shutdown Node")
         
+    except RuntimeError as e:
+        main_node.get_logger().error(f"[MAIN][main----]: {str(e)}")
+
     finally:
         executor.shutdown()
         rclpy.shutdown()

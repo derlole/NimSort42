@@ -1,3 +1,4 @@
+import time
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
@@ -35,8 +36,10 @@ class PositionPredictionNode(Node):
             10
         )
         self.timer = self.create_timer(0.1, self.main_order)
+        self.last_image_data_time = time.time()
 
     def image_data_callback(self, msg: NimSortImageData):
+        self.last_image_data_time = time.time()
         if msg.current_position_wcs.x == -1 and msg.current_position_wcs.y == -1 and msg.current_position_wcs.z == -1:
             self.bool_no_objects_logged = True
             return
@@ -74,6 +77,9 @@ class PositionPredictionNode(Node):
             self.send_prediction(SENTINEL)
 
     def main_order(self):
+        if time.time() - self.last_image_data_time > 3.0:
+            self.get_logger().warning("[PoPr][main_ord]: Keine aktuellen ImageData, Killing myself.")
+            raise RuntimeError("Keine aktuellen ImageData, State Killing myself.")
         try:
             next_objects = self.logic.calculate_next_object_positions()
         except ValueError as e:
@@ -92,10 +98,15 @@ def main(args=None):
     node = PositionPredictionNode()
     executor = MultiThreadedExecutor()
     executor.add_node(node)
+    
     try:
         executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
         node.get_logger().error("[ACN-][main----]: Shutdown Node")
+
+    except RuntimeError as e:
+        node.get_logger().error(f"[ACN-][main----]: {str(e)}")
+
     finally:
         executor.shutdown()
         rclpy.shutdown()
