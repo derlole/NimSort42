@@ -132,7 +132,7 @@ class PositionPrediction(PositionPredictionInterface):
                 del self._objects[obj_id]
                 print(
                     f"[INFO][PoPr][ROOT----]: Objekt ID {obj_id} bei X={obj.position[0]:.2f} "
-                    f"über Threshold – in over_threshold_objects verschoben."
+                    f"über Threshold und in over_threshold_objects verschoben."
                 )
  
     def _find_similar_object(self, x_position: float) -> MagicObject | None:
