@@ -41,3 +41,7 @@ class AxisInterface(ABC):
     def get_state(self) -> "AxisState":
         """Gibt aktuellen Zustand zurück."""
         pass
+
+    # @abstractmethod
+    # def picking(self, dt: float) -> float:
+    #     pass

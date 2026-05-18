@@ -1,4 +1,4 @@
-"""
+﻿"""
 axis.py
 ---
 contains the Axis Class for handling one Robotaxis.
@@ -97,7 +97,7 @@ class Axis(AxisInterface):
         )
         print(f"[DEBUG][Axis][update--]: acc_out={self._acceleration:.4f}m/s², tgt_acc={target_accel:.4f}m/s², dt={dt:.6f}s")
         return self._acceleration
-    
+
     def reset(self) -> None:
         """
         resets axisstate and controller to initial state

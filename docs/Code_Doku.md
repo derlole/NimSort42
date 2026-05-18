@@ -81,7 +81,7 @@ Hauptlogik zur Positionsvorhersage von Objekten auf dem Förderband.
 | Methode | Beschreibung |
 |---------|-------------|
 | `set_object_data()` | Speichert erkannte Objekte |
-| `set_conveyor_belt_speed()` | Setzt Förderbandgeschwindigkeit |
+| `set_conveyorbelt_speed()` | Setzt Förderbandgeschwindigkeit |
 | `calculate_next_object_position()` | Berechnet nächstes zu sortierendes Objekt |
 | `get_next_object_to_publish()` | Gibt Objekt mit höchster X-Position zurück |
 | `_update_positions()` | Aktualisiert Positionen basierend auf Zeit |
