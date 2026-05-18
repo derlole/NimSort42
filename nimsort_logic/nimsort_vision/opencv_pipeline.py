@@ -170,8 +170,10 @@ class OpencvPipeline(OpencvPipelineInterface):
 
             X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
             X_w_m, Y_w_m, Z_w_m = self.convert(X_w, Y_w, Z_W_CONSTANT_IN_MM)
+            
+            Y_w_m = -Y_w_m # Negieren, da Weltkoordinaten Y-Achse entgegengesetzt zu Pixelkoordinaten
 
-            if not self._plausi.check_position([X_w_m, -Y_w_m, Z_w_m]):
+            if not self._plausi.check_position([X_w_m, Y_w_m, Z_w_m]):
                 raise ValueError(f"Unplausible Koordinaten: ({X_w_m:.2f}, {Y_w_m:.2f}, {Z_w_m:.2f})")
             
 
