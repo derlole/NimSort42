@@ -43,6 +43,7 @@ class MainNode(Node):
         
 
     def publish_target(self, x, y, z, process_id):
+        process_id = process_id.value 
         msg=NimSortTarget()
         msg.target_point=Point(
             x=x,
@@ -57,7 +58,7 @@ class MainNode(Node):
         if time.time() - self.last_prediction_time > 3.0:
             self.get_logger().warning("[MAIN][main_ord]: Keine aktuellen Predictions, Killing myself.")
             raise RuntimeError("Keine aktuellen Predictions, State Killing myself.")
-        
+
         x, y, z, process_id = self.nimsort_main.state_machine()
         self.publish_target(x, y, z, process_id)
     

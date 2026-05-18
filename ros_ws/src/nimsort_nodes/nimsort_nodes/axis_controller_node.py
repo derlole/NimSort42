@@ -53,8 +53,10 @@ class AxisController(Node):
         self.axis_y = None
         self.axis_z = None
         self.last_target_time = time.time()
-        self.target_timeout_s = 3.0
+        self.last_robot_pos_time = time.time()
         self.last_update_time = time.monotonic()
+        self.target_timeout_s = 3.0
+        self.robot_pos_timeout_s = 0.5
 
         self.nimsort_target_sub = self.create_subscription(
             NimSortTarget,
@@ -130,6 +132,7 @@ class AxisController(Node):
 
     def robot_pos_callback(self, msg):
         self.last_robot_pos = msg
+        self.last_robot_pos_time = time.time()
         self.get_logger().info(f"Received RobotPos: {msg}")
 
     def ax_state_empty(self):
@@ -187,8 +190,8 @@ class AxisController(Node):
         
         print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis_x.target_reached}, {self.axis_y.target_reached}, {self.axis_z.target_reached}")
         
-        if time.time() - self.last_target_time > self.target_timeout_s:
-            self.get_logger().warn("[ACN-][ax_run]: Target timeout -> returning home")
+        if (time.time() - self.last_target_time > self.target_timeout_s) or (time.time() - self.last_robot_pos_time > self.robot_pos_timeout_s):
+            self.get_logger().warn("[ACN-][ax_run]: Target oder robot_pos timeout -> returning home")
 
             self.init_process.reset()
             self.init_process.start()

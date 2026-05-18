@@ -16,7 +16,6 @@ class PositionPredictionNode(Node):
         super().__init__('position_prediction_node')
         self.logic = PositionPredictionLogic()
         self.logic.set_conveyorbelt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
-        self.bool_no_objects_logged = False
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
@@ -40,12 +39,8 @@ class PositionPredictionNode(Node):
 
     def image_data_callback(self, msg: NimSortImageData):
         self.last_image_data_time = time.time()
-        if msg.current_position_wcs.x == -1 and msg.current_position_wcs.y == -1 and msg.current_position_wcs.z == -1:
-            self.bool_no_objects_logged = True
+        if msg.current_position_wcs.x == -1.0:
             return
-        elif self.bool_no_objects_logged:
-            self.get_logger().info("[INFO][PoPr][IDCB----]: Neue Objekte erkannt, Positionen werden aktualisiert.")
-            self.bool_no_objects_logged = False
 
         self.logic.set_object_data(
             object_type=msg.object_type,
@@ -68,27 +63,23 @@ class PositionPredictionNode(Node):
         self.prediction_pub.publish(msg)
 
     def publish_predictions(self, positions: list[tuple[float, float, float, int]]) -> None:
-        real_objects = [p for p in positions if p[3] != -1]
+        for position in positions:
+            self.send_prediction(position)
 
-        if real_objects:
-            for position in real_objects:
-                self.send_prediction(position)
-        elif self.bool_no_objects_logged:
-            self.send_prediction(SENTINEL)
 
     def main_order(self):
         if time.time() - self.last_image_data_time > 3.0:
             self.get_logger().warning("[PoPr][main_ord]: Keine aktuellen ImageData, Killing myself.")
             raise RuntimeError("Keine aktuellen ImageData, State Killing myself.")
+        
         try:
             next_objects = self.logic.calculate_next_object_positions()
         except ValueError as e:
             self.get_logger().warn(str(e))
-            return
+            next_objects = [SENTINEL]
 
         self.get_logger().debug(
             f"Objekt {next_objects[0][3]}  | XY: ({next_objects[0][0]:.3f}, {next_objects[0][1]:.3f})\n"
-            f"Objekt {next_objects[1][3]} | XY: ({next_objects[1][0]:.3f}, {next_objects[1][1]:.3f})"
         )
         self.publish_predictions(next_objects)
 

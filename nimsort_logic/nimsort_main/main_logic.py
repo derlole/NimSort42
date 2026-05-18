@@ -46,6 +46,7 @@ class NimSortMain(MainInterface):
         self.gripper_active = False
         self.current_prediction = None
         self.plausibility_check = PlausibilityCheck()
+        self._prediction_buffer = []
 
     def set_current_state(self, motion_state: NimSortState) -> None:
         """Setzt den aktuellen Bewegungszustand der State Machine."""

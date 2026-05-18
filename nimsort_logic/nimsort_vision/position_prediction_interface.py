@@ -22,7 +22,7 @@ class PositionPredictionInterface(ABC):
         pass
  
     @abstractmethod
-    def calculate_next_object_position(self) -> tuple[float, float, float, int]:
+    def calculate_next_object_positions(self) -> tuple[float, float, float, int]:
         """Returns (x, y, z, object_type) of the next arriving object."""
         pass
  
@@ -37,9 +37,9 @@ class PositionPredictionInterface(ABC):
         """Get the stored objects."""
         pass
  
-    @property
-    @abstractmethod
-    def get_conveyorbelt_speed(self) -> float:
-        """Get the current conveyor belt speed."""
-        pass
+    # @property
+    # @abstractmethod
+    # def get_conveyorbelt_speed(self) -> float:
+    #     """Get the current conveyor belt speed."""
+    #     pass
  
