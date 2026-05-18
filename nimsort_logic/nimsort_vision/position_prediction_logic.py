@@ -49,7 +49,7 @@ class PositionPrediction(PositionPredictionInterface):
                 ts=float(ts),
             )
  
-        print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {new_id} bei X={position[0]:.2f} gespeichert.")
+        print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {self._object_id_counter} bei X={position[0]:.2f} gespeichert.")
  
     def get_next_objects_to_publish(self, n: int = 2) -> list[MagicObject]:
         """Gibt die n Objekte mit der größten X-Position zurück."""

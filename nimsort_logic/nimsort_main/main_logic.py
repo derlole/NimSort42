@@ -70,9 +70,9 @@ class NimSortMain(MainInterface):
         new_prediction = MagicObject(
             object_type=object_type,
             position=[x, y, z],
-           
+            ts=0.0,  # 0.0 Timestampt as representation of invalid timestamp (ts is not required in Main Logic)
         )
-
+        self._prediction_buffer.insert(0, new_prediction)
 
     def get_next_target_to_pick(self) -> tuple[float, float, float, int] | None:
         """Filtert Buffer, wählt bei mehreren gültigen Targets das mit kleinstem x."""

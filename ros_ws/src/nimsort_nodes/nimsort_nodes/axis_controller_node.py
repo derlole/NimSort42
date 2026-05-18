@@ -55,7 +55,7 @@ class AxisController(Node):
         self.last_target_time = time.time()
         self.last_robot_pos_time = time.time()
         self.last_update_time = time.monotonic()
-        self.target_timeout_s = 3.0
+        self.target_timeout_s = 1.0
         self.robot_pos_timeout_s = 0.5
 
         self.nimsort_target_sub = self.create_subscription(
@@ -206,7 +206,7 @@ class AxisController(Node):
         # else:
         self.axis_x.set_target(self.last_nimsort_target.target_point.x * 0.8)
         self.axis_y.set_target(self.last_nimsort_target.target_point.y * 0.8)
-        self.axis_z.set_target(self.last_nimsort_target.target_point.z * 0.8)
+        self.axis_z.set_target(self.last_nimsort_target.target_point.z)
 
         acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, dt)
         acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, dt)

@@ -39,7 +39,7 @@ class MainNode(Node):
         if msg.object_type == -1:
             return
         
-        self.nimsort_main.get_next_target_to_pick(x=msg.predicted_position_wcs.x, y=msg.predicted_position_wcs.y, z=msg.predicted_position_wcs.z, object_type=msg.object_type)
+        self.nimsort_main.set_target_to_pick(x=msg.predicted_position_wcs.x, y=msg.predicted_position_wcs.y, z=msg.predicted_position_wcs.z, object_type=msg.object_type)
     
         
 
@@ -56,7 +56,7 @@ class MainNode(Node):
 
     def main_order(self):
         """State Machine Logik, die basierend auf aktuellen Zuständen entscheidet."""
-        if time.time() - self.last_prediction_time > 3.0:
+        if time.time() - self.last_prediction_time > 1.0:
             self.get_logger().warning("[MAIN][main_ord]: Keine aktuellen Predictions, Killing myself.")
             raise RuntimeError("Keine aktuellen Predictions, State Killing myself.")
 

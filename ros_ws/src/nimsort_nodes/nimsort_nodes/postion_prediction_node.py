@@ -68,7 +68,7 @@ class PositionPredictionNode(Node):
 
 
     def main_order(self):
-        if time.time() - self.last_image_data_time > 3.0:
+        if time.time() - self.last_image_data_time > 1.0:
             self.get_logger().warning("[PoPr][main_ord]: Keine aktuellen ImageData, Killing myself.")
             raise RuntimeError("Keine aktuellen ImageData, State Killing myself.")
         
