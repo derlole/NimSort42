@@ -1,12 +1,3 @@
-"""
-model_trainer.py
-----------------
-Trainiert den Decision-Tree-Klassifikator (max_depth=5) auf hu_0 + fourier_2
-und speichert das Modell als 'object_classifier.joblib'.
-
-Einfach in VSCode auf den Play-Button drücken – keine weiteren Argumente nötig.
-"""
-
 import os
 import sys
 
