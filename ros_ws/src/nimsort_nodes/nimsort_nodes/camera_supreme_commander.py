@@ -111,13 +111,14 @@ class Vision(Node):
             self.get_logger().error("[VN--][main_ord]:" + str(e))
 
         if len(objects) != len(features):
-            raise ValueError(f"Anzahl der erkannten Objekte ({len(objects)}) stimmt nicht mit Anzahl der Features ({len(features)}) überein.")
-
-
-        for i in range(len(objects)):
-            x_w, y_w, z_w = objects[i]
-            feature = features[i]
-            self.publish_image_data(x_w, y_w, z_w, ts, feature)
+            self.get_logger().error(f"[VN--][main_ord]: Anzahl der erkannten Objekte ({len(objects)}) stimmt nicht mit Anzahl der Features ({len(features)}) überein.")
+            self.publish_image_data(-1.0, -1.0, -1.0, -1, -1) 
+            return
+        else: 
+            for i in range(len(objects)):
+                x_w, y_w, z_w = objects[i]
+                feature = features[i]
+                self.publish_image_data(x_w, y_w, z_w, ts, feature)
 
             
         if speed is None:
