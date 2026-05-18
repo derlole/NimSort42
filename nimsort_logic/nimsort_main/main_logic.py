@@ -7,8 +7,9 @@ from nimsort_main.process_id import ProcessId
 POSITION_UNCORN= [-0.16,-0.14, 0.07] #TODO: Werte in Weltkoordinaten anpassen
 POSITION_CAT= [-0.06, -0.14, 0.07]
 INITIAL_POSITION = [-0.01,-0.05, 0.02]
-Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition
-Z_PICK=10.0 #z-Höhe über Objekt für Pick-Position
+Z_PRE_POST_PICK= 0.08 #z-Höhe über Objekt für Pick-Preposition
+Z_PICK=0.1 #z-Höhe über Objekt für Pick-Position
+GENERIC_PICK_PRE_POSITION = [-0.01, -0.05, Z_PRE_POST_PICK] #TODO: Werte in Weltkoordinaten anpassen
 SENTINEL = [-1.0, -1.0, -1.0,-1] 
 ROBOT_REACH=-0.3 #maximale Reichweite des Roboters in x-Richtung, Werte in Weltkoordinaten anpassen
 
@@ -103,48 +104,56 @@ class NimSortMain(MainInterface):
             case NimSortState.WAIT_FOR_INIT:
                 if self.reached:
                     self.current_state = NimSortState.READY_FOR_PICK
-                    return (0.0, 0.0, 0.0, ProcessId.INIT_AXIS)  
+                
+                return (0.0, 0.0, 0.0, ProcessId.INIT_AXIS)
                  
             case NimSortState.READY_FOR_PICK:
-                if self.get_next_target_to_pick() is not None:
+                if self.reached:
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
-                    return (*INITIAL_POSITION, ProcessId.GO_TO_POS)
+                
+                return (*INITIAL_POSITION, ProcessId.GO_TO_POS)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
-                if self.get_next_target_to_pick()[3] == 1 or self.get_next_target_to_pick()[3] == 2: # TODO isnt this 0 or 1?? # TODO idk, if this condition is good, we could go to the pickpre anyways, also if there is no object comming...
-                    self.current_state = NimSortState.GO_TO_PICKPOSTPOSITION
-                    return (self.current_prediction.position[0], self.current_prediction.position[1], Z_PRE_POST_PICK, ProcessId.GO_TO_POS) # TODO here was a 3 should be a 2, right? with enum there was a Picking drive but this should be Goto position, aint??
+                if self.get_next_target_to_pick() is not None and self.get_next_target_to_pick()[3] == 0 or self.get_next_target_to_pick()[3] == 1: # TODO check if object type is needed
+                    self.current_state = NimSortState.GO_TO_PICKPOSTPOSITION # TODO another if???
+
+                return (*GENERIC_PICK_PRE_POSITION, ProcessId.GO_TO_POS)
                        
             case NimSortState.GO_TO_PICKPOSITION:
-               if self.reached and self.gripper_active:
-                    self.current_state = NimSortState.GO_TO_DROP
-                    return (self.current_prediction.position[0],self.current_prediction.position[1],Z_PICK, ProcessId.PICKING_DRIVE)
+                if self.reached :
+                    if self.get_next_target_to_pick()[3] == 0:
+                        self.current_state = NimSortState.GO_TO_DROP_UNCORN
+                    elif self.get_next_target_to_pick()[3] == 1:
+                        self.current_state = NimSortState.GO_TO_DROP_CAT
+                    else: 
+                        self.current_state = NimSortState.GO_TO_PICKPREPOSITION
+
+                return (self.current_prediction.position[0], self.current_prediction.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
 
             case NimSortState.GO_TO_DROP_CAT:
-                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] == 1: # TODO isnt this 0 or 1??
-                    self.current_state = NimSortState.DROP
-                    return (*POSITION_UNCORN, ProcessId.GO_TO_POS_WITH_GRIPPER)
+                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] == 0:
+                    self.current_state = NimSortState.DROP_CAT
+
+                return (*POSITION_CAT, ProcessId.GO_TO_POS_WITH_GRIPPER)
     
             case  NimSortState.GO_TO_DROP_UNCORN:
-                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] == 2: # TODO isnt this 0 or 1??
-                    self.current_state = NimSortState.DROP
-                    return (*POSITION_CAT, ProcessId.GO_TO_POS_WITH_GRIPPER)
+                if self.reached and self.gripper_active and self.get_next_target_to_pick()[3] == 1:
+                    self.current_state = NimSortState.DROP_UNICORN
+
+                return (*POSITION_UNCORN, ProcessId.GO_TO_POS_WITH_GRIPPER)
                           
-            case NimSortState.DROP_CAT: # TODO what are these states for??
-                if self.reached and self.gripper_active:
-                    self.current_state = NimSortState.READY_FOR_PICK
-                    return (*POSITION_CAT, ProcessId.DEACTIVATE_GRIPPER)
+            case NimSortState.DROP_CAT:
+                if self.reached and self.gripper_active: # TODO if not neccesary
+                    self.current_state = NimSortState.GO_TO_PICKPREPOSITION
+                
+                return (*POSITION_CAT, ProcessId.DEACTIVATE_GRIPPER)
             
-            case NimSortState.DROP_UNICORN: # TODO what are these states for??
+            case NimSortState.DROP_UNICORN:
                 if self.reached and self.gripper_active:
-                    self.current_state = NimSortState.READY_FOR_PICK
-                    return (*POSITION_UNCORN, ProcessId.DEACTIVATE_GRIPPER)
+                    self.current_state = NimSortState.GO_TO_PICKPREPOSITION
+                
+                return (*POSITION_UNCORN, ProcessId.DEACTIVATE_GRIPPER)
             
-            case NimSortState.DROP:
-                if self.reached and not self.gripper_active:
-                    self.current_state = NimSortState.READY_FOR_PICK
-                    return (*INITIAL_POSITION, ProcessId.DEACTIVATE_GRIPPER)
-    
     def reset(self) -> None:
         """Setzt State Machine zurück auf START"""
         self.current_motion_state = None
