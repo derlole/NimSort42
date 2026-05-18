@@ -4,6 +4,7 @@ from rclpy.node import MutuallyExclusiveCallbackGroup, Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from geometry_msgs.msg import Point
 from nimsort_main.main_logic import NimSortMain 
+from nimsort_vision.magic_object import MagicObject
 from nimsort_msgs.msg import NimSortPrediction, NimSortMotionState, NimSortTarget
 
 class MainNode(Node):
@@ -33,7 +34,7 @@ class MainNode(Node):
        
     
     def listener_callback_prediction(self, msg):
-        """Verarbeitet Prediction Nachricht und veröffentlicht Target"""
+        """Verarbeitet Prediction Nachricht und speichert sie im Buffer"""
         self.last_prediction_time = time.time()
         if msg.object_type == -1:
             return

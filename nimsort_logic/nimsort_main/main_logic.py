@@ -3,6 +3,7 @@ from enum import Enum
 from nimsort_main.main_interface import MainInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 from nimsort_main.process_id import ProcessId
+from nimsort_vision.magic_object import MagicObject
 
 POSITION_UNCORN= [-0.16,-0.14, 0.07] #TODO: Werte in Weltkoordinaten anpassen
 POSITION_CAT= [-0.06, -0.14, 0.07]
@@ -60,6 +61,18 @@ class NimSortMain(MainInterface):
         """Setzt den aktuellen Bewegungszustand der State Machine."""
         self.reached = reached
         self.gripper_active = gripper_active
+    
+    def set_target_to_pick(self, x: float, y: float, z: float, object_type: int) -> None:
+        """Fügt eine neue Prediction zum Buffer hinzu."""
+        if object_type == -1:
+            return
+        
+        new_prediction = MagicObject(
+            object_type=object_type,
+            position=[x, y, z],
+           
+        )
+
 
     def get_next_target_to_pick(self) -> tuple[float, float, float, int] | None:
         """Filtert Buffer, wählt bei mehreren gültigen Targets das mit kleinstem x."""
