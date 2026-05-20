@@ -67,7 +67,7 @@ class NimSortMain(MainInterface):
         if object_type == -1:
             return
         
-        new_prediction = MagicObject(
+        new_prediction = MagicObject( #TODO MagicObject would be removed here or at leasts would not be stored in a List or buffer...
             object_type=object_type,
             position=[x, y, z],
             ts=0.0,  # 0.0 Timestampt as representation of invalid timestamp (ts is not required in Main Logic)
