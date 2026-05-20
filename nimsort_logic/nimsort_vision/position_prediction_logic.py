@@ -69,8 +69,18 @@ class PositionPrediction(PositionPredictionInterface):
                 raise ValueError("[WARN][PoPr][GNOTP---]: Ausgabe-Position hat Plausibilitätsprüfung nicht bestanden.")
  
         return sorted_objs
+    
+    def remove_first_object(self) -> None:
+        """Entfernt das Objekt mit der größten X-Position (führendes Objekt)."""
+        if not self._objects:
+            print("[WARN][PoPr][RFO-----]: Kein Objekt zum Entfernen vorhanden.")
+            return
+        
+        first_obj_id = max(self._objects, key=lambda obj_id: self._objects[obj_id].position[0])
+        removed_obj = self._objects.pop(first_obj_id)
+        print(f"[INFO][PoPr][RFO-----]: Objekt ID {first_obj_id} bei X={removed_obj.position[0]:.2f} entfernt.")
  
-    def calculate_next_object_positions(self) -> list[tuple[float, float, float, int]]:
+    def calculate_next_object_positions(self) -> list[tuple[float, float, float, int]]: # TODO rewrite
         """
         Berechnet die nächsten Positionen der führenden Objekte.
         Update und Threshold-Entfernung passiert genau einmal hier.
@@ -79,12 +89,12 @@ class PositionPrediction(PositionPredictionInterface):
             raise ValueError("[WARN][PoPr][CNOP----]: Förderband-Geschwindigkeit ungültig.")
  
         self._update_positions()
-        self._remove_objects_over_threshold()
+        # self._remove_objects_over_threshold()
  
         if not self._objects:
-            return [-1.0, -1.0, -1.0, -1], [-1.0, -1.0, -1.0, -1]  
+            return [-1.0, -1.0, -1.0, -1]
  
-        candidates = self.get_next_objects_to_publish(n=2)
+        candidates = self.get_next_objects_to_publish(n=1)
  
         return [
             (obj.position[0], obj.position[1], obj.position[2], obj.object_type)

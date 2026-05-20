@@ -43,7 +43,7 @@ This interface defines the interaction between the PositionPredictionNode and th
 
 - `set_conveyorbelt_speed(speed_mps)` sets the handed Conveyorbelt Speed for position prediction in logic
 - `set_object_data(object_type, position, ts)` stores the data in a corresponding datastructure for detected and handed Objects.
-- `calculate_next_object_position() -> tuple[float, float, float]` returns the current position of the next tecnically grippable Object in the WCS
+- `calculate_next_object_positions() -> tuple[float, float, float]` returns the current position of the next tecnically grippable Object in the WCS
 - properties to see what values are stored in the datastructure and the conveyorbelt Speed.
 
 ### Main
