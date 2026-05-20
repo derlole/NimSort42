@@ -8,7 +8,7 @@ from geometry_msgs.msg import Point
 from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
 
 DEFAULT_CONVEYOR_BELT_SPEED = 0.01
-FEEDBACK_TIMEOUT = 5.0  # Sekunden bis Feedback-Timeout (#3)
+
 
 
 class PositionPredictionNode(Node):
@@ -21,8 +21,7 @@ class PositionPredictionNode(Node):
        
         self._waiting_for_feedback: bool = False
         self._published_object_id: int | None = None   
-        self._waiting_since: float | None = None        
-
+        
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
             '/NimSortImageData',
@@ -91,7 +90,7 @@ class PositionPredictionNode(Node):
         """Setzt Feedback-State zurück."""
         self._waiting_for_feedback = False
         self._published_object_id = None
-        self._waiting_since = None
+        
 
     def _publish_prediction(self, x: float, y: float, z: float, obj_type: int) -> None:
         msg = NimSortPrediction()
@@ -125,12 +124,10 @@ class PositionPredictionNode(Node):
             self.get_logger().debug('[PoPr][main_ord]: Sentinel published, kein Feedback erwartet.')
             self._waiting_for_feedback = False
             self._published_object_id = None
-            self._waiting_since = None
         else:
            
             self._waiting_for_feedback = True
             self._published_object_id = obj_id
-            self._waiting_since = time.time()
             self.get_logger().debug(
                 f'[PoPr][main_ord]: Objekt ID {obj_id} published, warte auf Feedback.'
             )
