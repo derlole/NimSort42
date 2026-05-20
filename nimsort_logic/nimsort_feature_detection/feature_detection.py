@@ -3,7 +3,7 @@ import numpy as np
 import joblib
 import os
 
-from nimsort_vision.feature_detection_interface import FeatureDetectionInterface
+from nimsort_feature_detection.feature_detection_interface import FeatureDetectionInterface
 
 # Klassen-Mapping
 # 0 = einhorn | 1 = katze | 2 = kreis | 3 = quadrat

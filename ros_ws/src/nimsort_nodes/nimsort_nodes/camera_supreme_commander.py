@@ -9,7 +9,7 @@ import time
 from nimsort_msgs.msg import NimSortImageData, NimSortConveyorbeltSpeed
 from nimsort_vision.opencv_pipeline import OpencvPipeline
 from nimsort_vision.conveyor_speed import ConveyorSpeedEstimator
-from nimsort_vision.feature_detection import FeatureDetection
+from nimsort_feature_detection.feature_detection import FeatureDetection
 
 
 class Vision(Node):
