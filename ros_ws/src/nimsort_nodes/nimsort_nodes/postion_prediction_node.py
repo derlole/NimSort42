@@ -18,10 +18,10 @@ class PositionPredictionNode(Node):
         self.logic = PositionPredictionLogic()
         self.logic.set_conveyorbelt_speed(DEFAULT_CONVEYOR_BELT_SPEED)
 
-        # Feedback-State (#2, #3)
+       
         self._waiting_for_feedback: bool = False
-        self._published_object_id: int | None = None   # (#2) welche ID wurde published
-        self._waiting_since: float | None = None        # (#3) für Timeout
+        self._published_object_id: int | None = None   
+        self._waiting_since: float | None = None        
 
         self.image_data_sub = self.create_subscription(
             NimSortImageData,
@@ -74,7 +74,7 @@ class PositionPredictionNode(Node):
         Feedback auf Sentinel (published_object_id is None) wird ignoriert (#4)
         """
         if self._published_object_id is None:
-            # Sentinel wurde published → kein Feedback erwartet, ignorieren (#4)
+            
             self.get_logger().debug('[PoPr][feedback]: Feedback auf Sentinel ignoriert.')
             return
 
@@ -104,18 +104,13 @@ class PositionPredictionNode(Node):
             self.get_logger().warning('[PoPr][main_ord]: Keine aktuellen ImageData, Killing myself.')
             raise RuntimeError('Keine aktuellen ImageData, Killing myself.')
 
-        # Timeout-Check (#3)
+     
         if self._waiting_for_feedback:
-            if time.time() - self._waiting_since > FEEDBACK_TIMEOUT:
-                self.get_logger().warning(
-                    f'[PoPr][main_ord]: Feedback Timeout für Objekt ID {self._published_object_id}, '
-                    f'gebe Objekt frei.'
-                )
-                if self._published_object_id is not None:
-                    self.logic.remove_object_by_id(self._published_object_id)
+            if self._published_object_id is not None:
+                self.logic.remove_object_by_id(self._published_object_id)
                 self._release_feedback_state()
             else:
-                return  # noch warten
+                return  
 
         try:
             x, y, z, obj_type, obj_id = self.logic.calculate_next_object_position()
@@ -126,13 +121,13 @@ class PositionPredictionNode(Node):
         self._publish_prediction(x, y, z, obj_type)
 
         if obj_id is None:
-            # Sentinel published → kein Feedback erwarten (#4)
+            
             self.get_logger().debug('[PoPr][main_ord]: Sentinel published, kein Feedback erwartet.')
             self._waiting_for_feedback = False
             self._published_object_id = None
             self._waiting_since = None
         else:
-            # Echtes Objekt → auf Feedback warten (#2, #3)
+           
             self._waiting_for_feedback = True
             self._published_object_id = obj_id
             self._waiting_since = time.time()

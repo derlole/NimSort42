@@ -69,8 +69,8 @@ class PositionPrediction(PositionPredictionInterface):
         self._remove_objects_over_threshold()
 
         if not self._objects:
-            return (-1.0, -1.0, -1.0, -1, None)  # None signalisiert: Sentinel
-
+            return (-1.0, -1.0, -1.0, -1, -1) 
+         
         leading_id = max(self._objects, key=lambda k: self._objects[k].position[0])
         leading = self._objects[leading_id]
 
@@ -82,10 +82,9 @@ class PositionPrediction(PositionPredictionInterface):
             leading.position[1],
             leading.position[2],
             leading.object_type,
-            leading_id,          # ID für gezieltes Löschen (#2)
+            leading_id,          #
         )
 
-    # ── Properties ────────────────────────────────────────────────────────────
 
     @property
     def get_stored_objects(self) -> list[MagicObject]:
