@@ -9,8 +9,6 @@ from nimsort_vision.position_prediction_logic import PositionPrediction as Posit
 
 DEFAULT_CONVEYOR_BELT_SPEED = 0.01
 
-
-
 class PositionPredictionNode(Node):
 
     def __init__(self):
