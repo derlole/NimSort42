@@ -20,7 +20,6 @@ class Vision(Node):
         self.declare_parameter('camera_index', 4)
         self.camera_index = self.get_parameter('camera_index').get_parameter_value().integer_value
         self.last_speed = None
-        self.image = None
 
         self.image_data_publisher = self.create_publisher(
             NimSortImageData, 
@@ -76,11 +75,12 @@ class Vision(Node):
     def main_order(self):
         print(f"[VN--][main_ord]: Starting main order{time.time()}")
 
+        image = None
         objects = []
         features = []
         try:
             self.pipeline.captureImage()
-            objects, ts, self.image = self.pipeline.getImageData()
+            objects, ts, image = self.pipeline.getImageData()
 
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))
@@ -105,7 +105,7 @@ class Vision(Node):
 
 
         try:
-            features = self.feature_detector.getFeature(self.image)
+            features = self.feature_detector.getFeature(image)
         
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))

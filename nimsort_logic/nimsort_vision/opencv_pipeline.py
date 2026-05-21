@@ -140,7 +140,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         otsu_val, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-        print(f"[OcvP][getImageData]: Threshold {otsu_val}") #TODO remove debug print
+        # print(f"[OcvP][getImageData]: Threshold {otsu_val}") #TODO remove debug print
 
         if otsu_val < MIN_OTSU_THRESHOLD:
             thresh = np.zeros_like(blur)

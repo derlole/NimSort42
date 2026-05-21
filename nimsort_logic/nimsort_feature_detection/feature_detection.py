@@ -71,9 +71,6 @@ class FeatureDetection(FeatureDetectionInterface):
 
         return results
 
-    # ------------------------------------------------------------------
-    # Interface-Methoden
-    # ------------------------------------------------------------------
 
     def getFeature(self, binary_image: np.ndarray):
         """
@@ -97,6 +94,7 @@ class FeatureDetection(FeatureDetectionInterface):
         for feature_vec, cnt in extracted:
             prediction: int = int(self._model.predict(feature_vec)[0])
             features.append(prediction)
+            print(f"[FD][getFeature]: Prediction {prediction}")
 
             print(
                 f"[FD]: hu_0={feature_vec[0,0]:.4f}, "
