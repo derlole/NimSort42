@@ -92,7 +92,7 @@ class PositionPrediction(PositionPredictionInterface):
         # self._remove_objects_over_threshold()
  
         if not self._objects:
-            return [-1.0, -1.0, -1.0, -1]
+            return [[-1.0, -1.0, -1.0, -1]]
  
         candidates = self.get_next_objects_to_publish(n=1)
  
