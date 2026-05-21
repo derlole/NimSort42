@@ -15,7 +15,7 @@ MIN_CONTOUR_AREA = 4500
 
 class FeatureDetection(FeatureDetectionInterface):
     """
-    Klassifiziert ALLE Objekte im Binärbild anhand von hu_0 + fourier_2.
+    Klassifiziert ALLE Objekte im Binärbild anhand von hu_0 + hu_3.
 
     Rückgabewert von getFeature():
         List[int] → z.B. [0,2,3]
@@ -32,9 +32,6 @@ class FeatureDetection(FeatureDetectionInterface):
         self._last_feature = []
         print(f"[FD][__init__]: Modell geladen von '{model_path}'")
 
-    # ------------------------------------------------------------------
-    # Feature-Extraktion für mehrere Konturen
-    # ------------------------------------------------------------------
 
     @staticmethod
     def _extract_features_for_contours(binary_image: np.ndarray):
@@ -46,10 +43,8 @@ class FeatureDetection(FeatureDetectionInterface):
         """
         contours, _ = cv.findContours(binary_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-        # Filter wie in Pipeline
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
 
-        # Sortierung wie in Pipeline (rechts → links)
         contours = sorted(
             contours,
             key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"],
@@ -63,24 +58,15 @@ class FeatureDetection(FeatureDetectionInterface):
             if moments["m00"] == 0:
                 continue
 
-            # ── hu_0 ─────────────────────────────
+            # ── hu_0 + hu_3 ──────────────────────
             hu_raw = cv.HuMoments(moments).flatten()
             with np.errstate(divide="ignore"):
                 hu_log = -np.sign(hu_raw) * np.log10(np.abs(hu_raw) + 1e-10)
+
             hu_0 = hu_log[0]
+            hu_3 = hu_log[3]
 
-            # ── fourier_2 ────────────────────────
-            pts = cnt[:, 0, :].astype(np.float32)
-            z = pts[:, 0] + 1j * pts[:, 1]
-
-            Z = np.fft.fft(z)
-            N = len(Z)
-
-            amplitudes = np.abs(Z) / (np.abs(Z[1]) + 1e-10)
-            fourier_2 = float(amplitudes[2]) if N > 2 else 0.0
-
-            feature_vec = np.array([[hu_0, fourier_2]], dtype=np.float32)
-
+            feature_vec = np.array([[hu_0, hu_3]], dtype=np.float32)
             results.append((feature_vec, cnt))
 
         return results
@@ -114,7 +100,7 @@ class FeatureDetection(FeatureDetectionInterface):
 
             print(
                 f"[FD]: hu_0={feature_vec[0,0]:.4f}, "
-                f"fourier_2={feature_vec[0,1]:.4f} "
+                f"hu_3={feature_vec[0,1]:.4f} "
                 f"→ {prediction} ({LABEL_MAP.get(prediction, 'unbekannt')})"
             )
 
