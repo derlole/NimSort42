@@ -47,7 +47,8 @@ class NimSortMain(MainInterface):
         self.gripper_active = False
         self.current_prediction = None
         self.plausibility_check = PlausibilityCheck()
-        self._prediction_buffer = []
+        self._current_pickabel_object = None
+        self._picked = False
 
     def set_current_state(self, motion_state: NimSortState) -> None:
         """Setzt den aktuellen Bewegungszustand der State Machine."""
@@ -62,48 +63,34 @@ class NimSortMain(MainInterface):
         self.reached = reached
         self.gripper_active = gripper_active
     
+    def _prediction_usefull(self, x: float, y: float, z: float, object_type: int) -> bool:
+        """Überprüft, ob die Prediction gültig ist und gegriffen werden kann."""
+        if x < 0.0 or x > ROBOT_REACH: # TODO das heir muss noch geprüft werden ob die bedinungen nicht andersrum sind...
+            print(f"[WARN][Main][_PU-----]: Ungültige X-Position {x:.3f}.")
+            return False
+        
+        if not self.plausibility_check.check_prediction(MagicObject(object_type=object_type, position=[x, y, z], ts=0.0)):
+            print(f"[WARN][Main][_PU-----]: Prediction nicht plausibel.")
+            return False
+        
+        if self._picked:
+            return False
+        
+        return True
+
     def set_target_to_pick(self, x: float, y: float, z: float, object_type: int) -> None:
         """Fügt eine neue Prediction zum Buffer hinzu."""
-        if object_type == -1:
-            return
+        feedback = self._prediction_usefull(x, y, z, object_type)
+        if not feedback:
+            return feedback
         
         new_prediction = MagicObject(
             object_type=object_type,
             position=[x, y, z],
             ts=0.0,  # 0.0 Timestampt as representation of invalid timestamp (ts is not required in Main Logic)
         )
-        self._prediction_buffer.insert(0, new_prediction)
-
-    def get_next_target_to_pick(self) -> tuple[float, float, float, int] | None:
-        """Filtert Buffer, wählt bei mehreren gültigen Targets das mit kleinstem x."""
-        if not self._prediction_buffer:
-            print("[INFO][Main][GNTTP---]: Buffer leer, kein Target verfügbar.")
-            return None
-
-        # Nur Predictions innerhalb der Reichweite
-        valid = [
-            p for p in self._prediction_buffer
-            if p.position[0] < ROBOT_REACH # and p.position[0] > 0.0
-            and self.plausibility_check.check_prediction(p)
-        ]
-
-        if not valid:
-            print("[INFO][Main][GNTTP---]: Kein Target im Greifbereich.")
-            self._prediction_buffer.clear()
-            return None
-
-        # Kleinstes x zuerst greifen
-        best = min(valid, key=lambda p: p.position[0])
-        self._prediction_buffer.clear()
-        self.current_prediction = best
-
-        return (
-            self.current_prediction.position[0],
-            self.current_prediction.position[1],
-            self.current_prediction.position[2],
-            self.current_prediction.object_type,
-        )
-                  
+        self._current_pickabel_object = new_prediction
+        return feedback
     
     def state_machine(self) -> tuple[float, float, float, int]:
         match self.current_state:
@@ -128,7 +115,8 @@ class NimSortMain(MainInterface):
                 return (*INITIAL_POSITION, ProcessId.GO_TO_POS)
 
             case NimSortState.GO_TO_PICKPREPOSITION:
-                target = self.get_next_target_to_pick()
+                target = self._current_pickabel_object
+                self._picked = False
                 print(f"[INFO][Main][GTPPP---]: Aktuelles Target: {target}")
                 if target is not None and target[3] in (0, 1):
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
@@ -136,7 +124,7 @@ class NimSortMain(MainInterface):
                 return (*GENERIC_PICK_PRE_POSITION, ProcessId.GO_TO_POS)
                        
             case NimSortState.GO_TO_PICKPOSITION:
-                target = self.get_next_target_to_pick()
+                target = self._current_pickabel_object
                 print(f"[INFO][Main][GTPP----]: Hallo ich bin hier {target}")
                 if self.reached and target is not None:
                     if target[3] == 0:
@@ -149,27 +137,29 @@ class NimSortMain(MainInterface):
                 return (self.current_prediction.position[0], self.current_prediction.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
 
             case NimSortState.GO_TO_DROP_CAT:
-                target = self.get_next_target_to_pick()
+                target = self._current_pickabel_object
                 if self.reached and self.gripper_active and target is not None and target[3] == 1:
                     self.current_state = NimSortState.DROP_CAT
 
                 return (*POSITION_CAT, ProcessId.GO_TO_POS_WITH_GRIPPER)
-    
+     
             case  NimSortState.GO_TO_DROP_UNCORN:
-                target = self.get_next_target_to_pick()
+                target = self._current_pickabel_object
                 if self.reached and self.gripper_active and target is not None and target[3] == 0:
                     self.current_state = NimSortState.DROP_UNICORN
 
                 return (*POSITION_UNCORN, ProcessId.GO_TO_POS_WITH_GRIPPER)
                           
             case NimSortState.DROP_CAT:
-                if self.reached and self.gripper_active: # TODO if not neccesary
+                if self.reached and not self.gripper_active:
+                    self._picked = True
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
                 
                 return (*POSITION_CAT, ProcessId.DEACTIVATE_GRIPPER)
             
             case NimSortState.DROP_UNICORN:
-                if self.reached and self.gripper_active:
+                if self.reached and not self.gripper_active:
+                    self._picked = True
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
                 
                 return (*POSITION_UNCORN, ProcessId.DEACTIVATE_GRIPPER)

@@ -4,6 +4,7 @@ from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from nimsort_msgs.msg import NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed
 from geometry_msgs.msg import Point
+from std_msgs.msg import Bool
 from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
 
 DEFAULT_CONVEYOR_BELT_SPEED = 0.01  # TODO: durch echte Messung ersetzen
@@ -27,6 +28,12 @@ class PositionPredictionNode(Node):
             NimSortConveyorbeltSpeed,
             '/NimSortConveyorbeltSpeed',
             self.conveyorbelt_speed_callback,
+            10
+        )
+        self.prediction_feedback_sub = self.create_subscription(
+            Bool,
+            '/NimSortPredictionFeedback',
+            self.prediction_feedback_callback,
             10
         )
         self.prediction_pub = self.create_publisher(
@@ -55,6 +62,12 @@ class PositionPredictionNode(Node):
     def conveyorbelt_speed_callback(self, msg: NimSortConveyorbeltSpeed):
         self.logic.set_conveyorbelt_speed(msg.conveyorbelt_speed)
 
+    def prediction_feedback_callback(self, msg: Bool):
+        if not msg.data:
+            self.logic.remove_first_object()
+            # nue vorhersage schicken, wenn die alte vorhersage verworfen wurde
+            self.main_order()
+
     def send_prediction(self, position: tuple[float, float, float, int]) -> None:
         x, y, z, obj_type = position
         msg = NimSortPrediction()
@@ -62,26 +75,21 @@ class PositionPredictionNode(Node):
         msg.object_type = obj_type
         self.prediction_pub.publish(msg)
 
-    def publish_predictions(self, positions: list[tuple[float, float, float, int]]) -> None:
-        for position in positions:
-            self.send_prediction(position)
-
-
     def main_order(self):
         if time.time() - self.last_image_data_time > 1.0:
             self.get_logger().warning("[PoPr][main_ord]: Keine aktuellen ImageData, Killing myself.")
             raise RuntimeError("Keine aktuellen ImageData, State Killing myself.")
         
         try:
-            next_objects = self.logic.calculate_next_object_positions()
+            next_object = self.logic.calculate_next_object_positions()[0]
         except ValueError as e:
             self.get_logger().warn(str(e))
-            next_objects = [SENTINEL]
+            next_object = SENTINEL
 
         self.get_logger().debug(
-            f"Objekt {next_objects[0][3]}  | XY: ({next_objects[0][0]:.3f}, {next_objects[0][1]:.3f})\n"
+            f"Objekt {next_object[3]}  | XY: ({next_object[0]:.3f}, {next_object[1]:.3f})\n"
         )
-        self.publish_predictions(next_objects)
+        self.send_prediction(next_object)
 
 
 def main(args=None):
