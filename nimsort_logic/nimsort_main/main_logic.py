@@ -1,35 +1,11 @@
 import threading
-from enum import Enum
 from nimsort_main.main_interface import MainInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 from nimsort_main.process_id import ProcessId
 from nimsort_vision.magic_object import MagicObject
+from nimsort_main.main_states import NimSortState
 
-POSITION_UNCORN= [-0.16,-0.14, 0.07] #TODO: Werte in Weltkoordinaten anpassen
-POSITION_CAT= [-0.06, -0.14, 0.07]
-INITIAL_POSITION = [-0.01,-0.05, 0.02]
-Z_PRE_POST_PICK= 0.08 #z-Höhe über Objekt für Pick-Preposition
-Z_PICK=0.095 #z-Höhe über Objekt für Pick-Position
-GENERIC_PICK_PRE_POSITION = [-0.01, -0.05, Z_PRE_POST_PICK] #TODO: Werte in Weltkoordinaten anpassen
-SENTINEL = [-1.0, -1.0, -1.0,-1] 
-ROBOT_REACH=-0.3 #maximale Reichweite des Roboters in x-Richtung, Werte in Weltkoordinaten anpassen
-
-class NimSortState(Enum):
-    """Enum für alle Zustände der NimSort State Machine"""
-    START = "START"# Maybe nicht nötig
-    INIT_CALL = "INIT_CALL"
-    WAIT_FOR_INIT = "WAIT_FOR_INIT"
-    GO_TO_PICKPREPOSITION = "GO_TO_PICKPREPOSITION"
-    READY_FOR_PICK = "READY_FOR_PICK"
-    PICK = "PICK" # TODO this state ist not used...??
-    GO_TO_PICKPOSITION = "GO_TO_PICKPOSITION"
-    GO_TO_DROP_CAT = "GO_TO_DROP_CAT"
-    GO_TO_DROP_UNCORN = "GO_TO_DROP_UNCORN"
-    DROP_UNICORN = "DROP_UNICORN"
-    DROP_CAT = "DROP_CAT"
-    DROP = "DROP"
-    ERROR_STATE = "ERROR_STATE"
-
+from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNCORN, Z_PICK, ROBOT_REACH
 
 class NimSortMain(MainInterface):
     """State Machine für NimSort Logik

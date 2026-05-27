@@ -5,13 +5,9 @@ import os
 
 from nimsort_feature_detection.feature_detection_interface import FeatureDetectionInterface
 
-# Klassen-Mapping
-# 0 = einhorn | 1 = katze | 2 = kreis | 3 = quadrat
-LABEL_MAP = {0: "einhorn", 1: "katze", 2: "kreis", 3: "quadrat"}
+from configs.config_camera import MIN_CONTOUR_AREA, LABEL_MAP
 
 _MODEL_PATH = os.path.join(os.path.dirname(__file__), "object_classifier.joblib")
-MIN_CONTOUR_AREA = 4500
-
 
 class FeatureDetection(FeatureDetectionInterface):
     """

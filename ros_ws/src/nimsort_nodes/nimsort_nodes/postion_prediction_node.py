@@ -7,9 +7,8 @@ from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
 
-DEFAULT_CONVEYOR_BELT_SPEED = 0.01  # TODO: durch echte Messung ersetzen
-SENTINEL = (-1.0, -1.0, -1.0, -1)
 
+from configs.config_position_prediction import DEFAULT_CONVEYOR_BELT_SPEED, SENTINEL_MSG
 
 class PositionPredictionNode(Node):
 
@@ -84,7 +83,7 @@ class PositionPredictionNode(Node):
             next_object = self.logic.calculate_next_object_positions()[0]
         except ValueError as e:
             self.get_logger().warn(str(e))
-            next_object = SENTINEL
+            next_object = SENTINEL_MSG
 
         self.get_logger().debug(
             f"Objekt {next_object[3]}  | XY: ({next_object[0]:.3f}, {next_object[1]:.3f})\n"
