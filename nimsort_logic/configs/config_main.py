@@ -11,5 +11,5 @@ SENTINEL: tuple[float, float, float] = (-1.0, -1.0, -1.0,-1)
 ROBOT_REACH: float = -0.3
 
 # TF_CONFIG
-WORLD_TO_ROBOT_TRANSLATION: float = (0.29, -0.04, 0.083)
+WORLD_TO_ROBOT_TRANSLATION: tuple[float, float, float] = (0.29, -0.04, 0.083) # muss das ncht ein Tupple sein? 0.083 unsicher 
 
