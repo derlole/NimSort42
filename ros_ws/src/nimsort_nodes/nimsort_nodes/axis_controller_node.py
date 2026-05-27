@@ -11,30 +11,7 @@ from nimsort_motion.axis_controller_states import AxisControllerStates
 from nimsort_motion.init_process import InitProcess
 from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
 
-MAX_VELOCITY_X = 0.05
-MAX_VELOCITY_Y = 0.05
-MAX_VELOCITY_Z = 0.05
-MAX_ACCELERATION_X = 0.02
-MAX_ACCELERATION_Y = 0.02
-MAX_ACCELERATION_Z = 0.02
-POSITION_TOLERANCE_X = 0.001
-POSITION_TOLERANCE_Y = 0.001
-POSITION_TOLERANCE_Z = 0.001
-VELOCITY_TOLERANCE_X = 0.001
-VELOCITY_TOLERANCE_Y = 0.001
-VELOCITY_TOLERANCE_Z = 0.001
-KP_X = 1.2
-KP_Y = 1.2
-KP_Z = 1.2
-KD_X = 2.3
-KD_Y = 2.3
-KD_Z = 2.3
-D_FILTER_ALPHA_X = 0.5
-D_FILTER_ALPHA_Y = 0.5
-D_FILTER_ALPHA_Z = 0.5
-TF_X = 0.00875
-TF_Y = 0.00875
-TF_Z = 0.00875
+from configs.config_axis import *
 
 class AxisController(Node):
     def __init__(self):
@@ -198,12 +175,6 @@ class AxisController(Node):
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
         
-        # if (self.last_nimsort_target.process_id == 3) and currently_reached:
-        #     acc_y = self.axis_y.picking(self.last_conveyorbelt_speed ,dt)
-        #     acc_z = self.axis_z.picking(self.last_conveyorbelt_speed ,dt)
-        #     acc_x = self.axis_x.picking(self.last_conveyorbelt_speed ,dt)
-
-        # else:
         self.axis_x.set_target(self.last_nimsort_target.target_point.x * 0.8)
         self.axis_y.set_target(self.last_nimsort_target.target_point.y * 0.8)
         self.axis_z.set_target(self.last_nimsort_target.target_point.z)

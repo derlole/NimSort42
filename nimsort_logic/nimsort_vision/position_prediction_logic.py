@@ -1,13 +1,9 @@
 from nimsort_vision.magic_object import MagicObject
 from nimsort_vision.position_prediction_interface import PositionPredictionInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
- 
-DT = 0.1
-X_THRESHOLD = 0.55
-DUPLICATE_THRESHOLD = 0.06  # Maximaler Abstand in X, um Objekte als Duplikate zu betrachten
-SENTINEL_POSITION = [-1.0, -1.0, -1.0]
-SENTINEL_TYPE = -1
- 
+
+from configs.config_position_prediction import DT, X_THRESHOLD, DUPLICATE_THRESHOLD, SENTINEL_POSITION, SENTINEL_TYPE
+
 class PositionPrediction(PositionPredictionInterface):
  
     def __init__(self):

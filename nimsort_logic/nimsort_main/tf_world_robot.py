@@ -1,4 +1,4 @@
-WORLD_TO_ROBOT_TRANSLATION = (0.29, -0.04, 0.083)
+from configs.config_main import WORLD_TO_ROBOT_TRANSLATION
 
 class TransformWorldRobot:
     @staticmethod

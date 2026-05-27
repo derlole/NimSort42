@@ -1,11 +1,4 @@
-
-
-X_MIN = 0.0
-X_MAX = 0.6 
-
-Y_MIN = 0.02
-Y_MAX = 0.13 
-
+from configs.config_camera import X_MIN, X_MAX, Y_MIN, Y_MAX
 
 class PlausibilityCheck:
     """Klasse zur Prüfung der Plausibilität von Koordinaten."""
