@@ -5,11 +5,12 @@ class ConveyorSpeedEstimator:
     Schätzt die Förderbandgeschwindigkeit anhand von zwei aufeinanderfolgenden
     Objektpositionen (gleiche Objekte, erkannt in zwei Frames).
     """
-    def __init__(self, smoothing: float = 0.3):
+    def __init__(self, smoothing: float = 0.3, max_deviation: float = 0.001):
         self._last_x: float | None = None
         self._last_ts_ms: int | None = None
-        self._estimated_speed: float = 0.0
+        self._estimated_speed: float | None = None
         self._alpha = smoothing  # EMA-Glättungsfaktor (0 = träge, 1 = reaktiv)
+        self._max_deviation = max_deviation
 
     def update(self, x_m: float, ts_ms: int) -> float | None:
         """
@@ -29,10 +30,18 @@ class ConveyorSpeedEstimator:
 
         raw_speed = delta_x_m / delta_t_s
 
-        # Exponential Moving Average zur Glättung
-        self._estimated_speed = (
-            self._alpha * raw_speed + (1 - self._alpha) * self._estimated_speed
-        )
+        if self._estimated_speed is not None:
+            if abs(raw_speed - self._estimated_speed) > self._max_deviation:
+                # Ausreißer ignorieren und die bisherige Schätzung beibehalten.
+                self._last_x = x_m
+                self._last_ts_ms = ts_ms
+                return self._estimated_speed
+
+            self._estimated_speed = (
+                self._alpha * raw_speed + (1 - self._alpha) * self._estimated_speed
+            )
+        else:
+            self._estimated_speed = raw_speed
 
         self._last_x = x_m
         self._last_ts_ms = ts_ms
