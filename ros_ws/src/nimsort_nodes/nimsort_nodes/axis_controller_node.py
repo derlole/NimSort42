@@ -171,7 +171,7 @@ class AxisController(Node):
             self.get_logger().warn("[ACN-][ax_run]: Target oder robot_pos timeout -> returning home")
 
             self.init_process.reset()
-            self.init_process.start()
+            self.init_process.start(accel = (RESCUE_ACCELERATION_X, RESCUE_ACCELERATION_Y, RESCUE_ACCELERATION_Z))
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
         
