@@ -68,6 +68,10 @@ WELT_PUNKTE = np.array([
                   # 6. Quadrant oben-links
 ], dtype=np.float32)
 
+
+# Pickpunkt-Offset in Pixeln (Abstand vom Schwerpunkt zum tatsächlichen Greifpunkt)
+PICK_OFFSET_PX = 7
+
 # plausibility_check
 X_MIN = 0.0
 X_MAX = 0.6 
