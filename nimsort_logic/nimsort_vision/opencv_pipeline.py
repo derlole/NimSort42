@@ -10,7 +10,7 @@ from configs.config_camera import CAMERA_INDEX, MIN_CONTOUR_AREA, Z_W_CONSTANT_I
 
 class OpencvPipeline(OpencvPipelineInterface):
 
-    def __init__(self, camera_index=CAMERA_INDEX):
+    def __init__(self, camera_index = CAMERA_INDEX):
         self.time_stamp_ms = None
         self._last_result = None
         self._test_counter = 0
@@ -74,13 +74,12 @@ class OpencvPipeline(OpencvPipelineInterface):
 
         # Bounding-Box-Ausschnitt + Trapezmaske anwenden
         roi = self._raw_image[self._roi_slice].copy()
-        roi_masked = cv.bitwise_and(roi, roi, mask=self._trapez_mask)
+        roi_masked = cv.bitwise_and(roi, roi, mask = self._trapez_mask)
         cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked) #TODO remove after testing
 
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         otsu_val, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-        # print(f"[OcvP][getImageData]: Threshold {otsu_val}") #TODO remove debug print
 
         if otsu_val < MIN_OTSU_THRESHOLD:
             thresh = np.zeros_like(blur)
@@ -122,7 +121,6 @@ class OpencvPipeline(OpencvPipelineInterface):
             richtung_norm = richtung / np.linalg.norm(richtung)
             pick = S + richtung_norm * PICK_OFFSET_PX
             cx_px, cy_px = float(pick[0]), float(pick[1])
-            # --- Ende Pickpunkt ---
 
             X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
             X_w_m, Y_w_m, Z_w_m = self.convert(X_w, Y_w, Z_W_CONSTANT_IN_MM)
