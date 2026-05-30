@@ -33,12 +33,12 @@ print(classification_report(y, y_pred, target_names=CLASSES))
 
 # Plot: Konfusionsmatrix + Baum
 model.fit(X, y)
+
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-ConfusionMatrixDisplay(confusion_matrix(y, y_pred), display_labels=CLASSES).plot(
-    ax=axes[0], colorbar=False, cmap="Blues")
+ConfusionMatrixDisplay(confusion_matrix(y, y_pred), display_labels=CLASSES).plot(ax=axes[0], colorbar=False, cmap="Blues")
 axes[0].set_title("Konfusionsmatrix (10-fold CV)")
-plot_tree(model, feature_names=FEATURES, class_names=CLASSES,
-          filled=True, rounded=True, ax=axes[1], fontsize=9)
+
+plot_tree(model, feature_names=FEATURES, class_names=CLASSES, filled=True, rounded=True, ax=axes[1], fontsize=9)
 axes[1].set_title("Decision Tree (max_depth=5)")
 plt.tight_layout()
 plt.savefig(os.path.join(os.path.dirname(OUT_PATH), "confusion_matrix.png"), dpi=130)

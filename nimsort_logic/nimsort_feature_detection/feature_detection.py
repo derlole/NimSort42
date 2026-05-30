@@ -38,14 +38,8 @@ class FeatureDetection(FeatureDetectionInterface):
             List[(feature_vector, contour)]
         """
         contours, _ = cv.findContours(binary_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
-
-        contours = sorted(
-            contours,
-            key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"],
-            reverse=True
-        )
+        contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
 
         results = []
 
