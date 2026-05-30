@@ -48,7 +48,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         w /= w[2]
         return w[0], w[1]
     
-    def convert(self, x_mm, y_mm, z_mm):
+    def convert_mm_to_m(self, x_mm, y_mm, z_mm):
         x_m = x_mm / 1000.0
         y_m = y_mm / 1000.0
         z_m = z_mm / 1000.0
@@ -123,7 +123,7 @@ class OpencvPipeline(OpencvPipelineInterface):
             cx_px, cy_px = float(pick[0]), float(pick[1])
 
             X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
-            X_w_m, Y_w_m, Z_w_m = self.convert(X_w, Y_w, Z_W_CONSTANT_IN_MM)
+            X_w_m, Y_w_m, Z_w_m = self.convert_mm_to_m(X_w, Y_w, Z_W_CONSTANT_IN_MM)
             
             Y_w_m = -Y_w_m # Negieren, da Weltkoordinaten Y-Achse entgegengesetzt zu Pixelkoordinaten
 
