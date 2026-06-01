@@ -9,6 +9,7 @@ from nimsort_motion.trajectroy_planner import TrajectoryPlanner
 from nimsort_msgs.msg import NimSortMotionState, NimSortTarget, NimSortConveyorbeltSpeed
 from nimsort_motion.axis_controller_states import AxisControllerStates
 from nimsort_motion.init_process import InitProcess
+from nimsort_main.process_id import ProcessId
 from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
 
 from configs.config_axis import *
@@ -115,7 +116,7 @@ class AxisController(Node):
         self.get_logger().info(f"Received RobotPos: {msg}")
 
     def ax_state_empty(self):
-        if self.last_nimsort_target is not None and self.last_nimsort_target.process_id == 1:
+        if self.last_nimsort_target is not None and self.last_nimsort_target.process_id == ProcessId.INIT_AXIS:
             self.init_process.start()
             self.main_state = AxisControllerStates.INITIALIZING_AXIS_HW
 
@@ -159,7 +160,11 @@ class AxisController(Node):
         current_time = time.monotonic()
         dt = current_time - self.last_update_time
         self.last_update_time = current_time
+        
         currently_reached = self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached
+        if (self.last_nimsort_target.process_id == ProcessId.PICKING_DRIVE):
+            currently_reached = self.axis_z.target_reached and self.axis_y.target_reached
+
         gripper_should = False
 
         if self.last_nimsort_target is None:
@@ -187,12 +192,13 @@ class AxisController(Node):
         acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, dt)
         acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, dt)
         
-        if (self.last_nimsort_target.process_id == 3 or self.last_nimsort_target.process_id == 4):
+        if (self.last_nimsort_target.process_id == ProcessId.PICKING_DRIVE or self.last_nimsort_target.process_id == ProcessId.GO_TO_POS_WITH_GRIPPER):
             gripper_should = True
 
-        if currently_reached and self.last_nimsort_target is not None:
-            self.publish_motion_state(True, gripper_should)
+        # if currently_reached and self.last_nimsort_target is not None: # TODO how the old impl worked wtf
+        #     self.publish_motion_state(True, gripper_should)
 
+        self.publish_motion_state(currently_reached, gripper_should)
         self.send_acceleration(acc_x, acc_y, acc_z, gripper_should)
 
     def ax_state_returning_home(self):
