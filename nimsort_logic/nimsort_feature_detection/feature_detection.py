@@ -18,11 +18,9 @@ class FeatureDetection(FeatureDetectionInterface):
     """
 
     def __init__(self, model_path: str = _MODEL_PATH):
+        
         if not os.path.isfile(model_path):
-            raise FileNotFoundError(
-                f"[FD][__init__]: Modell nicht gefunden: {model_path}\n"
-                "Bitte zuerst train_classifier.py ausführen."
-            )
+            raise FileNotFoundError(f"[FD][__init__]: Modell nicht gefunden: {model_path}\n""Bitte zuerst train_classifier.py ausführen.")
 
         self._model = joblib.load(model_path)
         self._last_feature = []
