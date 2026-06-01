@@ -12,6 +12,7 @@ from nimsort_motion.init_process import InitProcess
 from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
 
 from configs.config_axis import *
+from nimsort_main.tf_world_robot import TransformWorldRobot
 
 class AxisController(Node):
     def __init__(self):
@@ -175,9 +176,11 @@ class AxisController(Node):
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
         
-        self.axis_x.set_target(self.last_nimsort_target.target_point.x * 0.8)
-        self.axis_y.set_target(self.last_nimsort_target.target_point.y * 0.8)
-        self.axis_z.set_target(self.last_nimsort_target.target_point.z)
+        target_trafo_x, target_trafo_y, target_trafo_z = TransformWorldRobot.world_to_robot(self.last_nimsort_target.target_point.x,self.last_nimsort_target.target_point.y,self.last_nimsort_target.target_point.z)
+        
+        self.axis_x.set_target(target_trafo_x * 0.8)
+        self.axis_y.set_target(target_trafo_y * 0.8)
+        self.axis_z.set_target(target_trafo_z)
 
         acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, dt)
         acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, dt)
