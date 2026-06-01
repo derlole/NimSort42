@@ -23,7 +23,7 @@ class PlausibilityCheck:
             print(f"[WARN]: Y-Koordinate {position[1]:.2f} außerhalb Bereich [{Y_MIN}, {Y_MAX}].")
             return False
         
-        print("[INFO]: Position ist plausibel.")
+        print("[INFO][PlCh][checkpos]: Position ist plausibel.")
         return True
     
     

@@ -1,5 +1,5 @@
 # TF_CONFIG
-WORLD_TO_ROBOT_TRANSLATION: tuple[float, float, float] = (-0.29, +0.04, -0.083) # muss das ncht ein Tupple sein? 0.083 unsicher 
+WORLD_TO_ROBOT_TRANSLATION: tuple[float, float, float] = (0.29, -0.04, 0.083) # muss das ncht ein Tupple sein? 0.083 unsicher 
 
 class TransformWorldRobot:
     @staticmethod
