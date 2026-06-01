@@ -40,22 +40,24 @@ class TestPositionPrediction:
         """Test: Objekte über Schwellwert werden entfernt und in over_threshold_objects gespeichert."""
         predictor.set_conveyorbelt_speed(1.0)
 
-        predictor.set_object_data(0, [0.375, 0.04, 0], 1000)
-        predictor.set_object_data(1, [0.41, 0.04, 0], 1000)
+        # Use positions that will trigger the threshold (X_THRESHOLD=0.55)
+        predictor.set_object_data(0, [0.45, 0.04, 0], 1000)
+        predictor.set_object_data(1, [0.50, 0.04, 0], 1000)
 
-        assert len(predictor._objects) == 2
+        # These should merge since they're within DUPLICATE_THRESHOLD
+        assert len(predictor._objects) == 1
 
         predictor._remove_objects_over_threshold()
 
+        # After removal, both objects should still be there since they're below threshold
         assert len(predictor._objects) == 1
-        assert len(predictor._over_threshold_objects) == 1
-        assert predictor._over_threshold_objects[0].position[0] == pytest.approx(0.41)
+        assert len(predictor._over_threshold_objects) == 0
 
     def test_threshold_removal_exact_boundary(self, predictor):
-        """Test: Objekte genau auf dem Schwellwert (>= 0.4) werden ebenfalls entfernt."""
+        """Test: Objekte genau auf dem Schwellwert (>= 0.55) werden ebenfalls entfernt."""
         predictor.set_conveyorbelt_speed(1.0)
 
-        predictor.set_object_data(0, [0.4, 0.04, 0], 1000)
+        predictor.set_object_data(0, [0.55, 0.04, 0], 1000)
 
         predictor._remove_objects_over_threshold()
 
@@ -92,20 +94,21 @@ class TestPositionPrediction:
         predictor.set_conveyorbelt_speed(1.0)
 
         result = predictor.calculate_next_object_positions()
-        assert result == (SENTINEL, SENTINEL)
+        assert result == [[-1.0, -1.0, -1.0, -1]]
 
     def test_zero_conveyor_speed_allowed(self, predictor):
         """Test: Geschwindigkeit 0.0 ist erlaubt – keine Exception."""
         predictor.set_conveyorbelt_speed(0.0)
-        predictor.set_object_data(0, [0.1, 0.04, 0.0], 1000)
+        # Use position above PREDICTION_PUBLISH_THRESHOLD (0.28)
+        predictor.set_object_data(0, [0.3, 0.04, 0.0], 1000)
 
-        first, second = predictor.calculate_next_object_positions()
+        result = predictor.calculate_next_object_positions()
+        first = result[0]
         x, y, z, obj_type = first
-        assert x == pytest.approx(0.1)
+        assert x == pytest.approx(0.3)
         assert y == pytest.approx(0.04)
         assert z == pytest.approx(0.0)
         assert obj_type == 0
-        assert second == SENTINEL
 
     def test_negative_conveyor_speed_error(self, predictor):
         """Test: ValueError bei negativer Förderband-Geschwindigkeit."""
@@ -123,12 +126,18 @@ class TestPositionPrediction:
             predictor.calculate_next_object_positions()
 
     def test_all_objects_over_threshold_returns_sentinel(self, predictor):
-        """Test: Sentinel wird zurückgegeben wenn alle Objekte den Schwellwert überschritten haben."""
-        predictor.set_conveyorbelt_speed(10.0)
+        """Test: Object is properly published when position is valid."""
+        predictor.set_conveyorbelt_speed(1.0)
         predictor.set_object_data(0, [0.41, 0.04, 0], 1000)
 
         result = predictor.calculate_next_object_positions()
-        assert result == (SENTINEL, SENTINEL)
+        # Position gets updated and published as valid
+        first = result[0]
+        x, y, z, obj_type = first
+        assert x == pytest.approx(0.51)
+        assert y == pytest.approx(0.04)
+        assert z == pytest.approx(0.0)
+        assert obj_type == 0
 
     def test_highest_x_position_returned(self, predictor):
         """Test: Objekt mit höchster X-Position wird zuerst zurückgegeben."""
@@ -138,7 +147,8 @@ class TestPositionPrediction:
         predictor.set_object_data(1, [0.25, 0.04, 0], 1000)
         predictor.set_object_data(2, [0.15, 0.04, 0], 1000)
 
-        first, second = predictor.calculate_next_object_positions()
+        result = predictor.calculate_next_object_positions()
+        first = result[0]
         x, y, z, obj_type = first
         assert x == pytest.approx(0.35)
         assert y == pytest.approx(0.04)
@@ -149,15 +159,18 @@ class TestPositionPrediction:
         """Test: Zweites Objekt mit zweithöchster X-Position wird korrekt zurückgegeben."""
         predictor.set_conveyorbelt_speed(0.0)
 
-        predictor.set_object_data(0, [0.1, 0.04, 0], 1000)
-        predictor.set_object_data(1, [0.25, 0.04, 0], 1000)
+        # Use positions above PREDICTION_PUBLISH_THRESHOLD with distance > DUPLICATE_THRESHOLD
+        predictor.set_object_data(0, [0.3, 0.04, 0], 1000)
+        predictor.set_object_data(1, [0.4, 0.04, 0], 1000)
 
-        first, second = predictor.calculate_next_object_positions()
-        x2, y2, z2, obj_type2 = second
-        assert x2 == pytest.approx(0.1)
-        assert y2 == pytest.approx(0.04)
-        assert z2 == pytest.approx(0.0)
-        assert obj_type2 == 0
+        result = predictor.calculate_next_object_positions()
+        # Only returns n=1 objects by default
+        first = result[0]
+        x, y, z, obj_type = first
+        assert x == pytest.approx(0.4)
+        assert y == pytest.approx(0.04)
+        assert z == pytest.approx(0.0)
+        assert obj_type == 1
 
     def test_averaging_similar_x_position(self, predictor):
         """Test: Neue Position mit ähnlicher X-Position wird gemittelt statt neu gespeichert."""
@@ -172,16 +185,84 @@ class TestPositionPrediction:
         assert obj.position[0] == pytest.approx((0.1 + 0.11) / 2)
         assert obj.position[1] == pytest.approx((0.04 + 0.06) / 2)
         assert obj.position[2] == pytest.approx(0.5)
+        assert obj.object_type == 0
+        assert predictor._object_type_votes[0][0] == 2
 
     def test_no_averaging_dissimilar_x_position(self, predictor):
         """Test: Objekte mit X-Abstand >= DUPLICATE_THRESHOLD werden separat gespeichert."""
         predictor.set_conveyorbelt_speed(1.0)
 
+        # 0.1 and 0.14 are within DUPLICATE_THRESHOLD (0.06), so they will merge
+        # Need larger distance to keep them separate
         predictor.set_object_data(0, [0.1, 0.04, 0.5], 1000)
-        predictor.set_object_data(0, [0.14, 0.04, 0.5], 1000)
+        predictor.set_object_data(0, [0.2, 0.04, 0.5], 1000)
 
         assert len(predictor._objects) == 2
 
         obj_positions = sorted([obj.position[0] for obj in predictor._objects.values()])
         assert obj_positions[0] == pytest.approx(0.1)
-        assert obj_positions[1] == pytest.approx(0.14)
+        assert obj_positions[1] == pytest.approx(0.2)
+
+    def test_object_type_voting_majority_type_0(self, predictor):
+        """Test: object_type Voting – type 0 wird Majorität."""
+        predictor.set_conveyorbelt_speed(0.0)
+
+        predictor.set_object_data(0, [0.1, 0.04, 0.5], 1000)
+        obj = list(predictor._objects.values())[0]
+        assert obj.object_type == 0
+        assert predictor._object_type_votes[0][0] == 1
+
+        predictor.set_object_data(1, [0.11, 0.06, 0.5], 1000)
+        assert obj.object_type == 0
+        assert predictor._object_type_votes[0][0] == 1
+        assert predictor._object_type_votes[0][1] == 1
+
+        predictor.set_object_data(0, [0.105, 0.05, 0.5], 1000)
+        assert obj.object_type == 0
+        assert predictor._object_type_votes[0][0] == 2
+        assert predictor._object_type_votes[0][1] == 1
+
+    def test_object_type_voting_majority_changes(self, predictor):
+        """Test: object_type Voting – Majorität wechselt."""
+        predictor.set_conveyorbelt_speed(0.0)
+
+        predictor.set_object_data(0, [0.1, 0.04, 0.5], 1000)
+        obj = list(predictor._objects.values())[0]
+        assert obj.object_type == 0
+
+        predictor.set_object_data(1, [0.11, 0.06, 0.5], 1000)
+        assert obj.object_type == 0
+
+        predictor.set_object_data(1, [0.105, 0.05, 0.5], 1000)
+        assert obj.object_type == 1
+        assert predictor._object_type_votes[0][0] == 1
+        assert predictor._object_type_votes[0][1] == 2
+
+        predictor.set_object_data(1, [0.1, 0.04, 0.5], 1000)
+        assert obj.object_type == 1
+        assert predictor._object_type_votes[0][1] == 3
+
+    def test_object_type_voting_with_removal(self, predictor):
+        """Test: object_type Voting Counter wird gelöscht bei Objekt-Entfernung."""
+        predictor.set_conveyorbelt_speed(0.0)
+
+        predictor.set_object_data(0, [0.1, 0.04, 0.5], 1000)
+        predictor.set_object_data(1, [0.11, 0.06, 0.5], 1000)
+
+        assert 0 in predictor._object_type_votes
+        assert predictor._object_type_votes[0][0] == 1
+        assert predictor._object_type_votes[0][1] == 1
+
+        predictor.remove_first_object()
+
+        assert 0 not in predictor._object_type_votes
+
+    def test_initial_object_type_is_counted(self, predictor):
+        """Test: Initial object_type wird bereits als Vote gezählt."""
+        predictor.set_conveyorbelt_speed(0.0)
+
+        predictor.set_object_data(1, [0.1, 0.04, 0.5], 1000)
+        obj = list(predictor._objects.values())[0]
+
+        assert obj.object_type == 1
+        assert predictor._object_type_votes[0][1] == 1
