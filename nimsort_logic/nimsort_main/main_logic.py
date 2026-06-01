@@ -5,7 +5,7 @@ from nimsort_main.process_id import ProcessId
 from nimsort_vision.magic_object import MagicObject
 from nimsort_main.main_states import NimSortState
 
-from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNCORN, Z_PICK, ROBOT_REACH
+from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNCORN, Z_PICK, ROBOT_REACH, ZERO_ROBOT_POSITION
 
 class NimSortMain(MainInterface):
     """State Machine für NimSort Logik
@@ -72,17 +72,17 @@ class NimSortMain(MainInterface):
         match self.current_state:
             case NimSortState.START:
                 self.current_state = NimSortState.INIT_CALL
-                return (0.0, 0.0, 0.0, ProcessId.SELF_INIT)      
+                return (*ZERO_ROBOT_POSITION, ProcessId.SELF_INIT)      
             
             case NimSortState.INIT_CALL:
                 self.current_state = NimSortState.WAIT_FOR_INIT  
-                return (0.0, 0.0, 0.0, ProcessId.INIT_AXIS)
+                return (*ZERO_ROBOT_POSITION, ProcessId.INIT_AXIS)
             
             case NimSortState.WAIT_FOR_INIT:
                 if self.reached:
                     self.current_state = NimSortState.READY_FOR_PICK
                 
-                return (0.0, 0.0, 0.0, ProcessId.INIT_AXIS)
+                return (*ZERO_ROBOT_POSITION, ProcessId.INIT_AXIS)
                  
             case NimSortState.READY_FOR_PICK:
                 if self.reached:
