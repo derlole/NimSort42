@@ -113,7 +113,7 @@ class NimSortMain(MainInterface):
                     else: 
                         self.current_state = NimSortState.GO_TO_PICKPREPOSITION
 
-                return (self._current_pickabel_object.position[0], self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
+                return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
 
             case NimSortState.GO_TO_DROP_CAT:
                 target = self._current_pickabel_object
