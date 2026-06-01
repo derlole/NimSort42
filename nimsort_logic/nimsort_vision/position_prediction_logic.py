@@ -2,7 +2,7 @@ from nimsort_vision.magic_object import MagicObject
 from nimsort_vision.position_prediction_interface import PositionPredictionInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 
-from configs.config_position_prediction import DT, X_THRESHOLD, DUPLICATE_THRESHOLD, SENTINEL_POSITION, SENTINEL_TYPE
+from configs.config_position_prediction import DT, X_THRESHOLD, DUPLICATE_THRESHOLD, SENTINEL_POSITION, SENTINEL_TYPE, PREDICTION_PUBLISH_THRESHOLD
 
 class PositionPrediction(PositionPredictionInterface):
  
@@ -53,16 +53,22 @@ class PositionPrediction(PositionPredictionInterface):
             raise ValueError("[WARN][PoPr][GNOTP---]: Keine Objekte verfügbar.")
  
         sorted_objs = sorted(
-            self._objects.values(),
+            [
+                obj
+                for obj in self._objects.values()
+                if obj.position[0] >= PREDICTION_PUBLISH_THRESHOLD
+            ],
             key=lambda obj: obj.position[0],
             reverse=True
         )[:n]
- 
-        for obj in sorted_objs:
+
+        for obj in sorted_objs[:]:
             if obj.object_type == SENTINEL_TYPE and obj.position[:3] == SENTINEL_POSITION:
                 continue
+            print(obj.position)
             if not self._plausibility_check.check_position(obj.position):
-                raise ValueError("[WARN][PoPr][GNOTP---]: Ausgabe-Position hat Plausibilitätsprüfung nicht bestanden.")
+                print(f"[WARN][PoPr][GNOTP---]: Ausgabe-Position hat Plausibilitätsprüfung nicht bestanden. {obj.position}")
+                self.remove_first_object() 
  
         return sorted_objs
     
@@ -76,7 +82,7 @@ class PositionPrediction(PositionPredictionInterface):
         removed_obj = self._objects.pop(first_obj_id)
         print(f"[INFO][PoPr][RFO-----]: Objekt ID {first_obj_id} bei X={removed_obj.position[0]:.2f} entfernt.")
  
-    def calculate_next_object_positions(self) -> list[tuple[float, float, float, int]]: # TODO rewrite
+    def calculate_next_object_positions(self) -> list[tuple[float, float, float, int]]:
         """
         Berechnet die nächsten Positionen der führenden Objekte.
         Update und Threshold-Entfernung passiert genau einmal hier.
@@ -91,6 +97,9 @@ class PositionPrediction(PositionPredictionInterface):
             return [[-1.0, -1.0, -1.0, -1]]
  
         candidates = self.get_next_objects_to_publish(n=1)
+
+        if not candidates:
+            return [[-1.0, -1.0, -1.0, -1]]
  
         return [
             (obj.position[0], obj.position[1], obj.position[2], obj.object_type)
