@@ -59,10 +59,10 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._test_counter += 1
         ret, self._raw_image = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
-        cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image) #TODO remove after testing
+        #cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image) #TODO remove after testing
 
         if not ret or self._raw_image is None:
-            raise RuntimeError("Bildaufnahme fehlgeschlagen.")
+            raise Exception("Bildaufnahme fehlgeschlagen.")
 
     def getImageData(self):
         """
@@ -70,12 +70,12 @@ class OpencvPipeline(OpencvPipelineInterface):
         und berechnet den Schwerpunkt der größten Kontur in Weltkoordinaten.
         """
         if self._raw_image is None:
-            raise RuntimeError("Kein Bild – zuerst captureImage() aufrufen.")
+            raise Exception("Kein Bild – zuerst captureImage() aufrufen.")
 
         # Bounding-Box-Ausschnitt + Trapezmaske anwenden
         roi = self._raw_image[self._roi_slice].copy()
         roi_masked = cv.bitwise_and(roi, roi, mask = self._trapez_mask)
-        cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked) #TODO remove after testing
+        #cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked) #TODO remove after testing
 
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
@@ -85,7 +85,7 @@ class OpencvPipeline(OpencvPipelineInterface):
             thresh = np.zeros_like(blur)
 
         thresh = cv.bitwise_and(thresh, self._trapez_mask)
-        cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh) #TODO remove after testing
+        #cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh) #TODO remove after testing
 
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
