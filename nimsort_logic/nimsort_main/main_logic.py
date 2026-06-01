@@ -42,7 +42,7 @@ class NimSortMain(MainInterface):
     
     def _prediction_usefull(self, x: float, y: float, z: float, object_type: int) -> bool:
         """Überprüft, ob die Prediction gültig ist und gegriffen werden kann."""
-        if x < 0.0 or x > ROBOT_REACH: # TODO das heir muss noch geprüft werden ob die bedinungen nicht andersrum sind...
+        if x < 0.0 or x > ROBOT_REACH:
             print(f"[WARN][Main][_PU-----]: Ungültige X-Position {x:.3f}.")
             return False
         

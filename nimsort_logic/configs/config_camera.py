@@ -12,7 +12,6 @@ MIN_OTSU_THRESHOLD = 90
 
 
 # Trapez-ROI: vier Eckpunkte im Uhrzeigersinn (oben-links, oben-rechts, unten-rechts, unten-links)
-# TODO die beschreibung welecher wert was ebdeutet gehört eher in ne doku als in die kommentare!!
 ROI_TRAPEZ = np.array([
     [14,  121],   # oben-links
     [602, 116],   # oben-rechts

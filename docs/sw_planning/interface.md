@@ -16,7 +16,7 @@ int32 object_type --> cat [0], magicalUnicorn [1], square [2], circle [3]
 ### NimSortTarget.msg
 
 geometry_msg/msg/Point target_point    
-int32 process_id --> represents Axistask #TODO genau definieren!!  
+int32 process_id --> represents Axistask
 
 
 ### NimSortMotionState.msg
