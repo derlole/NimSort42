@@ -70,11 +70,12 @@ class AxisController(Node):
             self.main_order
         )
 
-    def send_acceleration(self, acc_x, acc_y, acc_z):
+    def send_acceleration(self, acc_x, acc_y, acc_z, gripper_active):
         msg = RobotCmd()
         msg.accel_x = acc_x
         msg.accel_y = acc_y
         msg.accel_z = acc_z
+        msg.activate_gripper = gripper_active
         self.robot_cmd_pub.publish(msg)
 
     def main_order(self):
@@ -122,7 +123,7 @@ class AxisController(Node):
         x_acc, y_acc, z_acc = self.init_process.robot_values((self.last_robot_pos.pos_x, self.last_robot_pos.pos_y, self.last_robot_pos.pos_z))
         if self.init_process.finished:
             self.main_state = AxisControllerStates.INITIALIZING_AXIS_SW
-        self.send_acceleration(x_acc, y_acc, z_acc)
+        self.send_acceleration(x_acc, y_acc, z_acc, False)
 
 
     def ax_state_initializing_axis_sw(self):
@@ -192,7 +193,7 @@ class AxisController(Node):
         if currently_reached and self.last_nimsort_target is not None:
             self.publish_motion_state(True, gripper_should)
 
-        self.send_acceleration(acc_x, acc_y, acc_z)
+        self.send_acceleration(acc_x, acc_y, acc_z, gripper_should)
 
     def ax_state_returning_home(self):
 
@@ -204,7 +205,7 @@ class AxisController(Node):
             )
         )
 
-        self.send_acceleration(x_acc, y_acc, z_acc)
+        self.send_acceleration(x_acc, y_acc, z_acc, False)
 
         if self.init_process.finished:
             self.main_state = AxisControllerStates.SHUTDOWN
