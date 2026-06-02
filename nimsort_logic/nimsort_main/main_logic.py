@@ -6,7 +6,7 @@ from nimsort_vision.magic_object import MagicObject
 from nimsort_main.main_states import NimSortState
 from nimsort_main.edge_detector import EdgeDetectorFall, EdgeDetectorRise
 
-from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNCORN, Z_PICK, ROBOT_REACH, ZERO_ROBOT_POSITION
+from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNCORN, Z_PICK,Z_PRE_POST_PICK, ROBOT_REACH, ZERO_ROBOT_POSITION
 
 class NimSortMain(MainInterface):
     """State Machine für NimSort Logik
@@ -102,8 +102,15 @@ class NimSortMain(MainInterface):
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
 
                 return (*GENERIC_PICK_PRE_POSITION, ProcessId.GO_TO_POS)
-                       
+            
             case NimSortState.GO_TO_PICKPOSITION:
+                target = self._current_pickabel_object
+                print(f"[INFO][Main][GTPP----]: Aktuelles Target: {target}")
+                if reached_rise:
+                    self.current_state = NimSortState.GO_TO_PICK_POSTPOSTION
+                return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
+                       
+            case NimSortState.GO_TO_PICK_POSTPOSTION:
                 target = self._current_pickabel_object
                 print(f"[INFO][Main][GTPP----]: Hallo ich bin hier {target}")
                 if reached_rise and target is not None:
@@ -115,7 +122,9 @@ class NimSortMain(MainInterface):
                     else: 
                         self.current_state = NimSortState.GO_TO_PICKPREPOSITION
 
-                return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
+                return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PRE_POST_PICK, ProcessId.PICKING_DRIVE)
+            
+           
 
             case NimSortState.GO_TO_DROP_CAT:
                 target = self._current_pickabel_object
