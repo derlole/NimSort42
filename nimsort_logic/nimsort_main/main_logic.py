@@ -44,7 +44,6 @@ class NimSortMain(MainInterface):
     def _prediction_usefull(self, x: float, y: float, z: float, object_type: int) -> bool:
         """Überprüft, ob die Prediction gültig ist und gegriffen werden kann."""
         if x < 0.0 or x > ROBOT_REACH:
-            print(f"[WARN][Main][_PU-----]: Ungültige X-Position {x:.3f}.")
             return False
         
         if not self.plausibility_check.check_position([x, y, z]):
@@ -52,8 +51,10 @@ class NimSortMain(MainInterface):
             return False
         
         if self._picked:
+            self._picked = False
             return False
         
+        print(f"[INFO][Main][_PU-----]: picked {self._picked}")
         return True
 
     def set_target_to_pick(self, x: float, y: float, z: float, object_type: int) -> None:
@@ -72,7 +73,6 @@ class NimSortMain(MainInterface):
     
     def state_machine(self) -> tuple[float, float, float, int]:
         reached_rise = self.reached_edge_detector.update(self.reached)
-        print(f"[INFO][main][state_ma]: reached {self.reached} and reached_rise {reached_rise}")
         
         match self.current_state:
             case NimSortState.START:
@@ -97,8 +97,6 @@ class NimSortMain(MainInterface):
 
             case NimSortState.GO_TO_PICKPREPOSITION:
                 target = self._current_pickabel_object
-                self._picked = False
-                print(f"[INFO][Main][GTPPP---]: Aktuelles Target: {target}")
                 if target is not None and target.object_type in (0, 1) and self.reached:
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
                 elif target is not None and target.object_type in (0, 1):
@@ -117,14 +115,12 @@ class NimSortMain(MainInterface):
             
             case NimSortState.GO_TO_PICKPOSITION:
                 target = self._current_pickabel_object
-                print(f"[INFO][Main][GTPP----]: Aktuelles Target: {target}")
                 if reached_rise:
                     self.current_state = NimSortState.GO_TO_PICK_POSTPOSTION
                 return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
                        
             case NimSortState.GO_TO_PICK_POSTPOSTION:
                 target = self._current_pickabel_object
-                print(f"[INFO][Main][GTPP----]: Hallo ich bin hier {target}")
                 if reached_rise and target is not None:
                     print(f"[INFO][Main][GTPP----]: Ziel erreicht, überprüfe Target für nächsten Schritt: {target.object_type}")
                     if target.object_type == 0:
