@@ -7,6 +7,8 @@
 
 2. Das Kamerafenster öffnet sich mit den eingeblendeten Referenzlinien.
 
+![Ausgerichtete Kamera](../../misc/pictures/digital_overlay_camera.png)
+
 3. Kamera physisch ausrichten, bis die relevanten Objekte mit den Referenzlinien
    übereinstimmen:
    - Das **rote Kästchen** (oben im Bild) markiert die Zielzone des 2D-Codes.
