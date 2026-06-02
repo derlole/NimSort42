@@ -5,6 +5,7 @@ POSITION_UNCORN: tuple[float, float, float] = TransformWorldRobot.robot_to_world
 POSITION_CAT: tuple[float, float, float] = TransformWorldRobot.robot_to_world(-0.165, -0.135, 0.07)
 INITIAL_POSITION: tuple[float, float, float] = TransformWorldRobot.robot_to_world(-0.005,-0.074, 0.02)
 Z_PRE_POST_PICK: float = 0.08
+Z_PRE_POST_TF: float = TransformWorldRobot.robot_to_world_z(Z_PRE_POST_PICK)
 Z_PICK: float = TransformWorldRobot.robot_to_world_z(0.095) 
 GENERIC_PICK_PRE_POSITION: tuple[float, float, float] = TransformWorldRobot.robot_to_world(-0.01, -0.074, Z_PRE_POST_PICK)
 SENTINEL: tuple[float, float, float] = (-1.0, -1.0, -1.0,-1)

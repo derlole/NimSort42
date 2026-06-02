@@ -2,17 +2,13 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
-
-from nimsort_motion.axis import Axis
-from nimsort_motion.controller import Controller
-from nimsort_motion.trajectroy_planner import TrajectoryPlanner
+from nimsort_motion.software_axis import SoftwareAxis
 from nimsort_msgs.msg import NimSortMotionState, NimSortTarget, NimSortConveyorbeltSpeed
 from nimsort_motion.axis_controller_states import AxisControllerStates
 from nimsort_motion.init_process import InitProcess
-from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
 
+from ro45_portalrobot_interfaces.msg import RobotCmd, RobotPos
 from configs.config_axis import *
-from nimsort_main.tf_world_robot import TransformWorldRobot
 
 class AxisController(Node):
     def __init__(self):
@@ -20,16 +16,13 @@ class AxisController(Node):
 
         self.last_robot_pos = None
         self.last_nimsort_target = None
-        self.last_conveyorbelt_speed = None
         self.main_state = AxisControllerStates.EMPTY
         self.init_process = InitProcess()
         self.offset_x = 0.0
         self.offset_y = 0.0
         self.offset_z = 0.0
 
-        self.axis_x = None
-        self.axis_y = None
-        self.axis_z = None
+        self.axis = None
         self.last_target_time = time.time()
         self.last_robot_pos_time = time.time()
         self.last_update_time = time.monotonic()
@@ -40,12 +33,6 @@ class AxisController(Node):
             NimSortTarget,
             '/NimSortTarget',
             self.nimsort_target_callback,
-            10
-        )
-        self.nimsort_conveyorbelt_speed_sub = self.create_subscription(
-            NimSortConveyorbeltSpeed,
-            '/NimSortConveyorbeltSpeed',
-            self.nimsort_conveyorbelt_speed_callback,
             10
         )
         self.robot_pos_sub = self.create_subscription(
@@ -78,6 +65,22 @@ class AxisController(Node):
         msg.activate_gripper = gripper_active
         self.robot_cmd_pub.publish(msg)
 
+    def nimsort_target_callback(self, msg):
+        self.last_nimsort_target = msg
+        self.last_target_time = time.time()
+        self.get_logger().info(f"Received NimSortTarget: {msg}")
+
+    def robot_pos_callback(self, msg):
+        self.last_robot_pos = msg
+        self.last_robot_pos_time = time.time()
+        self.get_logger().info(f"Received RobotPos: {msg}")
+
+    def publish_motion_state(self, reached, gripper_active):
+        msg = NimSortMotionState()
+        msg.reached = reached
+        msg.gripper_active = gripper_active
+        self.motion_state_pub.publish(msg)
+
     def main_order(self):
         match self.main_state:
             case AxisControllerStates.EMPTY:
@@ -101,21 +104,8 @@ class AxisController(Node):
                 self.ax_state_shutdown()
             
 
-    def nimsort_target_callback(self, msg):
-        self.last_nimsort_target = msg
-        self.last_target_time = time.time()
-        self.get_logger().info(f"Received NimSortTarget: {msg}")
-
-    def nimsort_conveyorbelt_speed_callback(self, msg):
-        self.last_conveyorbelt_speed = msg.conveyorbelt_speed
-
-    def robot_pos_callback(self, msg):
-        self.last_robot_pos = msg
-        self.last_robot_pos_time = time.time()
-        self.get_logger().info(f"Received RobotPos: {msg}")
-
     def ax_state_empty(self):
-        if self.last_nimsort_target is not None and self.last_nimsort_target.process_id == 1:
+        if self.last_nimsort_target is not None and self.init_process.should_start(self.last_nimsort_target.process_id):
             self.init_process.start()
             self.main_state = AxisControllerStates.INITIALIZING_AXIS_HW
 
@@ -127,47 +117,29 @@ class AxisController(Node):
 
 
     def ax_state_initializing_axis_sw(self):
-        trajectrory_planner_x = TrajectoryPlanner(MAX_VELOCITY_X, MAX_ACCELERATION_X, POSITION_TOLERANCE_X, VELOCITY_TOLERANCE_X)
-        trajectrory_planner_y = TrajectoryPlanner(MAX_VELOCITY_Y, MAX_ACCELERATION_Y, POSITION_TOLERANCE_Y, VELOCITY_TOLERANCE_Y)
-        trajectrory_planner_z = TrajectoryPlanner(MAX_VELOCITY_Z, MAX_ACCELERATION_Z, POSITION_TOLERANCE_Z, VELOCITY_TOLERANCE_Z)
+        self.axis = SoftwareAxis()
 
-        controller_x = Controller(KP_X, KD_X, MAX_ACCELERATION_X, TF_X)
-        controller_y = Controller(KP_Y, KD_Y, MAX_ACCELERATION_Y, TF_Y)
-        controller_z = Controller(KP_Z, KD_Z, MAX_ACCELERATION_Z, TF_Z)
-
-        self.axis_x = Axis("X", controller_x, trajectrory_planner_x)
-        self.axis_y = Axis("Y", controller_y, trajectrory_planner_y)
-        self.axis_z = Axis("Z", controller_z, trajectrory_planner_z)
-
-        self.offset_x = self.last_robot_pos.pos_x
-        self.offset_y = self.last_robot_pos.pos_y
-        self.offset_z = self.last_robot_pos.pos_z
+        self.axis.set_offset(self.last_robot_pos.pos_x, self.last_robot_pos.pos_y, self.last_robot_pos.pos_z)
         
-        self.get_logger().info(f"[ACN-][ax_in_sw]: X Axis: {self.axis_x}")
-        self.get_logger().info(f"[ACN-][ax_in_sw]: Y Axis: {self.axis_y}")
-        self.get_logger().info(f"[ACN-][ax_in_sw]: Z Axis: {self.axis_z}")
+        self.get_logger().info(f"[ACN-][ax_in_sw]: X Axis: {self.axis.axis_x}")
+        self.get_logger().info(f"[ACN-][ax_in_sw]: Y Axis: {self.axis.axis_y}")
+        self.get_logger().info(f"[ACN-][ax_in_sw]: Z Axis: {self.axis.axis_z}")
 
         self.main_state = AxisControllerStates.RUNNING
-
-    def publish_motion_state(self, reached, gripper_active):
-        msg = NimSortMotionState()
-        msg.reached = reached
-        msg.gripper_active = gripper_active
-        self.motion_state_pub.publish(msg)
 
     def ax_state_running(self):
         current_time = time.monotonic()
         dt = current_time - self.last_update_time
         self.last_update_time = current_time
-        currently_reached = self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached
-        gripper_should = False
+        
+        currently_reached = self.axis.reached(self.last_nimsort_target.process_id)
 
         if self.last_nimsort_target is None:
             self.get_logger().warn("[ACN-][ax_run]: No target received yet")
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
         
-        print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis_x.target_reached}, {self.axis_y.target_reached}, {self.axis_z.target_reached}")
+        print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis.axis_x.target_reached}, {self.axis.axis_y.target_reached}, {self.axis.axis_z.target_reached}")
         
         if (time.time() - self.last_target_time > self.target_timeout_s) or (time.time() - self.last_robot_pos_time > self.robot_pos_timeout_s):
             self.get_logger().warn("[ACN-][ax_run]: Target oder robot_pos timeout -> returning home")
@@ -177,33 +149,18 @@ class AxisController(Node):
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
         
-        target_trafo_x, target_trafo_y, target_trafo_z = TransformWorldRobot.world_to_robot(self.last_nimsort_target.target_point.x,self.last_nimsort_target.target_point.y,self.last_nimsort_target.target_point.z)
-        
-        self.axis_x.set_target(target_trafo_x * 0.8)
-        self.axis_y.set_target(target_trafo_y * 0.8)
-        self.axis_z.set_target(target_trafo_z)
+        self.axis.set_target(self.last_nimsort_target.target_point.x, self.last_nimsort_target.target_point.y, self.last_nimsort_target.target_point.z)
+        acc_x, acc_y, acc_z = self.axis.update(self.last_robot_pos.pos_x, self.last_robot_pos.pos_y, self.last_robot_pos.pos_z, dt)
+        gripper_should = self.axis.gripper_active(self.last_nimsort_target.process_id)
 
-        acc_x = self.axis_x.update(self.last_robot_pos.pos_x - self.offset_x, dt)
-        acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, dt)
-        acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, dt)
-        
-        if (self.last_nimsort_target.process_id == 3 or self.last_nimsort_target.process_id == 4):
-            gripper_should = True
+        # if currently_reached and self.last_nimsort_target is not None: # TODO how the old impl worked wtf
+        #     self.publish_motion_state(True, gripper_should)
 
-        if currently_reached and self.last_nimsort_target is not None:
-            self.publish_motion_state(True, gripper_should)
-
+        self.publish_motion_state(currently_reached, gripper_should)
         self.send_acceleration(acc_x, acc_y, acc_z, gripper_should)
 
     def ax_state_returning_home(self):
-
-        x_acc, y_acc, z_acc = self.init_process.robot_values(
-            (
-                self.last_robot_pos.pos_x,
-                self.last_robot_pos.pos_y,
-                self.last_robot_pos.pos_z
-            )
-        )
+        x_acc, y_acc, z_acc = self.init_process.robot_values((self.last_robot_pos.pos_x, self.last_robot_pos.pos_y, self.last_robot_pos.pos_z))
 
         self.send_acceleration(x_acc, y_acc, z_acc, False)
 
