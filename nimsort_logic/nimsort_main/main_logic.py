@@ -6,7 +6,7 @@ from nimsort_vision.magic_object import MagicObject
 from nimsort_main.main_states import NimSortState
 from nimsort_main.edge_detector import EdgeDetectorFall, EdgeDetectorRise
 
-from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNCORN, Z_PICK,Z_PRE_POST_PICK, ROBOT_REACH, ZERO_ROBOT_POSITION
+from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNCORN, Z_PICK, ROBOT_REACH, ZERO_ROBOT_POSITION, Z_PRE_POST_TF
 
 class NimSortMain(MainInterface):
     """State Machine für NimSort Logik
@@ -25,6 +25,7 @@ class NimSortMain(MainInterface):
         self.gripper_active = False
         self.plausibility_check = PlausibilityCheck()
         self._current_pickabel_object = None
+        self._current_pick_pre_position = None
         self._picked = False
 
     def set_current_state(self, motion_state: NimSortState) -> None:
@@ -98,10 +99,21 @@ class NimSortMain(MainInterface):
                 target = self._current_pickabel_object
                 self._picked = False
                 print(f"[INFO][Main][GTPPP---]: Aktuelles Target: {target}")
-                if target is not None and target.object_type in (0, 1):
+                if target is not None and target.object_type in (0, 1) and self.reached:
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
+                elif target is not None and target.object_type in (0, 1):
+                    self.current_state = NimSortState.GO_TO_OBJECT_PICK_PREPOSITION
+                    self._current_pick_pre_position = (target.position[0] + 0.05, target.position[1], Z_PRE_POST_TF)
 
                 return (*GENERIC_PICK_PRE_POSITION, ProcessId.GO_TO_POS)
+            
+            case NimSortState.GO_TO_OBJECT_PICK_PREPOSITION:
+                target = self._current_pickabel_object
+                if reached_rise:
+                    self.current_state = NimSortState.GO_TO_PICKPOSITION
+                
+                return (*self._current_pick_pre_position, ProcessId.GO_TO_POS)
+
             
             case NimSortState.GO_TO_PICKPOSITION:
                 target = self._current_pickabel_object
@@ -122,7 +134,7 @@ class NimSortMain(MainInterface):
                     else: 
                         self.current_state = NimSortState.GO_TO_PICKPREPOSITION
 
-                return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PRE_POST_PICK, ProcessId.PICKING_DRIVE)
+                return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PRE_POST_TF, ProcessId.PICKING_DRIVE)
             
            
 
