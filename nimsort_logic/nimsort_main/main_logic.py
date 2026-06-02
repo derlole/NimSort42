@@ -54,7 +54,6 @@ class NimSortMain(MainInterface):
             self._picked = False
             return False
         
-        print(f"[INFO][Main][_PU-----]: picked {self._picked}")
         return True
 
     def set_target_to_pick(self, x: float, y: float, z: float, object_type: int) -> None:
@@ -98,8 +97,10 @@ class NimSortMain(MainInterface):
             case NimSortState.GO_TO_PICKPREPOSITION:
                 target = self._current_pickabel_object
                 if target is not None and target.object_type in (0, 1) and self.reached:
+                    print(f"[DEBUG]: Switch to GO_TO_PICKPOSITION")
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
                 elif target is not None and target.object_type in (0, 1):
+                    print(f"[DEBUG]: Switch to GO_TO_OBJECT_PICK_PREPOSITION")
                     self.current_state = NimSortState.GO_TO_OBJECT_PICK_PREPOSITION
                     self._current_pick_pre_position = (target.position[0] + 0.05, target.position[1], Z_PRE_POST_TF)
 
@@ -108,6 +109,7 @@ class NimSortMain(MainInterface):
             case NimSortState.GO_TO_OBJECT_PICK_PREPOSITION:
                 target = self._current_pickabel_object
                 if reached_rise:
+                    print(f"[DEBUG]: Switch to GO_TO_PICKPOSITION")
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
                 
                 return (*self._current_pick_pre_position, ProcessId.GO_TO_POS)
@@ -116,6 +118,7 @@ class NimSortMain(MainInterface):
             case NimSortState.GO_TO_PICKPOSITION:
                 target = self._current_pickabel_object
                 if reached_rise:
+                    print(f"[DEBUG]: Switch to GO_TO_PICK_POSTPOSTION")
                     self.current_state = NimSortState.GO_TO_PICK_POSTPOSTION
                 return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
                        
@@ -124,10 +127,13 @@ class NimSortMain(MainInterface):
                 if reached_rise and target is not None:
                     print(f"[INFO][Main][GTPP----]: Ziel erreicht, überprüfe Target für nächsten Schritt: {target.object_type}")
                     if target.object_type == 0:
+                        print(f"[DEBUG]: Switch to GO_TO_DROP_UNCORN")
                         self.current_state = NimSortState.GO_TO_DROP_UNCORN
                     elif target.object_type == 1:
+                        print(f"[DEBUG]: Switch to GO_TO_DROP_CAT")
                         self.current_state = NimSortState.GO_TO_DROP_CAT
                     else: 
+                        print(f"[DEBUG]: Switch to GO_TO_PICKPREPOSITION")
                         self.current_state = NimSortState.GO_TO_PICKPREPOSITION
 
                 return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PRE_POST_TF, ProcessId.PICKING_DRIVE)
@@ -151,6 +157,7 @@ class NimSortMain(MainInterface):
             case NimSortState.DROP_CAT:
                 self._current_pickabel_object = None
                 if self.reached and not self.gripper_active:
+                    print(f"[DEBUG]: Switch to GO_TO_PICKPREPOSITION")
                     self._picked = True
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
                 
@@ -159,6 +166,7 @@ class NimSortMain(MainInterface):
             case NimSortState.DROP_UNICORN:
                 self._current_pickabel_object = None
                 if self.reached and not self.gripper_active:
+                    print(f"[DEBUG]: Switch to GO_TO_PICKPREPOSITION")
                     self._picked = True
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
                 
