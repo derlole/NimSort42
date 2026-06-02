@@ -7,7 +7,7 @@ from nimsort_main.process_id import ProcessId
 from configs.config_axis import *
 
 class SoftwareAxis:
-    def __inti__(self):
+    def __init__(self):
         trajectrory_planner_x = TrajectoryPlanner(MAX_VELOCITY_X, MAX_ACCELERATION_X, POSITION_TOLERANCE_X, VELOCITY_TOLERANCE_X)
         trajectrory_planner_y = TrajectoryPlanner(MAX_VELOCITY_Y, MAX_ACCELERATION_Y, POSITION_TOLERANCE_Y, VELOCITY_TOLERANCE_Y)
         trajectrory_planner_z = TrajectoryPlanner(MAX_VELOCITY_Z, MAX_ACCELERATION_Z, POSITION_TOLERANCE_Z, VELOCITY_TOLERANCE_Z)

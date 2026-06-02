@@ -132,14 +132,14 @@ class AxisController(Node):
         dt = current_time - self.last_update_time
         self.last_update_time = current_time
         
-        currently_reached = self.axis.reached()
+        currently_reached = self.axis.reached(self.last_nimsort_target.process_id)
 
         if self.last_nimsort_target is None:
             self.get_logger().warn("[ACN-][ax_run]: No target received yet")
             self.main_state = AxisControllerStates.RETURNING_HOME
             return
         
-        print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis_x.target_reached}, {self.axis_y.target_reached}, {self.axis_z.target_reached}")
+        print(f"[ACN-][ax_run]: Last Robot Pos: {self.axis.axis_x.target_reached}, {self.axis.axis_y.target_reached}, {self.axis.axis_z.target_reached}")
         
         if (time.time() - self.last_target_time > self.target_timeout_s) or (time.time() - self.last_robot_pos_time > self.robot_pos_timeout_s):
             self.get_logger().warn("[ACN-][ax_run]: Target oder robot_pos timeout -> returning home")
