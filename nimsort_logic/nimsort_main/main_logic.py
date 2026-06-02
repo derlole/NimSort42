@@ -71,6 +71,8 @@ class NimSortMain(MainInterface):
     
     def state_machine(self) -> tuple[float, float, float, int]:
         reached_rise = self.reached_edge_detector.update(self.reached)
+        print(f"[INFO][main][state_ma]: reached {self.reached} and reached_rise {reached_rise}")
+        
         match self.current_state:
             case NimSortState.START:
                 self.current_state = NimSortState.INIT_CALL
