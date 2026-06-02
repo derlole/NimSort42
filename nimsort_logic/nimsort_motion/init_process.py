@@ -1,5 +1,6 @@
 from nimsort_motion.init_process_interface import InitProcessInterface
 from configs.config_axis import ZERO_ACCELERATION, HOMING_ACCELERATION
+from nimsort_main.process_id import ProcessId
 
 class InitProcess(InitProcessInterface):
     def __init__(self):
@@ -10,6 +11,9 @@ class InitProcess(InitProcessInterface):
         self.counter = 0
         self.finish_counter = 0
         self.started = False
+
+    def should_start(self, process_id: int):
+        return process_id == ProcessId.INIT_AXIS.value
 
     def start(self, accel: tuple[float, float, float] = HOMING_ACCELERATION) -> None:
         """"start the initialization process. of the axis"""
