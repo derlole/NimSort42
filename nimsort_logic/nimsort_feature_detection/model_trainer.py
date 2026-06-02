@@ -9,7 +9,7 @@ from sklearn.metrics import classification_report, confusion_matrix, ConfusionMa
 from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 
-CSV_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "features.csv")
+CSV_PATH = os.path.join(os.path.dirname(__file__), "features.csv")
 OUT_PATH = os.path.join(os.path.dirname(__file__), "object_classifier.joblib")
 
 CLASSES  = ["einhorn", "katze", "kreis", "quadrat"]
