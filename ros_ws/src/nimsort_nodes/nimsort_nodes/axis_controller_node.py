@@ -116,7 +116,7 @@ class AxisController(Node):
         self.get_logger().info(f"Received RobotPos: {msg}")
 
     def ax_state_empty(self):
-        if self.last_nimsort_target is not None and self.last_nimsort_target.process_id == ProcessId.INIT_AXIS:
+        if self.last_nimsort_target is not None and self.last_nimsort_target.process_id == ProcessId.INIT_AXIS.value:
             self.init_process.start()
             self.main_state = AxisControllerStates.INITIALIZING_AXIS_HW
 
@@ -162,7 +162,7 @@ class AxisController(Node):
         self.last_update_time = current_time
         
         currently_reached = self.axis_x.target_reached and self.axis_y.target_reached and self.axis_z.target_reached
-        if (self.last_nimsort_target.process_id == ProcessId.PICKING_DRIVE):
+        if (self.last_nimsort_target.process_id == ProcessId.PICKING_DRIVE.value):
             currently_reached = self.axis_z.target_reached and self.axis_y.target_reached
 
         gripper_should = False
@@ -192,7 +192,7 @@ class AxisController(Node):
         acc_y = self.axis_y.update(self.last_robot_pos.pos_y - self.offset_y, dt)
         acc_z = self.axis_z.update(self.last_robot_pos.pos_z - self.offset_z, dt)
         
-        if (self.last_nimsort_target.process_id == ProcessId.PICKING_DRIVE or self.last_nimsort_target.process_id == ProcessId.GO_TO_POS_WITH_GRIPPER):
+        if (self.last_nimsort_target.process_id == ProcessId.PICKING_DRIVE.value or self.last_nimsort_target.process_id == ProcessId.GO_TO_POS_WITH_GRIPPER.value):
             gripper_should = True
 
         # if currently_reached and self.last_nimsort_target is not None: # TODO how the old impl worked wtf
