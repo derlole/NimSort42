@@ -64,7 +64,7 @@ class PositionPredictionNode(Node):
     def prediction_feedback_callback(self, msg: Bool):
         if not msg.data:
             self.logic.remove_first_object()
-            # nue vorhersage schicken, wenn die alte vorhersage verworfen wurde
+            # nur vorhersage schicken, wenn die alte vorhersage verworfen wurde
             self.main_order()
 
     def send_prediction(self, position: tuple[float, float, float, int]) -> None:
@@ -100,10 +100,10 @@ def main(args=None):
     try:
         executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
-        node.get_logger().error("[ACN-][main----]: Shutdown Node")
+        node.get_logger().error("[PoPr][main----]: Shutdown Node")
 
     except RuntimeError as e:
-        node.get_logger().error(f"[ACN-][main----]: {str(e)}")
+        node.get_logger().error(f"[PoPr][main----]: {str(e)}")
 
     finally:
         executor.shutdown()
