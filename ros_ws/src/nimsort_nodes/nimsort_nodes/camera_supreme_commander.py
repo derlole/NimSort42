@@ -9,6 +9,7 @@ import time
 from nimsort_msgs.msg import NimSortImageData, NimSortConveyorbeltSpeed
 from nimsort_vision.opencv_pipeline import OpencvPipeline
 from nimsort_vision.conveyor_speed import ConveyorSpeedEstimator
+from nimsort_feature_detection.feature_detection import FeatureDetection
 
 
 class Vision(Node):
@@ -43,6 +44,12 @@ class Vision(Node):
         except RuntimeError as e:
             self.get_logger().error("[VN--][__init__]:" + str(e))
             raise
+        
+        try:
+            self.feature_detector = FeatureDetection()
+        except RuntimeError as e:
+            self.get_logger().error("[VN--][__init__]:" + str(e))
+            raise
 
 
     def publish_image_data(self, x_wcs, y_wcs, z_wcs, ts, object_type):
@@ -68,7 +75,9 @@ class Vision(Node):
     def main_order(self):
         print(f"[VN--][main_ord]: Starting main order{time.time()}")
 
+        image = None
         objects = []
+        features = []
         try:
             self.pipeline.captureImage()
             objects, ts, image = self.pipeline.getImageData()
@@ -94,12 +103,23 @@ class Vision(Node):
         except RuntimeError as e:
             self.get_logger().error("[VN--][main_ord]:" + str(e))
 
-            
-        # TODO insert trained_model_here to calculate the correct object_type
 
+        try:
+            features = self.feature_detector.getFeature(image)
+        
+        except RuntimeError as e:
+            self.get_logger().error("[VN--][main_ord]:" + str(e))
 
-        for x_w, y_w, z_w in objects:
-            self.publish_image_data(x_w, y_w, z_w, ts, 1) # TODO repalce the consants at the time you have the real object type
+        if len(objects) != len(features):
+            self.get_logger().error(f"[VN--][main_ord]: Anzahl der erkannten Objekte ({len(objects)}) stimmt nicht mit Anzahl der Features ({len(features)}) überein.")
+            self.publish_image_data(-1.0, -1.0, -1.0, -1, -1) 
+            return
+        else: 
+            for i in range(len(objects)):
+                x_w, y_w, z_w = objects[i]
+                feature = features[i]
+                self.publish_image_data(x_w, y_w, z_w, ts, feature)
+
             
         if speed is None:
             speed = 0.01
@@ -117,6 +137,9 @@ def main(args=None):
         executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
         node.get_logger().error("[VN--][main----]: Shutdown Node")
+        
+    except Exception as e:
+        node.get_logger().error(f"[VN--][main----]: Unexpected error occurred: {e}")
 
     finally:
         executor.shutdown()

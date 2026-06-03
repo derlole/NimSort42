@@ -1,7 +1,6 @@
 from nimsort_motion.init_process_interface import InitProcessInterface
-
-ZERO_ACCELERATION = (0.0, 0.0, 0.0)
-HOMING_ACCELERATION = (0.005, 0.005, -0.01)
+from configs.config_axis import ZERO_ACCELERATION, HOMING_ACCELERATION
+from nimsort_main.process_id import ProcessId
 
 class InitProcess(InitProcessInterface):
     def __init__(self):
@@ -13,9 +12,13 @@ class InitProcess(InitProcessInterface):
         self.finish_counter = 0
         self.started = False
 
-    def start(self) -> None:
+    def should_start(self, process_id: int):
+        return process_id == ProcessId.INIT_AXIS.value
+
+    def start(self, accel: tuple[float, float, float] = HOMING_ACCELERATION) -> None:
         """"start the initialization process. of the axis"""
         self.started = True
+        self.homing_acceleration = accel
 
     def robot_values(self, position):
         """Set the initial values for the process. and return the corresponding acceleration commands."""
@@ -33,7 +36,7 @@ class InitProcess(InitProcessInterface):
             self.last_x = x
             self.last_y = y
             self.last_z = z
-            return HOMING_ACCELERATION
+            return self.homing_acceleration
             
         dx = x - self.last_x
         dy = y - self.last_y
@@ -43,7 +46,7 @@ class InitProcess(InitProcessInterface):
         self.last_z = z
 
         if self.counter < 10:
-            return HOMING_ACCELERATION
+            return self.homing_acceleration
         elif self.counter < 20:
             return ZERO_ACCELERATION
         else:

@@ -1,4 +1,4 @@
-"""
+﻿"""
 axis.py
 ---
 contains the Axis Class for handling one Robotaxis.
@@ -64,7 +64,7 @@ class Axis(AxisInterface):
         ---
         target_position: float [m] position with respect to home
         """
-        print(f"[INFO][Axis][setTarg]: Setting new target for Axis {self._name}: {target_position:.4f}m")
+        print(f"[INFO][Axis][setTarg]: Setting new target for Axis {self._name}: {(target_position / 0.8):.4f}m")
         self._target_position = target_position
 
     def update(self, current_position: float, dt: float) -> float:
@@ -97,7 +97,7 @@ class Axis(AxisInterface):
         )
         print(f"[DEBUG][Axis][update--]: acc_out={self._acceleration:.4f}m/s², tgt_acc={target_accel:.4f}m/s², dt={dt:.6f}s")
         return self._acceleration
-    
+
     def reset(self) -> None:
         """
         resets axisstate and controller to initial state

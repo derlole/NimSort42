@@ -1,11 +1,4 @@
-
-
-X_MIN = 0.0
-X_MAX = 0.4 #TODO define limit and document it. According issue: #69
-
-Y_MIN = 0.02
-Y_MAX = 0.13 
-
+from configs.config_camera import X_MIN, X_MAX, Y_MIN, Y_MAX
 
 class PlausibilityCheck:
     """Klasse zur Prüfung der Plausibilität von Koordinaten."""
@@ -30,7 +23,6 @@ class PlausibilityCheck:
             print(f"[WARN]: Y-Koordinate {position[1]:.2f} außerhalb Bereich [{Y_MIN}, {Y_MAX}].")
             return False
         
-        print("[INFO]: Position ist plausibel.")
         return True
     
     

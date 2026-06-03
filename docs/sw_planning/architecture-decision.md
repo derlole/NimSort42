@@ -1,9 +1,9 @@
-# Architecutre responsibilitys
+# Architecture responsibility's
 
 ## Ros Nodes
 
 ### Vision
-- Orcestrate when picture is going to be taken
+- Orchestrate when picture is going to be taken
 - Process model-input-data from taken picture with OpenCV
 - receive model output from FeatureDetection
 - calculate current position of object. (current defines time when image was taken)
@@ -15,23 +15,23 @@
 
 ### MainNode
 - receive NimSortPrediction 
-- orcestrate Programm Flow
+- orchestrate Programm Flow
 - call system initialization
 - publish NimSortTarget
 
 ### AxisController
 - receive NimSortTarget
 - receive RobotPos
-- hold and orcestrate all Axis
+- hold and orchestrate all Axis
 - know and prevent forbidden zones
 - publish RobotCmd
 
-## Python Calsses
+## Python Classes
 
 ### CSTransformation
-- providing functions to Transform between CordinateSystems
+- providing functions to Transform between CoordinateSystems
 
-### OpencvPipeline
+### OpenCVPipeline
 - Taking Picture
 - process picture with according filters
 - calculates object position
@@ -39,16 +39,16 @@
 
 ### FeatureDetection
 - receive preprocessed Image 
-- retrieves neede parameters
-- calculate object clasification with parameters
-- return calculated obejct data
+- retrieves needed parameters
+- calculate object classification with parameters
+- return calculated object data
 
 ### PositionPrediction
-- store received ImageData in any fitting datastructure
+- store received ImageData in any fitting data structure
 - calculate positionPrediction for next possible MagicObject
 
 ### MainLogic
-- System statemachine
+- System state machine
 
 ### InitProcess
 - initialize System
@@ -59,6 +59,6 @@
 - calculate in the RCS (RobotCoordinateSystem)
 
 ### Controller
-- controll acceleration
+- control acceleration
 
 

@@ -6,71 +6,11 @@ import os
 from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 
-CAMERA_INDEX = 4
-MIN_CONTOUR_AREA = 4500
-Z_W_CONSTANT_IN_MM = 2.0
-MIN_OTSU_THRESHOLD = 105
-
-# Trapez-ROI: vier Eckpunkte im Uhrzeigersinn (oben-links, oben-rechts, unten-rechts, unten-links)
-ROI_TRAPEZ = np.array([
-    [14,  121],   # oben-links
-    [602, 116],   # oben-rechts
-    [602, 272],   # unten-rechts
-    [14,  304],   # unten-links
-], dtype=np.int32)
-
-PIXEL_PUNKTE = np.array([
-    [66, 131],   # Ecke 1 oben-links
-    [109, 131],  # Ecke 2 oben-rechts
-    [109, 178],  # Ecke 3 unten-rechts
-    [66, 178],   # Ecke 4 unten-links
-    [153, 129],  # 2. Quadrat oben-links
-    [195, 129],
-    [195, 175],
-    [153, 176], 
-    [238, 128],  # 3. Quadrat oben-links
-    [278, 127],
-    [279, 173],
-    [239, 174], 
-    [321, 127],   # 4. Quadrat oben-links
-    [359, 127],
-    [360, 172],
-    [321, 172],  
-    [400, 126],   # 5. Quadrat oben-links
-    [437, 126],
-    [438, 170],
-    [401, 172],  
-                  # 6. Quadrat oben-links
-], dtype=np.float32)
-
-WELT_PUNKTE = np.array([
-    [59, 0],      # Ecke 1 oben-links  [X_mm, Y_mm]
-    [78.40, 0],   # Ecke 2 oben-rechts
-    [78.40, -20], # Ecke 3 unten-rechts
-    [59, -20],    # Ecke 4 unten-links
-    [97.7, 0],    # 2. Quadrat oben-links
-    [117.18, 0],
-    [117.18, -20],
-    [97.7, -20],   
-    [136.3, 0],   # 3. Quadrant oben-links
-    [155.8, 0],
-    [155.8, -20],
-    [136.3, -20], 
-    [175.1, 0],    # 4. Quadrant oben-links
-    [194.3, 0],
-    [194.3, -20],
-    [175.1, -20],  
-    [213.8, 0],    # 5. Quadrant oben-links
-    [233.3, 0],
-    [233.3, -20],
-    [213.8, -20],  
-                  # 6. Quadrant oben-links
-], dtype=np.float32)
-
+from configs.config_camera import CAMERA_INDEX, MIN_CONTOUR_AREA, Z_W_CONSTANT_IN_MM, MIN_OTSU_THRESHOLD, ROI_TRAPEZ, PIXEL_PUNKTE, WELT_PUNKTE, PICK_OFFSET_PX
 
 class OpencvPipeline(OpencvPipelineInterface):
 
-    def __init__(self, camera_index=CAMERA_INDEX):
+    def __init__(self, camera_index = CAMERA_INDEX):
         self.time_stamp_ms = None
         self._last_result = None
         self._test_counter = 0
@@ -108,7 +48,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         w /= w[2]
         return w[0], w[1]
     
-    def convert(self, x_mm, y_mm, z_mm):
+    def convert_mm_to_m(self, x_mm, y_mm, z_mm):
         x_m = x_mm / 1000.0
         y_m = y_mm / 1000.0
         z_m = z_mm / 1000.0
@@ -119,10 +59,10 @@ class OpencvPipeline(OpencvPipelineInterface):
         self._test_counter += 1
         ret, self._raw_image = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
-        cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image) #TODO remove after testing
+        #cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image) #TODO remove after testing
 
         if not ret or self._raw_image is None:
-            raise RuntimeError("Bildaufnahme fehlgeschlagen.")
+            raise Exception("Bildaufnahme fehlgeschlagen.")
 
     def getImageData(self):
         """
@@ -130,25 +70,24 @@ class OpencvPipeline(OpencvPipelineInterface):
         und berechnet den Schwerpunkt der größten Kontur in Weltkoordinaten.
         """
         if self._raw_image is None:
-            raise RuntimeError("Kein Bild – zuerst captureImage() aufrufen.")
+            raise Exception("Kein Bild – zuerst captureImage() aufrufen.")
 
         # Bounding-Box-Ausschnitt + Trapezmaske anwenden
         roi = self._raw_image[self._roi_slice].copy()
-        roi_masked = cv.bitwise_and(roi, roi, mask=self._trapez_mask)
-        cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked) #TODO remove after testing
+        roi_masked = cv.bitwise_and(roi, roi, mask = self._trapez_mask)
+        #cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked) #TODO remove after testing
 
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         otsu_val, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-        print(f"[OcvP][getImageData]: Threshold {otsu_val}") #TODO remove debug print
 
         if otsu_val < MIN_OTSU_THRESHOLD:
             thresh = np.zeros_like(blur)
 
         thresh = cv.bitwise_and(thresh, self._trapez_mask)
-        cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh) #TODO remove after testing
+        #cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh) #TODO remove after testing
 
-        contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
         contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
 
@@ -168,10 +107,27 @@ class OpencvPipeline(OpencvPipelineInterface):
             cx_px = cx_roi + self._rx
             cy_px = cy_roi + self._ry
 
-            X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
-            X_w_m, Y_w_m, Z_w_m = self.convert(X_w, Y_w, Z_W_CONSTANT_IN_MM)
+        # --- Pickpunkt-Verschiebung ---
+            S = np.array([cx_px, cy_px], dtype=np.float32)
+            min_dist = float('inf')
+            naechster_punkt = None
+            for punkt in cnt:
+                p = np.array([punkt[0][0] + self._rx, punkt[0][1] + self._ry], dtype=np.float32)
+                dist = np.linalg.norm(S - p)
+                if dist < min_dist:
+                    min_dist = dist
+                    naechster_punkt = p
+            richtung = S - naechster_punkt
+            richtung_norm = richtung / np.linalg.norm(richtung)
+            pick = S + richtung_norm * PICK_OFFSET_PX
+            cx_px, cy_px = float(pick[0]), float(pick[1])
 
-            if not self._plausi.check_position([X_w_m, -Y_w_m, Z_w_m]):
+            X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
+            X_w_m, Y_w_m, Z_w_m = self.convert_mm_to_m(X_w, Y_w, Z_W_CONSTANT_IN_MM)
+            
+            Y_w_m = -Y_w_m # Negieren, da Weltkoordinaten Y-Achse entgegengesetzt zu Pixelkoordinaten
+
+            if not self._plausi.check_position([X_w_m, Y_w_m, Z_w_m]):
                 raise ValueError(f"Unplausible Koordinaten: ({X_w_m:.2f}, {Y_w_m:.2f}, {Z_w_m:.2f})")
             
 

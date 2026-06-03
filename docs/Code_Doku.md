@@ -81,15 +81,15 @@ Hauptlogik zur Positionsvorhersage von Objekten auf dem Förderband.
 | Methode | Beschreibung |
 |---------|-------------|
 | `set_object_data()` | Speichert erkannte Objekte |
-| `set_conveyor_belt_speed()` | Setzt Förderbandgeschwindigkeit |
-| `calculate_next_object_position()` | Berechnet nächstes zu sortierendes Objekt |
+| `set_conveyorbelt_speed()` | Setzt Förderbandgeschwindigkeit |
+| `calculate_next_object_positions()` | Berechnet nächstes zu sortierendes Objekt |
 | `get_next_object_to_publish()` | Gibt Objekt mit höchster X-Position zurück |
 | `_update_positions()` | Aktualisiert Positionen basierend auf Zeit |
 | `_remove_objects_over_threshold()` | Entfernt Objekte, die den Schwellwert überschreiten |
 
 **Workflow:**
 1. Objekte werden via `set_object_data()` hinzugefügt
-2. Bei jedem Timer-Call wird `calculate_next_object_position()` aufgerufen
+2. Bei jedem Timer-Call wird `calculate_next_object_positions()` aufgerufen
 3. Positionen werden erhöht (`_update_positions`)
 4. Objekte über Schwellwert (X ≥ 40.0m) werden entfernt
 5. Objekt mit höchster X-Position wird publiziert

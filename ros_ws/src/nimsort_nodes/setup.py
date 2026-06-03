@@ -31,7 +31,7 @@ setup(
             'nimsort_position_prediction = nimsort_nodes.postion_prediction_node:main',
             'nimsort_vision = nimsort_nodes.camera_supreme_commander:main',
             'nimsort_main = nimsort_nodes.main_node:main',
-            'nimsort_hand_drive = nimsort_nodes.axis_hand_drive:main',
+            'nimsort_manual = nimsort_nodes.manual_axis:main',
         ],
     },
 )

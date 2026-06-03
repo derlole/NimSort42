@@ -2,10 +2,12 @@
 
 1. Skript starten:
 ```bash
-   python3 vision/camera/camera_alignment.py
+   python3 misc/vision/camera/camera_alignment.py
 ```
 
 2. Das Kamerafenster öffnet sich mit den eingeblendeten Referenzlinien.
+
+![Ausgerichtete Kamera](../../misc/pictures/digital_overlay_camera.png)
 
 3. Kamera physisch ausrichten, bis die relevanten Objekte mit den Referenzlinien
    übereinstimmen:
