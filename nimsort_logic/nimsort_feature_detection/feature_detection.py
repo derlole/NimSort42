@@ -55,9 +55,9 @@ class FeatureDetection(FeatureDetectionInterface):
             hu_3 = hu_log[3]
 
             feature_vec = np.array([[hu_0, hu_3]], dtype=np.float32)
-            #results.append((feature_vec, cnt))
+            results.append((feature_vec))
 
-        return feature_vec
+        return results
 
 
     def getFeature(self, binary_image: np.ndarray):
