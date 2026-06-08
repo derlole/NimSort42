@@ -1,6 +1,6 @@
 import cv2
 
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(4)
 cv2.namedWindow("FBI-Survailance-Cam", cv2.WINDOW_NORMAL)
 
 # Linien definieren: (start_x, start_y), (end_x, end_y), farbe BGR, dicke
