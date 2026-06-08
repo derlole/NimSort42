@@ -26,7 +26,7 @@ Definiert die möglichen Zustände der State Machine:
 
 ## Konfiguration
 - Laden Sie Positionen und Parameter aus `configs.config_main`
-- Wichtige Konstanten: `INITIAL_POSITION`, `POSITION_CAT`, `POSITION_UNCORN`, `ROBOT_REACH`
+- Wichtige Konstanten: `INITIAL_POSITION`, `POSITION_CAT`, `POSITION_UNICORN`, `ROBOT_REACH`
 
 ## Besonderheiten
 - **Plausibilitätsprüfung**: Vor jedem Pick wird die vorhergesagte Position validiert (z.B. nicht außerhalb der Roboterärmreichweite)
