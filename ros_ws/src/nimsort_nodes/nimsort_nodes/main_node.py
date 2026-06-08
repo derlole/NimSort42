@@ -6,7 +6,7 @@ from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
 from nimsort_main.main_logic import NimSortMain 
 from nimsort_vision.magic_object import MagicObject
-from nimsort_msgs.msg import NimSortPrediction, NimSortMotionState, NimSortTarget
+from nimsort_msgs.msg import NimSortPrediction, NimSortMotionState, NimSortTarget, NimSortConveyorbeltSpeed
 
 class MainNode(Node):
     def __init__(self):
@@ -26,6 +26,13 @@ class MainNode(Node):
             '/NimSortPrediction',
             self.listener_callback_prediction,
             10)
+        
+        self.conveyorbelt_speed_sub = self.create_subscription(
+            NimSortConveyorbeltSpeed,
+            '/NimSortConveyorbeltSpeed',
+            self.listener_callback_conveyorbelt_speed,
+            10)
+
         self.timer = self.create_timer(0.1, self.main_order)
         self.last_prediction_time = time.time()
 
@@ -43,6 +50,10 @@ class MainNode(Node):
         prediction_feedback = self.nimsort_main.set_target_to_pick(x=msg.predicted_position_wcs.x, y=msg.predicted_position_wcs.y, z=msg.predicted_position_wcs.z, object_type=msg.object_type)
         self.publish_prediction_feedback(prediction_feedback)
     
+    def listener_callback_conveyorbelt_speed(self, msg):
+        """handles incoming conveyorbelt speed updates"""
+        self.nimsort_main.set_conveyorbelt_speed(msg.conveyorbelt_speed)
+
     def publish_prediction_feedback(self, prediction_feedback: bool) -> None:
         """Publishes feedback on the reveived prediction to the prediction node, so it can decide whether to keep or remove the prediction"""
         msg = Bool()

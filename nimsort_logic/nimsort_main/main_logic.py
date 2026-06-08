@@ -43,6 +43,10 @@ class NimSortMain(MainInterface):
         """Setzt den aktuellen Bewegungszustand der State Machine."""
         self.reached = reached
         self.gripper_active = gripper_active
+
+    def set_conveyorbelt_speed(self, speed: float) -> None:
+        """Setzt die aktuelle Förderbandgeschwindigkeit, damit die State Machine sie für Berechnungen nutzen kann."""
+        self.conv_speed = speed
     
     def _prediction_usefull(self, x: float, y: float, z: float, object_type: int) -> bool:
         """Überprüft, ob die Prediction gültig ist und gegriffen werden kann."""
@@ -75,6 +79,7 @@ class NimSortMain(MainInterface):
     
     def state_machine(self) -> tuple[float, float, float, int]:
         reached_rise = self.reached_edge_detector.update(self.reached)
+        print(f"reached rise: {reached_rise}")
         
         match self.current_state:
             case NimSortState.START:
@@ -131,7 +136,7 @@ class NimSortMain(MainInterface):
                 if reached_rise:
                     print(f"[DEBUG][Main][GTPPO---]: Switch to GO_TO_PICK_POSTPOSTION")
                     self.current_state = NimSortState.GO_TO_PICK_POSTPOSTION
-                return (self._current_pickabel_object.position[0] + 0.01, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
+                return (self._current_pickabel_object.position[0] + self.conv_speed, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
                        
             case NimSortState.GO_TO_PICK_POSTPOSTION:
                 target = self._current_pickabel_object

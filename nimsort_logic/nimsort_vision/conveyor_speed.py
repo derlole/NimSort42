@@ -1,6 +1,6 @@
 from collections import deque
 import statistics
-
+from configs.config_camera import DEFAULT_SPEED_ESTIMATION   
 class ConveyorSpeedEstimator:
     """
     Förderband-Geschwindigkeitsschätzung mit:
@@ -66,6 +66,11 @@ class ConveyorSpeedEstimator:
             + (1.0 - self._alpha) * self._estimated_speed
         )
 
+        return self._estimated_speed
+    
+    def get_last_speed(self) -> float:
+        if self._estimated_speed is None or self._estimated_speed <= 0.0:
+            return DEFAULT_SPEED_ESTIMATION
         return self._estimated_speed
 
     def reset(self):

@@ -122,7 +122,8 @@ class Vision(Node):
 
             
         if speed is None:
-            speed = 0.01
+            speed = self.speed_calc.get_last_speed()
+
         self.publish_conveyorbelt_speed(speed)
 
 
