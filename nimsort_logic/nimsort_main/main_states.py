@@ -15,4 +15,4 @@ class NimSortState(Enum):
     DROP_UNICORN = "DROP_UNICORN"
     DROP_CAT = "DROP_CAT"
     DROP = "DROP"
-    ERROR_STATE = "ERROR_STATE"
+    GO_TO_BECHER ="GO_TO_BECHER"

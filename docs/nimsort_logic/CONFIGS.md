@@ -12,7 +12,7 @@ Positionen:
 - `INITIAL_POSITION` – Startkalibrierposition [x, y, z] in Meter
 - `GENERIC_PICK_PRE_POSITION` – Vorpositionierung vor Griff
 - `POSITION_CAT` – Ablage-Position für Katzen
-- `POSITION_UNCORN` – Ablage-Position für Einhörner
+- `POSITION_UNICORN` – Ablage-Position für Einhörner
 - `Z_PICK` – Z-Achsen-Höhe zum Greifen
 - `Z_PRE_POST_TF` – Z-Höhe für Transferbewegungen
 

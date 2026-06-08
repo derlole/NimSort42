@@ -29,7 +29,7 @@ class NimSortMain(MainInterface):
         self._picked = False
 
         self._first_run_through = False
-        self._this_is_a_funny_marker_for_a_funny_step = False
+        self._gtprp_reached_rise = False
 
     def set_current_state(self, motion_state: NimSortState) -> None:
         """Setzt den aktuellen Bewegungszustand der State Machine."""
@@ -99,12 +99,14 @@ class NimSortMain(MainInterface):
 
             case NimSortState.GO_TO_PICKPREPOSITION:
                 target = self._current_pickabel_object
-                if reached_rise and  self._first_run_through:
-                        self._this_is_a_funny_marker_for_a_funny_step = True
-                        print(f"[DEBUG][Main][GTPRP---]: Erster Durchlauf erreicht, warte auf nächste Prediction für GO_TO_PICKPOSITION")
-                if target is not None and target.object_type in (0, 1) and self.reached and (not self._first_run_through or self._this_is_a_funny_marker_for_a_funny_step):
+                if reached_rise and self._first_run_through:
+                    self._gtprp_reached_rise = True
+                    print(f"[DEBUG][Main][GTPRP---]: Erster Durchlauf erreicht, warte auf nächste Prediction für GO_TO_PICKPOSITION")
+
+                if target is not None and target.object_type in (0, 1) and self.reached and (not self._first_run_through or self._gtprp_reached_rise):
                     print(f"[DEBUG][Main][GTPRP---]: Switch to GO_TO_PICKPOSITION")
                     self.current_state = NimSortState.GO_TO_PICKPOSITION
+
                 elif target is not None and target.object_type in (0, 1):
                     print(f"[DEBUG][Main][GTPRP---]: Switch to GO_TO_OBJECT_PICK_PREPOSITION")
                     self.current_state = NimSortState.GO_TO_OBJECT_PICK_PREPOSITION
@@ -125,7 +127,7 @@ class NimSortMain(MainInterface):
             case NimSortState.GO_TO_PICKPOSITION:
                 target = self._current_pickabel_object
                 self._first_run_through = True
-                self._this_is_a_funny_marker_for_a_funny_step = False
+                self._gtprp_reached_rise = False
                 if reached_rise:
                     print(f"[DEBUG][Main][GTPPO---]: Switch to GO_TO_PICK_POSTPOSTION")
                     self.current_state = NimSortState.GO_TO_PICK_POSTPOSTION
@@ -180,10 +182,13 @@ class NimSortMain(MainInterface):
                     self.current_state = NimSortState.GO_TO_PICKPREPOSITION
                 
                 return (*POSITION_UNICORN, ProcessId.DEACTIVATE_GRIPPER)
+
+            case NimSortState.GO_TO_BECHER:
+                print(f"[DEBUG][Main][GTB-----]: Grab a Becher and drink a Coffee, its over...")
             
     def reset(self) -> None:
         """Setzt State Machine zurück auf START"""
         self.current_motion_state = None
         self.current_state = NimSortState.START
         self._first_run_through = False
-        self._this_is_a_funny_marker_for_a_funny_step = False
+        self._gtprp_reached_rise = False

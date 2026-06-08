@@ -1,7 +1,7 @@
 from nimsort_main.tf_world_robot import TransformWorldRobot
 
 # main_logic
-POSITION_UNCORN: tuple[float, float, float] = TransformWorldRobot.robot_to_world(-0.065,-0.135, 0.07)
+POSITION_UNICORN: tuple[float, float, float] = TransformWorldRobot.robot_to_world(-0.065,-0.135, 0.07)
 POSITION_CAT: tuple[float, float, float] = TransformWorldRobot.robot_to_world(-0.165, -0.135, 0.07)
 INITIAL_POSITION: tuple[float, float, float] = TransformWorldRobot.robot_to_world(-0.005,-0.074, 0.02)
 Z_PRE_POST_PICK: float = 0.08
