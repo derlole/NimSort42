@@ -1,8 +1,8 @@
-# `opencv_pipeline.py` = Bildverarbeitungs-Pipeline für NimSort
+# `opencv_pipeline.py` -- Bildverarbeitungs-Pipeline für NimSort
 
 ## Zweck
 
-Dieses Modul implementiert die zentrale OpenCV-Bildverarbeitungs-Pipeline des NimSort-Systems. Es kapselt den gesamten Weg vom Rohframe der Förderbandkamera bis zur Ausgabe von Weltkoordinaten erkannter Objekte — bereit zur Weiterverarbeitung durch den ROS 2-Node.
+Dieses Modul implementiert die zentrale OpenCV-Bildverarbeitungs-Pipeline. Es kapselt den gesamten Weg vom Rohframe der Förderbandkamera bis zur Ausgabe von den Schwerpunkten der Objekte in  Weltkoordinaten.
 
 Die Klasse `OpencvPipeline` implementiert das Interface `OpencvPipelineInterface` und arbeitet eng mit `PlausibilityCheck` sowie den Kamera-Konfigurationsparametern aus `config_camera` zusammen.
 
@@ -42,10 +42,10 @@ Initialisiert die Pipeline und bereitet alle rechenintensiven Strukturen einmali
 **Schritte:**
 
 1. Verzeichnisse für Debug-Bilder anlegen (`images_live/raw`, `roi`, `bin`)
-2. Kamera öffnen via `cv.VideoCapture` — wirft `RuntimeError` bei Fehler
+2. Kamera öffnen via `cv.VideoCapture`, wirft `RuntimeError` bei Fehler
 3. **Homographie-Matrix `H`** berechnen aus `PIXEL_PUNKTE` → `WELT_PUNKTE` (`cv.findHomography`)
 4. **Bounding Box des ROI-Trapezes** einmalig vorberechnen (`cv.boundingRect`) → schneller Array-Slice
-5. **Trapez-Maske** relativ zur Bounding Box vorberechnen (`cv.fillPoly`) — wird in jeder `getImageData()`-Aufruf wiederverwendet
+5. **Trapez-Maske** relativ zur Bounding Box vorberechnen (`cv.fillPoly`) → wird in jeder `getImageData()`-Aufruf wiederverwendet
 
 > Die Vorberechnung von Maske und Slice in `__init__` ist eine bewusste Performance-Optimierung, da diese Strukturen frame-konstant sind.
 
@@ -63,7 +63,7 @@ Liest exklusiv den nächsten Rohframe von der Kamera und speichert Bild und Zeit
 - Inkrementiert internen `_test_counter` (für Debug-Dateinamen)
 - Wirft `Exception` wenn `cap.read()` fehlschlägt
 
-> Bewusst schlank gehalten — enthält keine Bildverarbeitung, damit Latenz und Zeitstempel-Genauigkeit maximiert werden.
+> Bewusst schlank gehalten, enthält keine Bildverarbeitung, damit Latenz und Zeitstempel-Genauigkeit maximiert werden.
 
 ---
 
@@ -73,7 +73,7 @@ Liest exklusiv den nächsten Rohframe von der Kamera und speichert Bild und Zeit
 def getImageData(self) -> tuple[list, int, np.ndarray]
 ```
 
-Verarbeitet das zuletzt aufgenommene Bild vollständig und gibt erkannte Objekte in Weltkoordinaten zurück.
+Verarbeitet das zuletzt aufgenommene Bild vollständig und gibt den Pickpoint der erkannten Objekte in Weltkoordinaten zurück.
 
 **Rückgabe:** `(objects, time_stamp_ms, thresh)`
 
@@ -81,7 +81,7 @@ Verarbeitet das zuletzt aufgenommene Bild vollständig und gibt erkannte Objekte
 |------|-----|--------|
 | `objects` | `list[tuple]` | Liste von `(X_m, Y_m, Z_m)` pro erkanntem Objekt |
 | `time_stamp_ms` | `int` | Zeitstempel des zugehörigen Frames |
-| `thresh` | `np.ndarray` | Binärbild nach Otsu-Schwellwert (für Debugging) |
+| `thresh` | `np.ndarray` | Binärbild nach Otsu-Schwellwert (für Machine Learning) |
 
 **Verarbeitungsschritte im Detail:**
 
@@ -111,7 +111,7 @@ if otsu_val < MIN_OTSU_THRESHOLD:
     thresh = np.zeros_like(blur)
 ```
 
-Otsu bestimmt den optimalen Schwellwert automatisch anhand der Grauwertverteilung. Liegt `otsu_val` unter `MIN_OTSU_THRESHOLD` (konfigurierbar), wird das Binärbild leer gesetzt — das verhindert Falschdetektionen bei homogenem, objektfreiem Band.
+Otsu bestimmt den optimalen Schwellwert automatisch anhand der Grauwertverteilung. Liegt `otsu_val` unter `MIN_OTSU_THRESHOLD` (konfigurierbar), wird das Binärbild leer gesetzt. Das verhindert Falschdetektionen bei homogenem, objektfreiem Band.
 
 #### 4. Konturerkennung & Filterung
 
@@ -139,7 +139,7 @@ cy_px = cy_roi + self._ry
 
 Der Schwerpunkt wird aus den Bildmomenten berechnet und vom ROI-lokalen Koordinatensystem zurück in das Vollbild-Koordinatensystem transformiert.
 
-Anschließend wird der **Pickpunkt** leicht in Richtung Zentroid verschoben — weg vom nächstliegenden Konturpunkt:
+Anschließend wird der **Pickpunkt** leicht in Richtung Zentroid verschoben. Weg vom nächstliegenden Konturpunkt:
 
 ```python
 # Nächsten Konturpunkt zum Schwerpunkt finden
@@ -148,7 +148,7 @@ richtung_norm = richtung / np.linalg.norm(richtung)
 pick = S + richtung_norm * PICK_OFFSET_PX
 ```
 
-> Diese Verschiebung stellt sicher, dass der Greifpunkt nicht auf der Objektkante, sondern leicht im Inneren des Objekts liegt.
+> Diese Verschiebung stellt sicher, dass der Greifpunkt nicht am Objektrand, sondern im Inneren des Objekts liegt.
 
 #### 6. Homographie: Pixel → Weltkoordinaten
 
@@ -237,4 +237,4 @@ getImageData()
 
 ## Einordnung im NimSort-System
 
-`OpencvPipeline` ist das Herzstück der Sensorik. Der ROS 2-Node `camera_supreme_commander.py` ruft `captureImage()` und `getImageData()` in seiner Timer-Callback-Schleife auf und publiziert die zurückgegebenen Weltkoordinaten als ROS-Topics an den Roboterarm.
+`OpencvPipeline` ist das Herzstück der Sensorik. Die ROS2-Node `camera_supreme_commander.py` ruft `captureImage()` und `getImageData()` in seiner Timer-Callback-Schleife auf und publiziert die zurückgegebenen Weltkoordinaten als ROS-Topics.
