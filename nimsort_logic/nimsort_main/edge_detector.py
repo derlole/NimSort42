@@ -17,3 +17,21 @@ class EdgeDetectorFall:
 
         self.prev = current
         return falling
+    
+class EdgeDetectorWithTHCounter(EdgeDetectorRise):
+    def __init__(self, threshold: int):
+        super().__init__()
+        self.counter = 0
+        self.threshold = threshold
+
+    def update(self, current):
+        res_iter = False
+        if self.counter >= self.threshold:
+            res_iter = super().update(current)
+        
+        if current:
+            self.counter = 0
+        else:
+            self.counter += 1
+
+        return res_iter
