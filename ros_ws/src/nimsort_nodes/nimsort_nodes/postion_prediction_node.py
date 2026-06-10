@@ -62,7 +62,6 @@ class PositionPredictionNode(Node):
         self.logic.set_conveyorbelt_speed(msg.conveyorbelt_speed)
 
     def prediction_feedback_callback(self, msg: Bool):
-        self.logic.save_current()
         if not msg.data:
             self.logic.remove_first_object()
             self.main_order()

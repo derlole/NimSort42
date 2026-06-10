@@ -6,4 +6,3 @@ class MagicObject:
     object_type: int
     position: list[float]  # [x, y, z] in meters
     ts: float
-    save_flag : bool = False
