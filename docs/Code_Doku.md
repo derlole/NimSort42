@@ -163,7 +163,7 @@ Das Motion Module nutzt die Positionsvorhersagen des Main Modules, um:
 ┌─────────────────────────────────────────┐
 │         Main Module                     │
 │  (ROS2 Node + Koordination)             │
-│  PositionPredictionNode                 │
+│                 │
 └──────────────┬──────────────────────────┘
                │ Bewegungsbefehle
                v
