@@ -56,7 +56,7 @@ class NimSortMain(MainInterface):
         if not self.plausibility_check.check_position([x, y, z]):
             print(f"[WARN][Main][_PU-----]: Prediction nicht plausibel.")
             return False
-        
+        print(f"[DEBUG][Main][_PU-----]: picked_object: {self._picked_object}, dist: {abs(x - self._picked_object.position[0]) if self._picked_object else 'N/A'}")
         if self._picked_object is not None:
             if abs(x - self._picked_object.position[0]) < 0.051:
                 return False
@@ -81,7 +81,6 @@ class NimSortMain(MainInterface):
     
     def state_machine(self) -> tuple[float, float, float, int]:
         reached_rise = self.reached_edge_detector.update(self.reached)
-        print(f"reached rise: {reached_rise}")
         
         match self.current_state:
             case NimSortState.START:
@@ -142,10 +141,7 @@ class NimSortMain(MainInterface):
                        
             case NimSortState.GO_TO_PICK_POSTPOSTION:
                 target = self._current_pickabel_object
-                if target is not None and self._picked_object is None:
-                    self._picked_object = target
                 if reached_rise and target is not None:
-                    print(f"[INFO][Main][GTPP----]: Ziel erreicht, überprüfe Target für nächsten Schritt: {target.object_type}")
                     if target.object_type == 0:
                         print(f"[DEBUG][Main][GTPIPO--]: Switch to GO_TO_DROP_UNICORN")
                         self.current_state = NimSortState.GO_TO_DROP_UNICORN
@@ -179,7 +175,10 @@ class NimSortMain(MainInterface):
             case NimSortState.DROP_CAT:
                 target = self._current_pickabel_object
                 self._current_pickabel_object = None
-                
+
+                if target is not None and self._picked_object is None:
+                    self._picked_object = target
+
                 if self.reached and not self.gripper_active:
                     print(f"[DEBUG][Main][DC------]: Switch to GO_TO_PICKPREPOSITION")
                     self._picked_object = None
@@ -190,6 +189,10 @@ class NimSortMain(MainInterface):
             case NimSortState.DROP_UNICORN:
                 target = self._current_pickabel_object
                 self._current_pickabel_object = None
+                
+                if target is not None and self._picked_object is None:
+                    self._picked_object = target
+
                 if self.reached and not self.gripper_active:
                     print(f"[DEBUG][Main][DU------]: Switch to GO_TO_PICKPREPOSITION")
                     self._picked_object = None

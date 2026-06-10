@@ -74,7 +74,7 @@ PICK_OFFSET_PX = 7
 # plausibility_check
 X_MIN = 0.0
 X_MAX = 0.6 
-Y_MIN = 0.02
+Y_MIN = 0.009
 Y_MAX = 0.13
 
 DEFAULT_SPEED_ESTIMATION = 0.01
