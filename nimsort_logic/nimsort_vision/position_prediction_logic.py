@@ -92,6 +92,16 @@ class PositionPrediction(PositionPredictionInterface):
  
         return sorted_objs
     
+    def save_current(self) -> None:
+        """Setzt das save_flag des aktuell führenden Objekts auf True, damit es nicht verworfen wird."""
+        if not self._objects:
+            print("[WARN][PoPr][SC------]: Kein Objekt zum Speichern vorhanden.")
+            return
+        
+        first_obj_id = max(self._objects, key=lambda obj_id: self._objects[obj_id].position[0])
+        self._objects[first_obj_id].save_flag = True
+        print(f"[INFO][PoPr][SC------]: Objekt ID {first_obj_id} bei X={self._objects[first_obj_id].position[0]:.2f} als gespeichert markiert.")
+
     def remove_first_object(self) -> None:
         """Entfernt das Objekt mit der größten X-Position (führendes Objekt)."""
         if not self._objects:
@@ -164,7 +174,7 @@ class PositionPrediction(PositionPredictionInterface):
         Entfernte Objekte werden in _over_threshold_objects gespeichert.
         """
         for obj_id, obj in list(self._objects.items()):
-            if obj.position[0] >= X_THRESHOLD:
+            if obj.position[0] >= X_THRESHOLD and not obj.save_flag:
                 self._over_threshold_objects.append(obj)
                 del self._objects[obj_id]
                 if obj_id in self._object_type_votes:

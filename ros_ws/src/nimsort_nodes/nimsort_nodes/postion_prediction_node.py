@@ -62,9 +62,9 @@ class PositionPredictionNode(Node):
         self.logic.set_conveyorbelt_speed(msg.conveyorbelt_speed)
 
     def prediction_feedback_callback(self, msg: Bool):
+        self.logic.save_current()
         if not msg.data:
             self.logic.remove_first_object()
-            # nur vorhersage schicken, wenn die alte vorhersage verworfen wurde
             self.main_order()
 
     def send_prediction(self, position: tuple[float, float, float, int]) -> None:
