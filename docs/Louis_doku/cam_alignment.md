@@ -10,9 +10,10 @@ Die beiden **blauen horizontalen Linien** markieren die obere und untere Förder
 
 ## Abhängigkeiten
 
-```python
-import cv2  # OpenCV für Videostream und Bildanzeige
-```
+
+| Name | Version |
+|------|---------|
+| Opencv-python | 4.13.0 |
 
 ---
 

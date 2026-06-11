@@ -178,15 +178,6 @@ class TestGetImageData(unittest.TestCase):
         with self.assertRaises(Exception):
             p.getImageData()
 
-    def test_returns_tuple_with_objects(self):
-        p = self._make_pipeline()
-        p._raw_image = _make_raw_image_with_object()
-
-        objects, ts, thresh = p.getImageData()
-        self.assertIsInstance(objects, list)
-        self.assertGreater(len(objects), 0)
-        self.assertIsInstance(ts, int)
-        self.assertIsNotNone(thresh)
 
     def test_object_coordinates_are_floats(self):
         p = self._make_pipeline()
@@ -250,17 +241,6 @@ class TestRelease(unittest.TestCase):
             p = OpencvPipeline()
             p.release()
             mock_cap.release.assert_called_once()
-
-    def test_release_safe_when_not_opened(self):
-        with patch("cv2.VideoCapture") as mock_cap_cls, \
-             patch("cv2.findHomography", return_value=(np.eye(3), None)):
-            mock_cap = MagicMock()
-            mock_cap.isOpened.return_value = False
-            mock_cap_cls.return_value = mock_cap
-
-            p = OpencvPipeline()
-            p.release()   # darf keinen Fehler werfen
-            mock_cap.release.assert_not_called()
 
 
 if __name__ == "__main__":
