@@ -211,13 +211,13 @@ Jede Haupt-logikdatei Implementiert ein im selben ordner Definierte Schnitstelle
 
 ### 2.3.1 Vision
 
-| Anforderungen | Schnittstellen Logik Implementierungen |
+| Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
 | • Aufnahme von Bildern<br>• Verarbeitet das Bild bis zu Pickpoint und vorverarbeitetem Graustufenbild<br>• Erkennt um welches Objekt es sich handelt<br>• Berechnet die Förderbandgeschwindigkeit | NimSortImageData, NimSortConveyorbeltSpeed | • OpencvPipeline<br>• ConveyorSpeedEstimator<br>• FeatureDetection |
 
 ### 2.3.2 PositionPrediction
 
-| Anforderungen | Schnittstellen Logik Implementierungen |
+| Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|--------------------|
 | • Speichern der erkannten Objekte<br>• Berechnung der neuen Positionen mit evtl. ber"ucksichtigung neuer erkantner Daten<br>• Aktualisierung der erkannten Objekte | NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed | • PositionPrediction |
 
@@ -229,7 +229,7 @@ Jede Haupt-logikdatei Implementiert ein im selben ordner Definierte Schnitstelle
 
 ### 2.3.4 AxisController
 
-| Anforderungen | Schnittstellen Logik Implementierungen |
+| Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
 | • Erhalte: RobotPos<br>• Halte und verwalte die Axen<br>• Kenne und vermeide verbotene fahrzonen<br>• Publish RobotCmd | NimSortTarget, RobotPos, NimSortMotionState, RobotCmd| • InitProcess<br>• Axis |
 
