@@ -38,8 +38,7 @@
 - calculate an return preprocessed Image and Object position
 
 ### FeatureDetection
-- receive preprocessed Image 
-- retrieves needed parameters
+- receive preprocessed Image
 - calculate object classification with parameters
 - return calculated object data
 
@@ -49,6 +48,8 @@
 
 ### MainLogic
 - System state machine
+- Orchestrates the drive_mode the axis 
+- Hold the current Object which has to be picked
 
 ### InitProcess
 - initialize System
@@ -57,6 +58,7 @@
 - hold axis data (position, velocity, acceleration)
 - calculate acceleration form position
 - calculate in the RCS (RobotCoordinateSystem)
+- Absctract 3 Axis down to one with Wrapper class
 
 ### Controller
 - control acceleration

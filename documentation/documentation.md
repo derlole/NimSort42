@@ -20,10 +20,9 @@
 
 ---
 
-## Zugehörige Projektdokumentationen
-
-[logic_2.md](logic_2)  
-[ros.md](ros.md)  
+## Zugehörige Projekt-Codedokumentationen
+Dokumentation der Umsetzung der Anforderungen und der Limitierungen der Logik: [nimsort_logic.md](nimsort_logic.md)  
+Dokumentation der beispielhaften Implementierung mit ROS2: [nimsort_ros.md](nimsort_ros.md)  
 
 ---
 
@@ -146,7 +145,7 @@ flowchart TD
 ### 2.1.2 Python Package Aufbau
 ```
 nimsort_logic/
-├── conigs/*.py                         # Konfigurationsdateien
+├── configs/*.py                        # Konfigurationsdateien
 ├── nimsort_feature_detection/*.py      # Featuredetection Scripts
 ├── nimsort_main/*.py                   # Main-logic
 ├── nimsort_motion/*.py                 # Axis-Scripts, Regler usw.
@@ -398,6 +397,10 @@ Das Prinzip I von SOLID hilft viel
 - Das einheitliche Verständniss der Anforderungen und die Einordnung im Gesamtsystem haben in der Teamdynamik dazu geführt, dass jeder zu jedem Themenbereich Vorschläge einbringen konnte und haben das generelle Systemverständnis früh auf den selben stand gebracht. -> Missverständnisse konnten reduziert bzw. vermieden werden.
 Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decision.md) [interface.md](../docs/sw_planning/interface.md) [logging.md](../docs/sw_planning/logging.md)
 
+## 5.8 Erhaltung und Überprüfung der Software Architektur
+- Das erhalten der Softwarearchitektur (soweit es geht) hilft bei der Konsistenz des Codes, der Anforderungen und der Kommunikation.
+- Durch **keine** Umverantwortung von Aufgaben und Verantwortungen gehen keine Anforderungen verloren und diese können klarer Abgearbeitet werden.
+- Wenn Anpassungen an der Architektur vorgenommen werden sollten diese am besten mit dem gesamten Team implementiert werden, damit von seiten aller Verantwortungen bewertet werden kann.
 
 # 6 Documente und Referenzen
 
