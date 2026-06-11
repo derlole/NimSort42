@@ -270,24 +270,74 @@ flowchart TD
 # 3 Designentscheidungen
 
 ## 3.1 State Machines
+**Entscheidung:** Verwendung von einer State Machine ausschließlich in der Main Logic
 
-### 3.1.1 Warum und wo State Machines?
-
-### 3.1.2 State Aufbau
+**Begründung:**
+- Vorhersagbares Verhalten
+- Einfaches debugging
+- Einfach Erweiterbar
 
 ## 3.2 PD-Regler vs. PDF-Regler
+**Entscheidung:** Finale Entscheidung hin zu einem PD Regler, auch wenn die Software schnell auf PDF erweitert werden könnte.
+
+**Begründung:**
+- Systematischer fehler auf der X- und Y-Achse müsste dabei in der Software berücksichtigt werden.
+- Verhältnissmäßig Großer overhead zum wechseln eines schnell aufgelegten PD-Regler zu einem gut ausgelegten PDF-Regler
+- Gut genuges Ergebniss mit PD-Regler
 
 ## 3.3 Keine Aruco Marker sondern Homographie
+**Entscheidung:** Keine Verwendung von Aruco Markern. Ersatz durch eine Homographie durch vorhandene erkennbare Bildpunkte.
+
+**Begründung:**
 
 ## 3.4 Decision Tree
+**Entscheidung:** Verwendung eines Entscheidungsbaumes als Machine Learning Modell zur differenzierung von den drei Klassen, Einhorn, Katze und Rest
+
+**Begründung:**
 
 ## 3.5 Sentinels
+**Entscheidung:** Definieren von Sentinels zum Publishen von nicht-Fehler werten, aber leeren Werten
+
+**Begründung:**
+- Das konsatate berichten der Daten ist wichtig für das angewendete Konzept des Fail-Safe
+- Eindeutiges Logging und frühere Abbruchbedingungen
+- Vermeiden von versehentlich leeren Werten.
+- Einfachere Testbarkeit
 
 ## 3.6 Fail-Safe statt Fail-Operational
-Für mehr Informationen über das Fail save konzept lesen sie hier: [failsave_concept.md](../docs/sw_planning/failsafe_concept.md)
+**Entscheidung:** Kein Faile-Operational, sondern ein Fail safe mit definiertem Safe-State
+
+**Begründung:**
+- Einfacher mit unseren anderen Entscheidungen umzusetzen
+- Sicherer Zustand der Maschine sorgt für Sicherheit für Mensch und Maschine, weil so sowohl Software als auch Hardware fehler zu großen Teilen erkannt werden können und zu einem Sicheren Zustand führen können.
+- Wenn die Software fehl schlägt muss aus Sicherheitsgründen für die Maschine die Software sowieso neugestartet werden -> Ein fail-Operational müsste sowieso ein Softwareneustart folgen
+- Einfacheres Debug durch absichtliches versetzen in den Safe-State
+**Files:** Für mehr Informationen über das Fail save konzept lesen sie hier: [failsave_concept.md](../docs/sw_planning/failsafe_concept.md)
 
 ## 3.7 Koordinatensysteme
-Für mehr information zu den verwendeten Koordinatensystemen lesen sie hier: [CSSystem.md](../docs/sw_planning/CSSystem.md)
+**Entscheidung:** Lage und Definiton der Koordinatensysteme
+
+**Begründung:**
+- Die Frühe Definition hilft in der Kommunikation im Team und trägt zum gemeinsamen verständniss des Systems bei.
+**Files:** Für mehr information zu den verwendeten Koordinatensystemen lesen sie hier: [CSSystem.md](../docs/sw_planning/CSSystem.md)
+
+## 3.8 Kamera-Ausrichtung mit digitalem Overlay
+**Entscheidung:** Kamera-Ausrichtung mit einem Digitalen Overlay 
+
+**Begründung:**
+- Genaue Ausrichtung der Kamera führt zu besseren Positionsdaten in der Software.
+- Durch die Nutzung der Homograophie mit festen Bildpunkten der Anwendung muss die Kamera relativ genau immer gleich stehen.
+- durch regelmäßigere Kontroller kann wenigstens dieser Hardware Fehler größtenteils ausgeschlossen werden.
+
+**Files:** Dieses Skript zeigt ein digitales Overlay über dem Live-Kamerabild und dient dazu,
+die Kamera reproduzierbar auf eine definierte Position auszurichten.
+
+![Digital Overlay](../misc/pictures/digital_overlay_camera.png)
+
+## 3.9 Datenhaltung in der PositionPrediction
+**Entscheidung:**
+
+**Begründung:**
 
 # 4 Technische Herleitungen
 
@@ -297,7 +347,9 @@ Für mehr information zu den verwendeten Koordinatensystemen lesen sie hier: [CS
 
 ## 4.3 Position Prediction Datenhaltung
 
-## 4.4 
+## 4.4 PD-Regler
+
+## 4.5
 
 # 5 Lessons Learned
 
@@ -314,7 +366,7 @@ Spätes angehen der korrekten Koordinaten und Transformationen führt zu mehrfac
 - In diesem Fall sicherte das die Hardware indem viele Fehlerhafte Koordinaten vor der Übergabe an die Achsen mehrfach auf ihren Sinnhaftigkeit geprüft wurden.
 
 ## 5.4 Fehlerhafte Hardware kostet Software viel Zeit
-- Nicht jeder Hardwarefehler kann sofort als solcher erkannt werden. Die Folge ist das Suchen von Fehlern die es nciht gibt
+- Nicht jeder Hardwarefehler kann sofort als solcher erkannt werden. Die Folge ist das Suchen von Fehlern die es nicht gibt
 - Fehlerhafte Hardware kann dazu führen, dass diese sich selbst beschädigt, ohne, dass das mit Software abgesichert werden kann
 - Beschädigte Hardware kostet den Entwickler der das Problem selbst beheben muss viele Stunden Arbeit, weil es nicht sein Fachgebiet ist.
 - Absichtlich billige Hardware muss durch übertriebene Softwarerobustheit ausgeglichen werden, da mangeld gute Hardware einfache Konzepte durch konsistent neue Fehler einfache Konzepte zunichte macht
