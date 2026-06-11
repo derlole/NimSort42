@@ -16,7 +16,8 @@
 3. [Designentscheidungen](#3-designentscheidungen)
 4. [Technische Herleitungen](#4-technische-herleitungen)
 5. [Lessons Learned](#5-lessons-learned)
-6. [Documente und Referenzen](#6-documente-und-referenzen)
+6. [Auswertung des Gesamtsystems](#6-auswertung-des-gesamtsystems)
+7. [Documente und Referenzen](#7-documente-und-referenzen)
 
 ---
 
@@ -406,10 +407,20 @@ Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decisio
 - Das erhalten der Softwarearchitektur (soweit es geht) hilft bei der Konsistenz des Codes, der Anforderungen und der Kommunikation.
 - Durch **keine** Umverantwortung von Aufgaben und Verantwortungen gehen keine Anforderungen verloren und diese können klarer Abgearbeitet werden.
 - Wenn Anpassungen an der Architektur vorgenommen werden sollten diese am besten mit dem gesamten Team implementiert werden, damit von seiten aller Verantwortungen bewertet werden kann.
+# 6 Auswertung des Gesamtsystems
 
-# 6 Documente und Referenzen
+## 6.1 Funktionalität
 
-## 6.1 Code Nutzung und Dokumentation
+## 6.2 Konsistenz
+
+## 6.3 Anforderungserfüllung
+
+## 6.4 performance
+
+
+# 7 Documente und Referenzen
+
+## 7.1 Code Nutzung und Dokumentation
 
 Dokumentation des Logik Packages und seinen Modulen im Detail:
 [nimsort_logic.md](nimsort_logic.md)
@@ -419,7 +430,7 @@ Projektplanung:
 README des Repos:
 [README.md](../README.md)
 
-## 6.2 Andere Verlinkte Dateien und Dokumentationen
+## 7.2 Andere Verlinkte Dateien und Dokumentationen
 Projektinterne Logging Konventionen: [logging.md](../docs/sw_planning/logging.md)
 Dokumentation der Logik Interfaces: [interface.md](../docs/sw_planning/interface.md)
 Entscheidungen und Anforderungen in der Softwarearchitektur: [architecture_decisions.md](../docs/sw_planning/architecture-decision.md)
