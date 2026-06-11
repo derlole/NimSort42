@@ -4,7 +4,6 @@
 Das `nimsort_nodes` Paket enthält alle ROS2 Nodes (Python-basiert). Jeder Node wrappet die Logik aus `nimsort_logic` und kommuniziert über ROS2 Topics mit anderen Nodes. 
 Alle Topics sind entweder default ROS2 Typen, oder durch [nimsort_msgs.md](nimsort_msgs.md) dokumentiert.
 
-## Hauptknoten
 
 ### MainNode (`main_node.py`)
 **Zentrale State Machine für Sortierlogik – ROS2 Wrapper**
