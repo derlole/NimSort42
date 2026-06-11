@@ -114,6 +114,8 @@
 
 ---
 
+Um die Projektinterne Dokumentation für das Projektmanagement zu sehen, schauen sie hier: [projektplanung.md](../docs/management/projektplanung.md)
+
 # 2 Software-Architektur
 
 ## 2.1 Architektur-Übersicht
@@ -339,6 +341,15 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 
 **Begründung:**
 
+## 3.10 Feedback von Main zur PositionPrediction
+
+**Entscheidung:**
+
+**Begründung:**
+
+## 3.11
+Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
+
 # 4 Technische Herleitungen
 
 ## 4.1 Conveyorbeld Speed Berechnung und Haltung
@@ -349,7 +360,7 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 
 ## 4.4 PD-Regler
 
-## 4.5
+## 4.5 Pick Prozess
 
 # 5 Lessons Learned
 
@@ -399,3 +410,13 @@ Dokumentationd er Beispielimplementierung des Logik Packages mit ROS2 Humble:
 Projektplanung:
 README des Repos:
 [README.md](../README.md)
+
+## 6.2 Andere Verlinkte Dateien und Dokumentationen
+Projektinterne Logging Konventionen: [logging.md](../docs/sw_planning/logging.md)
+Dokumentation der Logik Interfaces: [interface.md](../docs/sw_planning/interface.md)
+Entscheidungen und Anforderungen in der Softwarearchitektur: [architecture_decisions.md](../docs/sw_planning/architecture-decision.md)
+Dokumentationen der an der Hardware vorgenommenen änderungen: [hardware_fixes.md](../docs/hardware_fixes.md)
+Dokumentation der Im Porjekt relevanten oder größeren Entscheidungen: [decisions.md](../docs/decisions.md)
+Definition der im Projekt verwendeten Koordinatensysteme: [CSSystem.md](../docs/sw_planning/CSSystem.md)
+Dokumentation der Gedanken zum Fail-save konzept: [failsave_concept.md](../docs/sw_planning/failsafe_concept.md)
+Dokumentation der Projektplanung: [projektplanung.md](../docs/management/projektplanung.md)

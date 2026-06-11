@@ -35,3 +35,9 @@ The Repository Contains a python package for easier reference into the files acr
 cd nimsort_logic
 pip install -e .
 ```
+
+## Align the Camera
+To see how to start and how to correctly align the Camera see this File: [camera_alignment.md](docs/explanations/camera_alignment.md)
+
+## Run Nodes
+See how the Nodes can be run correctly here: [starting_nodes.md](docs/explanations/starting_nodes.md)
