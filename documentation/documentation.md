@@ -268,6 +268,11 @@ flowchart TD
     linkStyle 5 stroke:#ff66aa,stroke-width:2px
 ```
 
+## 2.5 Veratwortlichkeitsbereiche
+- **Louis Moser:** Vision, Machine-Learning
+- **Yannick Bachhuber:** PositionPrediction, Main
+- **Benjamin Keppler:** AxisController, Main
+
 # 3 Designentscheidungen
 
 ## 3.1 State Machines

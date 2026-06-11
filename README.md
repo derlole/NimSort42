@@ -2,6 +2,11 @@
 This Repo Contains all the Files and Documentation to run The Nimsort Project which controlls a 3 Axis Portal Robot to pick Objects from a Moving Conveorbelt to sort them accourding to their class into different Containers
 To See the Docs see this File: [documentaion.md](documentation/documentation.md)
 
+## Collaborators and responsibility
+- Louis Moser
+- Yannick Bachhuber
+- Benjamin Keppler 
+
 ## Pull Submodules
 In order to build all packages you have to recursively pull the submodules into your local repository with the following command:
 ```bash
