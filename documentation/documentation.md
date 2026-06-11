@@ -15,8 +15,8 @@
 2. [Software-Architektur](#2-software-architektur)
 3. [Designentscheidungen](#3-designentscheidungen)
 4. [Technische Herleitungen](#4-technische-herleitungen)
-5. [Lessons Learned](#5-Lessons-Learned)
-6. [Documente und Referenzen](#6-Dokumente-und-Referenzen)
+5. [Lessons Learned](#5-lessons-learned)
+6. [Documente und Referenzen](#6-documente-und-referenzen)
 
 ---
 

@@ -29,6 +29,18 @@ The user must be in the group dialout to have access to the serial interfaces. T
 sudo usermod -a -G dialout YOURUSERNAME
 ```
 
+## Install Global Python dependencies
+```txt
+opencv-python
+rclpy
+numpy
+joblib
+pandas
+matplotlib
+scipy
+pytest
+```
+
 ## Install Local Python packages
 The Repository Contains a python package for easier reference into the files across the repo. This Package can be installed locally with the following commands:
 ```bash
