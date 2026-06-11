@@ -1,4 +1,4 @@
-POSITION_UNICORN= [-0.16,-0.14, 0.07]
+POSITION_UNICORN= [-0.16,-0.14, 0.07] # TODO rework this file 
 POSITION_CAT= [-0.06, -0.14, 0.07]
 
 Z_PRE_POST_PICK= 5.0 #z-Höhe über Objekt für Pick-Preposition

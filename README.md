@@ -1,4 +1,6 @@
 # NimSort42
+This Repo Contains all the Files and Documentation to run The Nimsort Project which controlls a 3 Axis Portal Robot to pick Objects from a Moving Conveorbelt to sort them accourding to their class into different Containers
+To See the Docs see this File: [documentaion.md](documentation/documentation.md)
 
 ## Pull Submodules
 In order to build all packages you have to recursively pull the submodules into your local repository with the following command:
@@ -33,11 +35,3 @@ The Repository Contains a python package for easier reference into the files acr
 cd nimsort_logic
 pip install -e .
 ```
-
-## Other md Files
-- CSSystems.md contains the CoordinateSystems which are classified for this Project [CSSystems.md](docs/CSSystem.md)
-- main.md contains the main Software documentation [main.md](docs/main.md)
-- projektplanung.md contains the Project Planning phase decisions and Information which are not specified in the GitHub Project [projektplanung.md](docs/projektplanung.md)
-- arcitecture-decisions.md contains the requirements for the single architecture pieces [architecture-decisicions.ms](docs/architecture-decision.md)
-- logging.md contains the logging convention across the ros2 and python scripts across this repo to have better readable logs [logging.md](docs/logging.md)
-- interfaces.md contains the documentation for the decisions on each interfaces, the ros2 msgs as well as the interfaces between raw python code and ros2 nodes. [interfaces.md](docs/interface.md)

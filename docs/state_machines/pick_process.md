@@ -1,3 +1,5 @@
+# !!!DEPRECATED!!!
+
 ## This document explains in breaked down Steps how the Picking Process is going to be realized across the Orcestrating Main Node and the Executin AxisController Node
 
 ### Declarations:
