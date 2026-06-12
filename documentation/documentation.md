@@ -1,4 +1,4 @@
-<!-- Written, maintained and owned by Louis Moser, Linus Braun, Yannick Bachhuber (NIMSORT42 DEVELOPMENT TEAM) -->
+<!-- Written, maintained and owned by Louis Moser, Benjamin Keppler, Yannick Bachhuber (NIMSORT42 DEVELOPMENT TEAM) -->
 
 # NIMSORT42 Projekt - Dokumentations-Grundgerüst
 
