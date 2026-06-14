@@ -353,6 +353,17 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 **Begründung:**
 
 ## 3.11
+
+**Entscheidung:** Der Picking Process wird in seiner Substanz dargestellt als unterschiedliche Drive Modi der AxisNode. Diese kann unterschiedliche Targes unterschiedlich anfahren und damit einen Picking Drive realisieren.
+
+**Begründung:**
+- Die Architektur lässt es einfach zu nicht sicherheitsnotwendige Feedbacks zu senden, und Gleichzeitig allgemein notwendige Feedbacks hinzuzufügen. 
+- Die Umsetzung erlaubt es im allgemeinen Saubere Main States zu Formulieren welche gut den Gesamtablauf der Maschiene representieren. 
+- Die Axis änderungen sind minimal und können bei einer Revidierung der Entscheidung ohne veränderungen erhalten bleiben oder einfach zurückgesetz werden. Insofern ist es ein reines Feature was nicht zwangsweise benutzt werden muss.
+
+**Files:** Eine etwas tiefere Beschriebung der gedankengänge zum Pickprocess sind hier zu lesen: [pick_process.md](../docs/state_machines/pick_process.md)
+
+## 3.12
 Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 
 # 4 Technische Herleitungen
