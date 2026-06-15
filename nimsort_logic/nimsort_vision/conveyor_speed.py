@@ -5,7 +5,7 @@ class ConveyorSpeedEstimator:
     """
     Förderband-Geschwindigkeitsschätzung mit:
     - Medianfilter
-    - EMA-Glättung
+    - EMA-Glättung also know as PT1-Filter or Low-Pass-Filter as PT-1
     - Ausreißerunterdrückung
     - Persistenzprüfung für Geschwindigkeitsänderungen
     """
