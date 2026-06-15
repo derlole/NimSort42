@@ -137,7 +137,7 @@ class NimSortMain(MainInterface):
                 if reached_rise:
                     print(f"[DEBUG][Main][GTPPO---]: Switch to GO_TO_PICK_POSTPOSTION")
                     self.current_state = NimSortState.GO_TO_PICK_POSTPOSTION
-                return (self._current_pickabel_object.position[0] + self.conv_speed, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
+                return (self._current_pickabel_object.position[0] + self.conv_speed * 0.5, self._current_pickabel_object.position[1], Z_PICK, ProcessId.PICKING_DRIVE)
                        
             case NimSortState.GO_TO_PICK_POSTPOSTION:
                 target = self._current_pickabel_object
