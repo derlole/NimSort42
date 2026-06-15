@@ -58,7 +58,7 @@ Dokumentation der beispielhaften Implementierung mit ROS2: [nimsort_ros.md](nims
 - Professor fällt aus -> Projekt nicht bewertbar
 - Zu geringe Hardwareverfügbarkeit -> zu wenig praktisches testen möglich
 
-### 1.1.5
+### 1.1.5 Arbeitsweise
 - Iterativ
 - Wasserfall in den Iterationen
 
@@ -215,7 +215,7 @@ Jede Haupt-logikdatei Implementiert ein im selben ordner Definierte Schnitstelle
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
-| • Aufnahme von Bildern<br>• Verarbeitet das Bild bis zu Pickpoint und vorverarbeitetem Graustufenbild<br>• Erkennt um welches Objekt es sich handelt<br>• Berechnet die Förderbandgeschwindigkeit | NimSortImageData, NimSortConveyorbeltSpeed | • OpencvPipeline<br>• ConveyorSpeedEstimator<br>• FeatureDetection |
+| • Aufnahme von Bildern<br>• Verarbeitet das Bild bis zu Pickpoint und vorverarbeitetem Graustufenbild<br>• Erkennt um welches Objekt es sich handelt<br>• Berechnet die Förderbandgeschwindigkeit | NimSortImageData, NimSortConveyorbeltSpeed | • OpencvPipeline<br>•ConveyorSpeedEstimator<br>• FeatureDetection |
 
 ### 2.3.2 PositionPrediction
 
@@ -352,7 +352,7 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 
 **Begründung:**
 
-## 3.11
+## 3.11 Pick Process
 
 **Entscheidung:** Der Picking Process wird in seiner Substanz dargestellt als unterschiedliche Drive Modi der AxisNode. Diese kann unterschiedliche Targes unterschiedlich anfahren und damit einen Picking Drive realisieren.
 
@@ -363,7 +363,7 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 
 **Files:** Eine etwas tiefere Beschriebung der gedankengänge zum Pickprocess sind hier zu lesen: [pick_process.md](../docs/state_machines/pick_process.md)
 
-## 3.12
+## 3.12 Weitere
 Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 
 # 4 Technische Herleitungen
@@ -388,7 +388,7 @@ Die Qualität der Anforderungen kann sich auf viele bereiche der Software auswir
 ## 5.2 Kooridnatensysteme
 Spätes angehen der korrekten Koordinaten und Transformationen führt zu mehrfachen anläufen in der korrekten Funktionalität
 
-## 5.3 Runntime Plausibilitätschekcs
+## 5.3 Runtime Plausibilitätschekcs
 - Plausibilitätschecks an Schnittstellen oder übergabestellen testet schon früh und imemr zur laufzeit ob funktionen Sinnvolle Werte zurückgeben und ob datensätze verarbeitet werden sollten.
 - In diesem Fall sicherte das die Hardware indem viele Fehlerhafte Koordinaten vor der Übergabe an die Achsen mehrfach auf ihren Sinnhaftigkeit geprüft wurden.
 
