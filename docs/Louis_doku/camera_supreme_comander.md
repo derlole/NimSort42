@@ -10,27 +10,13 @@ Der Node trägt den Namen `camera_supreme_commander` und läuft als `Vision`-Kla
 
 ## Abhängigkeiten
 
-```python
-import rclpy
-from rclpy.node import Node
-from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
-from geometry_msgs.msg import Point
-from nimsort_msgs.msg import NimSortImageData, NimSortConveyorbeltSpeed
-
-from nimsort_vision.opencv_pipeline import OpencvPipeline
-from nimsort_vision.conveyor_speed import ConveyorSpeedEstimator
-from nimsort_feature_detection.feature_detection import FeatureDetection
-```
-
-| Import | Zweck |
-|--------|-------|
-| `rclpy` | ROS 2 Python-Client |
-| `MultiThreadedExecutor` | Parallele Callback-Ausführung |
-| `NimSortImageData` | Custom-Message: Objektposition + Typ + Zeitstempel |
-| `NimSortConveyorbeltSpeed` | Custom-Message: Bandgeschwindigkeit |
-| `OpencvPipeline` | Bildaufnahme & Pickpoin-Berechnung in Weltkoordinaten |
-| `ConveyorSpeedEstimator` | Geschwindigkeitsschätzung aus Objektbewegung |
-| `FeatureDetection` | Objektklassifikation via Hu-Momente |
+| Name | Version |
+|------|---------|
+| rclpy | 2.0+ |
+| geometry_msgs | 2.0+ |
+| nimsort_msgs | Custom |
+| nimsort_vision | Custom |
+| nimsort_feature_detection | Custom |
 
 ---
 

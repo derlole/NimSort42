@@ -10,23 +10,15 @@ Das Skript ist kein importierbares Modul, sondern wird einmalig manuell ausgefü
 
 ## Abhängigkeiten
 
-```python
-import os, joblib, numpy as np, pandas as pd
-import matplotlib; matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
-from sklearn.model_selection import StratifiedKFold, cross_val_predict, cross_val_score
-from sklearn.tree import DecisionTreeClassifier, plot_tree
-```
+| Name | Version |
+|------|---------|
+| numpy | 1.26.0+ |
+| joblib | 1.3.0+ |
+| pandas | 2.0.0+ |
+| matplotlib | 3.7.0+ |
+| scikit-learn | 1.3.0+ |
 
-| Import | Zweck |
-|--------|-------|
-| `pandas` | CSV-Laden und Feature-Extraktion |
-| `sklearn` | Modell, Kreuzvalidierung, Metriken |
-| `matplotlib` | Konfusionsmatrix- und Baumplot |
-| `joblib` | Modell serialisieren |
 
-`matplotlib.use("Agg")` erzwingt das dateibasierte Backend, das Skript läuft damit auch ohne Display (z.B. auf einem Server).
 
 ---
 

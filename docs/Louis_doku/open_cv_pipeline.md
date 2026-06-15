@@ -10,26 +10,12 @@ Die Klasse `OpencvPipeline` implementiert das Interface `OpencvPipelineInterface
 
 ## Abhängigkeiten
 
-```python
-import cv2 as cv
-import numpy as np
-import time, os
-
-from nimsort_vision.opencv_pieline_interface import OpencvPipelineInterface
-from nimsort_vision.plausibility_check import PlausibilityCheck
-from configs.config_camera import (
-    CAMERA_INDEX, MIN_CONTOUR_AREA, Z_W_CONSTANT_IN_MM,
-    MIN_OTSU_THRESHOLD, ROI_TRAPEZ, PIXEL_PUNKTE, WELT_PUNKTE, PICK_OFFSET_PX
-)
-```
-
-| Import | Zweck |
-|--------|-------|
-| `cv2` | Bildaufnahme, Filterung, Konturerkennung, Homographie |
-| `numpy` | Vektoroperationen für Koordinatentransformationen |
-| `OpencvPipelineInterface` | Abstrakte Basisklasse (Interface-Vertrag) |
-| `PlausibilityCheck` | Validierung berechneter Weltkoordinaten |
-| `config_camera` | Kamera-Index, ROI-Trapez, Homographie-Punkte, Schwellwerte |
+| Name | Version |
+|------|---------|
+| opencv-python | 4.13.0 |
+| numpy | 1.26.0+ |
+| nimsort_vision | Custom |
+| configs | Custom |
 
 ---
 

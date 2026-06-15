@@ -10,24 +10,13 @@ Die Klasse `FeatureDetection` implementiert das Interface `FeatureDetectionInter
 
 ## Abhängigkeiten
 
-```python
-import cv2 as cv
-import numpy as np
-import joblib
-import os
-
-from nimsort_feature_detection.feature_detection_interface import FeatureDetectionInterface
-from configs.config_camera import MIN_CONTOUR_AREA, LABEL_MAP
-```
-
-| Import | Zweck |
-|--------|-------|
-| `cv2` | Konturerkennung, Bildmomente, Hu-Momente |
-| `numpy` | Feature-Vektoren, Log-Transformation |
-| `joblib` | Laden des trainierten Klassifikators (`.joblib`) |
-| `FeatureDetectionInterface` | Abstrakte Basisklasse |
-| `MIN_CONTOUR_AREA` | Mindestfläche gültiger Konturen (aus `config_camera`) |
-| `LABEL_MAP` | Mapping Klassen-ID → Bezeichnung (aus `config_camera`) |
+| Name | Version |
+|------|---------|
+| opencv-python | 4.13.0 |
+| numpy | 1.26.0+ |
+| joblib | 1.3.0+ |
+| nimsort_feature_detection | Custom |
+| configs | Custom |
 
 ---
 
