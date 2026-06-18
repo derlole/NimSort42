@@ -132,7 +132,8 @@ controller.reset()
 Dies setzt interne Zustände wie den gespeicherten Fehler zurück und sollte beispielsweise nach einer Referenzfahrt oder beim Neustart einer Bewegung erfolgen.
 
 ## 2.4 Einordnung im Nimsort-System
-
+Der Controller wird von der Axis Implementiert und nimmt für einen PDF-Regler typische Konfigurationsparameter entgegen und muss mit dem aktuellen Fehler der in der Achse berechnet wird aufgerufen. 
+Der Controlle ist also Teil der Achse, kann aber auch als Normaler Regler verwendet werden.
 
 # 3 class TrajectoryPlanner
 
@@ -164,8 +165,6 @@ Zusätzlich überwacht die Klasse, ob das Bewegungsziel innerhalb definierter Po
 ### Einfaches Beispiel
 
 ```python id="3bgq4r"
-from nimsort_motion.trajectory_planner import TrajectoryPlanner
-
 planner = TrajectoryPlanner(
     max_velocity=1.0,
     max_acceleration=2.0,
@@ -183,13 +182,13 @@ target_acceleration = planner.compute(
     current_velocity=current_velocity
 )
 
-print(target_acceleration)
+
 ```
 
 ### Typischer Einsatz innerhalb einer Bewegungssteuerung
 
 ```python id="3m8j1r"
-while not planner.reached:
+    # cyclically called code e.g trough callbacks
 
     target_acceleration = planner.compute(
         target_position=target_position,
@@ -203,7 +202,6 @@ while not planner.reached:
         accel_ff=target_acceleration
     )
 
-    axis.set_control_output(control_signal)
 ```
 
 ### Überprüfung der Zielerreichung
@@ -216,7 +214,7 @@ if planner.reached:
 Der Status wird automatisch während jedes Aufrufs von `compute()` aktualisiert.
 
 ## 3.4 Einordnung im Nimsort-System
-
+Der Trajectory Planer eröffnet der Person, welche die Achse Konfiguriert, die Möglichkeit einen PDF-Regler aus dem aktuellen PD Regler zu machen und die Notwendigen werte mittels des TrajectoryPlanners zu berechnen.
 
 # 4 class Axis
 ## 4.1 Zweck
@@ -282,6 +280,8 @@ print("Bewegung abgeschlossen")
 ```
 
 ## 4.4 Einordnung im Nimsort-System
+Die Klasse Axis wird in der Überklasse [SoftwareAxis](#6-class-softwareaxis) in der dreifachen ausführung implementiert um eine Portalkinematik darzustellen.
+Diese können aber auch händisch erzeugt und aufgerufen werden, dabei verdreifacht sich nur der Code, da die schnitstelle genau gleich, zu der der SoftwareAxis ist.
 
 # 5 class InitProcess
 
@@ -376,7 +376,8 @@ if process.is_initialized():
 ```
 
 ## 5.4 Einordnung im Nimsort-System
-
+Die Implementierung des InitProcess erfolgt in der Beispielimplementierung in der AxisNode, äquivalent sollte an einer hardwarenahen Schnittstelle dieser InitProcess aufgerufen werden. Der initProcess mus erst durch start gestartet werden, so kann von extern eine versehentliche initialisierung verhindert werden.
+Die InitProcess Klasse zahlt also insgesamt auf die Funktionalität der Achsen ein.
 
 # 6 class SoftwareAxis
 
