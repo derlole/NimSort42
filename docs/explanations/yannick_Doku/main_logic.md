@@ -178,15 +178,15 @@ flowchart TD
     INIT_CALL --> WAIT_FOR_INIT
     WAIT_FOR_INIT -->|reached| READY_FOR_PICK
     READY_FOR_PICK -->|reached| GTPRP
-    GTPRP -->|target, reached, first_run_through| GTPP
-    GTPRP -->|target, nicht reached| GTOPP
+    GTPRP -->|target & reached & first_run_through| GTPP
+    GTPRP -->|target & not_reached| GTOPP
     GTOPP -->|reached_rise| GTPP
     GTPP -->|reached_rise| GTPPO
-    GTPPO -->|reached_rise, type 0| GTDU
-    GTPPO -->|reached_rise, type 1| GTDC
-    GTPPO -->|reached_rise, unbekannter Typ| GTPRP
-    GTDU -->|reached_rise, gripper_active| DU
-    GTDC -->|reached_rise, gripper_active| DC
-    DU -->|reached, kein gripper| GTPRP
-    DC -->|reached, kein gripper| GTPRP
+    GTPPO -->|reached_rise & type 0| GTDU
+    GTPPO -->|reached_rise & type 1| GTDC
+    GTPPO -->|reached_rise & unknown_typ| GTPRP
+    GTDU -->|reached_rise & gripper_active| DU
+    GTDC -->|reached_rise & gripper_active| DC
+    DU -->|reached & gripper_not_active| GTPRP
+    DC -->|reached & gripper_not_active| GTPRP
 ```
