@@ -98,7 +98,7 @@ Methode des Reglers mit welcher ein Aktueller Reglerwert ermittelt werden kann.
 
 ## 2.4 Einordnung im Nimsort-System
 Der Controller wird von der Axis Implementiert und nimmt für einen PDF-Regler typische Konfigurationsparameter entgegen und muss mit dem aktuellen Fehler der in der Achse berechnet wird aufgerufen. 
-Der Controlle ist also Teil der Achse, kann aber auch als Normaler Regler verwendet werden.
+Der Controller ist also Teil der Achse, kann aber auch als Normaler Regler verwendet werden.
 
 # 3 class TrajectoryPlanner
 
@@ -209,7 +209,7 @@ Neuberechnung des Outputs in einem bestimmten Zyklus
 
 | Parameter | Typ | Beschreibung |
 |---|---|---|
-| `current_position` | `float` | Aktuelle Istposition der Achse |
+| `current_position` | `float` | Aktuelle Ist-position der Achse |
 | `dt` | `float` | vergangene Zeit seit letztem Aufruf |
 
 **Rückgabe:** `float`: Umzusetzende Geschwindigkeit
@@ -221,15 +221,15 @@ Setzt alle in der Laufzeit veränderten Werte zurück und ermöglicht einen Neus
 
 ### `property:position`
 
-**Rückgabe:** `float`: letzte bekannte Istposition der Achse
+**Rückgabe:** `float`: letzte bekannte Ist-Position der Achse
 
 ### `property:velocity`
 
-**Rückgabe:** `float`: letzte bekannte Istgeschwindigkeit der Achse
+**Rückgabe:** `float`: letzte bekannte Ist-Geschwindigkeit der Achse
 
 ### `property:acceleration`
 
-**Rückgabe:** `float`: letzte bekannte Istbeschleunigung der Achse
+**Rückgabe:** `float`: letzte bekannte Ist-Beschleunigung der Achse
 
 ### `property:target_reached`
 
@@ -267,7 +267,7 @@ Die Klasse übernimmt dabei:
 | Import         | Zweck                                                                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
 | nimsort_motion | Das eigene Package muss auf dem Zielsystem installiert sein, damit die benötigten Unterklassen und Schnittstellen importiert werden können. |
-| configs | Das configs Package mus installiert sein, oder anders bereitgestellt werden, da die initialisierung in den Beschleunigungswerten Konfiguriert wird |
+| configs | Das configs Package muss installiert sein, oder anders bereitgestellt werden, da die initialisierung in den Beschleunigungswerten Konfiguriert wird |
 | nimsort_main | Da die Initialisierung sich nicht selbst starten darf wird der ProcessID des Main Package benötigt um diese Interpretieren zu können |  
 
 ## 5.3 Nutzung
@@ -280,7 +280,7 @@ Klasse zur Verwaltung und Steuerung eines Initialisierungsprozesses
 **Rückgabe:** `InitProcess`: InitProcess Klasse 
 
 ### `should_start(process_id: int) -> bool`
-Gibt an ob ein Initialisierungprozess gestartet werden soll.
+Gibt an ob ein Initialisierung-Prozess gestartet werden soll.
 
 | Parameter | Typ | Beschreibung |
 |---|---|---|
@@ -294,7 +294,7 @@ Gibt die Erlaubnis eine Initialisierung zu fahren.
 
 | Parameter | Typ | Beschreibung |
 |---|---|---|
-| `accel` | `tuple[float, float, float] = HOMING_ACCELERATION` | Überschreiben der standard beschleunigungswerte für eine Initialisierungsfahrt. |
+| `accel` | `tuple[float, float, float] = HOMING_ACCELERATION` | Überschreiben der standard Beschleunigungswerte für eine Initialisierungsfahrt. |
 
 **Rückgabe:** `None`: 
 
@@ -303,7 +303,7 @@ Gibt die Erlaubnis eine Initialisierung zu fahren.
 
 | Parameter | Typ | Beschreibung |
 |---|---|---|
-| `position` | `tuple[float, float, float]` | Die Aktuellen Istpositionen der Achsen |
+| `position` | `tuple[float, float, float]` | Die Aktuellen Ist-Positionen der Achsen |
 
 **Rückgabe:** `tuple[float, float, float]`: Beschleunigungswerte die für den Initialisierungsprozess gefahren werden sollen
 
@@ -318,7 +318,7 @@ Gibt zurück ob das System fertig Initialisiert ist.
 **Rückgabe:** `bool`: True, wenn das System vollständig Initialisiert ist.
 
 ## 5.4 Einordnung im Nimsort-System
-Die Implementierung des InitProcess erfolgt in der Beispielimplementierung in der AxisNode, äquivalent sollte an einer hardwarenahen Schnittstelle dieser InitProcess aufgerufen werden. Der initProcess mus erst durch start gestartet werden, so kann von extern eine versehentliche initialisierung verhindert werden.
+Die Implementierung des InitProcess erfolgt in der Beispielimplementierung in der AxisNode, äquivalent sollte an einer hardwarenahen Schnittstelle dieser InitProcess aufgerufen werden. Der InitProcess muss erst durch start gestartet werden, so kann von extern eine versehentliche initialisierung verhindert werden.
 Die InitProcess Klasse zahlt also insgesamt auf die Funktionalität der Achsen ein.
 
 # 6 class SoftwareAxis
@@ -393,9 +393,9 @@ Gibt die neuen Beschleunigungswerte für die einzelnen Achsen anhand der Istposi
 
 | Parameter | Typ | Beschreibung |
 |---|---|---|
-| `pos_x` | `float` | Istposition der X-Achse |
-| `pos_y` | `float` | Istposition der Y-Achse |
-| `pos_z` | `float` | Istposition der Z-Achse |
+| `pos_x` | `float` | Ist-Position der X-Achse |
+| `pos_y` | `float` | Ist-Position der Y-Achse |
+| `pos_z` | `float` | Ist-Position der Z-Achse |
 
 **Rückgabe:** `tuple[float, float, float]`: Beschleunigungswerte der drei Achsen die gefahren werden sollen
 
