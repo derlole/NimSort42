@@ -72,64 +72,29 @@ Die Klasse stellt ausschließlich die Regellogik bereit und besitzt keine direkt
 
 ## 2.3 Nutzung
 
-### Einfaches Beispiel
+### `Controller(kp: float, kd: float, output_limit: float, kff: float)`
 
-```python
-from nimsort_motion.controller import Controller
+Konstruktor der Controller Klasse, Initialisiert ein Controller Objekt
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `kp` | `float` | Regelparameter des P-Anteils |
+| `kd` | `float` | Regelparameter des D-Anteils |
+| `kff` | `float` | Regelparameter des Feedforward-Anteils |
+| `output_limit` | `float` | Maximaler wert in  +- der Ausgegeben werden kann |
 
-controller = Controller(
-    kp=20.0,
-    kd=2.0,
-    output_limit=100.0,
-    kff=0.5
-)
+**Rückgabe:** `Controller`
 
-target_position = 100.0
-current_position = 85.0
+### `compute(error: float, dt: float, accel_ff: float = 0.0) -> float`
 
-dt = 0.01
+Methode des Reglers mit welcher ein Aktueller Reglerwert ermittelt werden kann.
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `error` | `float` | Fehler zwischen Ziel- und Aktuallwert |
+| `dt` | `float` | vergangene Zeit seit Letztem Aufruf der Funktion |
+| `accel_ff` | `float` | Beschleunigungs-Übergabewert, falls Feedforward verwendet wird |
 
-error = target_position - current_position
+**Rückgabe:** `float`: Berechneter Reglwert
 
-control_output = controller.compute(
-    error=error,
-    dt=dt,
-    accel_ff=0.0
-)
-
-print(control_output)
-```
-
-### Typischer Einsatz innerhalb eines Regelkreises
-
-```python
-controller = Controller(
-    kp=20.0,
-    kd=2.0,
-    output_limit=100.0
-)
-
-while True:
-    current_position = axis.position
-    target_position = trajectory.position
-
-    error = target_position - current_position
-
-    control_signal = controller.compute(
-        error=error,
-        dt=cycle_time
-    )
-
-    axis.set_control_output(control_signal)
-```
-
-### Rücksetzen des Reglers
-
-```python
-controller.reset()
-```
-
-Dies setzt interne Zustände wie den gespeicherten Fehler zurück und sollte beispielsweise nach einer Referenzfahrt oder beim Neustart einer Bewegung erfolgen.
 
 ## 2.4 Einordnung im Nimsort-System
 Der Controller wird von der Axis Implementiert und nimmt für einen PDF-Regler typische Konfigurationsparameter entgegen und muss mit dem aktuellen Fehler der in der Achse berechnet wird aufgerufen. 
@@ -161,57 +126,34 @@ Zusätzlich überwacht die Klasse, ob das Bewegungsziel innerhalb definierter Po
 
 
 ## 3.3 Nutzung
+### `TrajectoryPlanner(max_velocity: float, max_acceleration: float, position_tolerance: float, velocity_tolerance: float)`
 
-### Einfaches Beispiel
+Konstruktor eines TrajectoryPlanners und Konfiguration
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `max_velocity` | `float` | Maximale erlaubte verfahr Geschwindigkeit |
+| `max_acceleration` | `float` | Maximale erlaubte Beschleunigung |
+| `position_tolerance` | `float` | Toleranz wann die Position der Achse als erreicht gilt |
+| `velocity_tolerance` | `float` | Toleranz wann die Geschwindigkeit der Achse für das erreichen eines Punktes langsam genug ist |
 
-```python id="3bgq4r"
-planner = TrajectoryPlanner(
-    max_velocity=1.0,
-    max_acceleration=2.0,
-    position_tolerance=0.001,
-    velocity_tolerance=0.01
-)
+**Rückgabe:** `TrajectoryPlanner`
 
-target_position = 0.5
-current_position = 0.1
-current_velocity = 0.0
+### `compute(target_position: float, current_position: float, current_velocity: float) -> float`
 
-target_acceleration = planner.compute(
-    target_position=target_position,
-    current_position=current_position,
-    current_velocity=current_velocity
-)
+Methode mit welcher die aktuelle Sollbeschleunigung zum erreichen einer Optimalen Trajektorie gefahren werden müsste.
 
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `target_position` | `float` | Zielposition die angefahren werden soll |
+| `current_position` | `float` | Aktuelle Istposition |
+| `current_velocity` | `float` | Aktuelle Istgeschwindigkeit |
 
-```
+**Rückgabe:** `float`: neue Sollbeschleunigung des Systems
 
-### Typischer Einsatz innerhalb einer Bewegungssteuerung
+### `property: reached`
+Gibt an ob der zuletzt hinterlegte Zielpunkt erreicht ist.
 
-```python id="3m8j1r"
-    # cyclically called code e.g trough callbacks
-
-    target_acceleration = planner.compute(
-        target_position=target_position,
-        current_position=axis.position,
-        current_velocity=axis.velocity
-    )
-
-    control_signal = controller.compute(
-        error=target_position - axis.position,
-        dt=cycle_time,
-        accel_ff=target_acceleration
-    )
-
-```
-
-### Überprüfung der Zielerreichung
-
-```python id="vprkfe"
-if planner.reached:
-    print("Zielposition erreicht")
-```
-
-Der Status wird automatisch während jedes Aufrufs von `compute()` aktualisiert.
+**Rückgabe:** `bool`: Ob Achse den Zielpunkt erreicht hat. 
 
 ## 3.4 Einordnung im Nimsort-System
 Der Trajectory Planer eröffnet der Person, welche die Achse Konfiguriert, die Möglichkeit einen PDF-Regler aus dem aktuellen PD Regler zu machen und die Notwendigen werte mittels des TrajectoryPlanners zu berechnen.
@@ -241,43 +183,61 @@ Das zugehörige Interface befindet sich in [axis_interface.py](../../nimsort_log
 
 ## 4.3 Nutzung
 
-### Einfaches Beispiel
+### `Axis(name: str, controller:  Controller, trajectory_planner: TrajectoryPlanner, initial_position: float = 0.0)`
 
-```python
-from nimsort_motion.axis import Axis
+Konstruktor der Achs-Klasse NACH Referenzfahrt und Ruhelage im Initialpunkt
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `name` | `str` | Flexibler Name für die Achse |
+| `controller` | `Controller` | Zugehöriger initialisierter Controller |
+| `trajectory_planner` | `TrajectoryPlanner` | Zugehöriger initialisierter TrajectoryPlanner |
+| `initial_position` | `float` | Initiale Position |
 
-# Achse erzeugen
-axis = Axis(...)
+**Rückgabe:** `Axis`: Initialisierte Achs-Instanz
 
-# Zielposition setzen
-axis.set_target_position(250.0)
+### `set_target(self, target_position: float)`
+Setzen eines Neuen Zielpunktes der Achse
 
-# Zyklischer Aufruf der Achslogik
-while not axis.state.target_reached:
-    axis.update()
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `target_position` | `float` | Neuer Zielpunkt |
 
-    state = axis.state
+**Rückgabe:** `None`
 
-    print(
-        f"Position: {state.position:.2f}, "
-        f"Geschwindigkeit: {state.velocity:.2f}"
-    )
+### update(self, current_position: float, dt: float) -> float``
+Neuberechnung des Outputs in einem bestimmten Zyklus
 
-# Ziel erreicht
-print("Bewegung abgeschlossen")
-```
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `current_position` | `float` | Aktuelle Istposition der Achse |
+| `dt` | `float` | vergangene Zeit seit letztem Aufruf |
 
-### Typischer Ablauf innerhalb einer Steuerung
+**Rückgabe:** `float`: Umzusetzende Geschwindigkeit
 
-```text
-1. Achse initialisieren
-2. Referenzfahrt durchführen
-3. Zielposition vorgeben
-4. Achslogik zyklisch aufrufen
-5. Achszustand auswerten
-6. Auf target_reached warten
-7. Nächsten Bewegungsauftrag ausführen
-```
+### `reset() -> None`
+Setzt alle in der Laufzeit veränderten Werte zurück und ermöglicht einen Neustart der Achse
+
+**Rückgabe:** `None`
+
+### `property:position`
+
+**Rückgabe:** `float`: letzte bekannte Istposition der Achse
+
+### `property:velocity`
+
+**Rückgabe:** `float`: letzte bekannte Istgeschwindigkeit der Achse
+
+### `property:acceleration`
+
+**Rückgabe:** `float`: letzte bekannte Istbeschleunigung der Achse
+
+### `property:target_reached`
+
+**Rückgabe:** `bool`: der erreicht status der Achse auf den zuletzt berechneten Zielpunkt
+
+### `get_state() -> AxisState`
+
+**Rückgabe:** `AxisState`: Aktueller Status der Achse in der statisch erzeugten dataclasss AxisState zusammengefasst
 
 ## 4.4 Einordnung im Nimsort-System
 Die Klasse Axis wird in der Überklasse [SoftwareAxis](#6-class-softwareaxis) in der dreifachen ausführung implementiert um eine Portalkinematik darzustellen.
@@ -312,68 +272,50 @@ Die Klasse übernimmt dabei:
 
 ## 5.3 Nutzung
 
-### Starten des Initialisierungsvorgangs
+### `InitProcess()`
+Klasse zur Verwaltung und Steuerung eines Initialisierungsprozesses
+| Parameter | Typ | Beschreibung |
+|---|---|---|
 
-```python
-from nimsort_motion.init_process import InitProcess
+**Rückgabe:** `InitProcess`: InitProcess Klasse 
 
-process = InitProcess()
+### `should_start(process_id: int) -> bool`
+Gibt an ob ein Initialisierungprozess gestartet werden soll.
 
-process.start()
-```
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `process_id` | `int` | Status in welcher Die Achse sich befinden soll |
 
-### Prozess zyklisch ausführen
+**Rückgabe:** `bool`: true, wenn der Initialisierungsprozess gestartet werden soll
 
-```python
-while not process.is_initialized():
 
-    current_position = (
-        robot.x,
-        robot.y,
-        robot.z
-    )
+### `start(self, accel: tuple[float, float, float]) -> None`
+Gibt die Erlaubnis eine Initialisierung zu fahren.
 
-    acceleration_command = process.robot_values(
-        current_position
-    )
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `accel` | `tuple[float, float, float] = HOMING_ACCELERATION` | Überschreiben der standard beschleunigungswerte für eine Initialisierungsfahrt. |
 
-    robot.set_acceleration(
-        acceleration_command
-    )
-```
+**Rückgabe:** `None`: 
 
-### Start über ProcessId prüfen
+### `robot_values(self, position: tuple[float, float, float]) -> tuple[float, float, float]`
+Überwachung und Koordinierung des Prozesses.
 
-```python
-if process.should_start(process_id):
-    process.start()
-```
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `position` | `tuple[float, float, float]` | Die Aktuellen Istpositionen der Achsen |
 
-### Initialisierung zurücksetzen
+**Rückgabe:** `tuple[float, float, float]`: Beschleunigungswerte die für den Initialisierungsprozess gefahren werden sollen
 
-```python
-process.reset()
-```
+### `reset() -> None`
+Setzt die Initialisierung in den Leeren zustand zurück, anschließend kann die für eine erneute Initialisierung genutzt werden.
 
-### Initialisierungsstatus abfragen
+**Rückgabe:** `None`
 
-```python
-if process.is_initialized():
-    print("Robot initialization completed")
-```
+### `is_initialized() -> bool`
+Gibt zurück ob das System fertig Initialisiert ist.
 
-### Typischer Ablauf
-
-```text
-1. Initialisierungsprozess erzeugen
-2. Startbedingung prüfen
-3. Prozess starten
-4. Positionsdaten zyklisch übergeben
-5. Homing-Beschleunigung ausgeben
-6. Stillstand des Roboters erkennen
-7. Initialisierung als abgeschlossen markieren
-8. In den normalen Betriebsmodus wechseln
-```
+**Rückgabe:** `bool`: True, wenn das System vollständig Initialisiert ist.
 
 ## 5.4 Einordnung im Nimsort-System
 Die Implementierung des InitProcess erfolgt in der Beispielimplementierung in der AxisNode, äquivalent sollte an einer hardwarenahen Schnittstelle dieser InitProcess aufgerufen werden. Der initProcess mus erst durch start gestartet werden, so kann von extern eine versehentliche initialisierung verhindert werden.
@@ -413,71 +355,60 @@ Die eigentliche Bewegungsplanung und Regelung wird dabei an die Klassen `Axis`, 
 | nimsort_main | Die Software Achsen stellen wieder eine Logische representation dar, weswegen sie zur Interpretation der ProcessID das main_package benötigen |  
 
 ## 6.3 Nutzung
+### `SoftwareAxis()`
+Konstruktor der SoftwareAxis Klasse und Initialisierung der enthaltenen Einzelachsen
 
-### Instanz erzeugen
+**Rückgabe:** `SoftwareAxis`: Instanz der Achse mit enthaltenen Axis Unterklassen
 
-```python
-software_axis = SoftwareAxis()
-```
+### `reached(process_id: int) -> bool`
+Ermittlung ob das System gerade am gesetzten Zielpunkt steht.
 
-### Zielposition vorgeben
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `process_id` | `int` | Fahrmodus in welchem Die Achse sich befinden soll |
 
-```python
-software_axis.set_target(
-    x=0.25,
-    y=0.10,
-    z=-0.15
-)
-```
+**Rückgabe:** `bool`: True, wenn das System am gesetzten Zielpunkt steht
 
-Die Zielkoordinaten werden automatisch vom Weltkoordinatensystem in das Roboterkoordinatensystem transformiert und anschließend an die einzelnen Achsen übergeben.
+### `gripper_active(process_id: int) -> bool`
+Ermittelt ob der Greifer des Systems aktiv sein soll
 
-### Zyklische Aktualisierung
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `process_id` | `int` | Fahrmodus in welchem Die Achse sich befinden soll |
 
-```python
-while True:
+**Rückgabe:** `bool`: True wenn der Greifer Aktiv sein soll
 
-    acc_x, acc_y, acc_z = software_axis.update(
-        pos_x=current_x,
-        pos_y=current_y,
-        pos_z=current_z,
-        dt=cycle_time
-    )
+### `set_target(self, x: float , y: float , z: float) -> None`
+Setzt einen neune Zielpunkt des Systems in seinen drei Achsen
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `x` | `float` | Zielposition der X-Achse |
+| `y` | `float` | Zielposition der Y-Achse |
+| `z` | `float` | Zielposition der Z-Achse |
 
-    robot.send_acceleration(
-        acc_x,
-        acc_y,
-        acc_z
-    )
-```
+**Rückgabe:** `None`
 
-### Zielerreichung prüfen
+### `update(self, pos_x: float, pos_y:float, pos_z: float, dt: float) -> tuple[float, float, float]`
+Gibt die neuen Beschleunigungswerte für die einzelnen Achsen anhand der Istposition zurück
 
-```python
-if software_axis.reached(process_id):
-    print("Target reached")
-```
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `pos_x` | `float` | Istposition der X-Achse |
+| `pos_y` | `float` | Istposition der Y-Achse |
+| `pos_z` | `float` | Istposition der Z-Achse |
 
-Abhängig vom aktiven Prozess werden unterschiedliche Achsen zur Bewertung der Zielerreichung berücksichtigt.
+**Rückgabe:** `tuple[float, float, float]`: Beschleunigungswerte der drei Achsen die gefahren werden sollen
 
-### Positionsoffset setzen
+### ` set_offset(self, x: float, y: float, z: float) -> None`
+Setzt die Offsetwerte der Achsen
 
-```python
-software_axis.set_offset(
-    x=offset_x,
-    y=offset_y,
-    z=offset_z
-)
-```
+| Parameter | Typ | Beschreibung |
+|---|---|---|
+| `x` | `float` | Achsen-Offset der X-Achse |
+| `y` | `float` | Achsen-Offset der Y-Achse |
+| `z` | `float` | Achsen-Offset der Z-Achse |
 
-Offsets werden bei der Positionsrückführung berücksichtigt und können beispielsweise nach einer Initialisierung oder Referenzierung gesetzt werden.
-
-### Greiferstatus bestimmen
-
-```python
-if software_axis.gripper_active(process_id):
-    activate_gripper()
-```
+**Rückgabe:** `None`
 
 ## 6.4 Einordnung im Nimsort-System
 

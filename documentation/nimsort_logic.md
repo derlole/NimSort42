@@ -85,7 +85,7 @@ Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Beson
 - Unterschiedliche Verfahrmöglichkeiten die sich in der Definition des erreichens der Achse auszeichnen
 
 ## 5.4 Weitere Dokumentation
-- keine
+- Detailierterer Breakedown der Klassen und der Nutzung dieser: [nimsort_motion](../docs/nimsort_logic/nimsort_motion.md)
 
 # 6 Modul: nimsort_vision
 
