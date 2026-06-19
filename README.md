@@ -54,7 +54,77 @@ pip install -e .
 ```
 
 ## Align the Camera
-To see how to start and how to correctly align the Camera see this File: [camera_alignment.md](docs/explanations/camera_alignment.md)
+### Skript zur Kameraausrichtung verwenden
+
+1. Skript starten:
+
+```bash
+   python3 misc/vision/camera/camera_alignment.py
+```
+
+2. Das Kamerafenster öffnet sich mit den eingeblendeten Referenzlinien.
+
+![Ausgerichtete Kamera](misc/pictures/digital_overlay_camera.png)
+
+3. Kamera physisch ausrichten, bis die relevanten Objekte mit den Referenzlinien
+   übereinstimmen:
+
+   * Das **rote Kästchen** (oben im Bild) markiert den Zielbereich des 2D-Codes.
+   * Die **blauen Linien** dienen als Ausrichtungshilfe zum Förderband.
+
+4. Sobald alles passt, Kamera fixieren.
+   Die Position ist damit dokumentiert und kann jederzeit wiederhergestellt werden.
+
+#### Steuerung
+
+| Taste | Funktion                                     |
+| ----- | -------------------------------------------- |
+| `ESC` | Programm beenden                             |
+| `F`   | Zwischen Vollbild- und Fenstermodus wechseln |
 
 ## Run Nodes
-See how the Nodes can be run correctly here: [starting_nodes.md](docs/explanations/starting_nodes.md)
+### Starting and unsing Camera Node
+#### Parameter
+camera_index: default 4
+
+starting as following to run with camera_index 4 as default
+```bash
+ros2 run nimsort_nodes nimsort_vision
+```
+Starting as following to use any camera indexs as integer
+
+```bash
+ros2 run nimsort_nodes nimsort_vision --ros-args  -p camera_index:=2
+```
+When does the Node Stops?
+Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.
+
+### Starting and unsing PositionPrediction Node
+
+starting as following to run PositionPredictionNode
+```bash
+ros2 run nimsort_nodes nimsort_position_prediction
+```
+
+When does the Node Stops?
+Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.
+
+### Starting and unsing Main Node
+
+starting as following to MainNode
+```bash
+ros2 run nimsort_nodes nimsort_main
+```
+
+When does the Node Stops?
+Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.
+
+### Starting and unsing PositionPrediction Node
+
+starting as following to run AxisControllerNode
+```bash
+ros2 run nimsort_nodes nimsort_axis_controller
+```
+
+When does the Node Stops?
+Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.

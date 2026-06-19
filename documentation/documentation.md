@@ -22,8 +22,8 @@
 ---
 
 ## Zugehörige Projekt-Codedokumentationen
-Dokumentation der Umsetzung der Anforderungen und der Limitierungen der Logik: [nimsort_logic.md](nimsort_logic.md)  
-Dokumentation der beispielhaften Implementierung mit ROS2: [nimsort_ros.md](nimsort_ros.md)  
+Dokumentation der Umsetzung der Anforderungen und der Limitierungen der Logik: **[nimsort_logic.md](nimsort_logic.md)**  
+Dokumentation der beispielhaften Implementierung mit ROS2: **[nimsort_ros.md](nimsort_ros.md)**  
 
 ---
 
@@ -433,13 +433,10 @@ Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decisio
 
 ## 7.1 Code Nutzung und Dokumentation
 
-Dokumentation des Logik Packages und seinen Modulen im Detail:
-[nimsort_logic.md](nimsort_logic.md)
-Dokumentationd er Beispielimplementierung des Logik Packages mit ROS2 Humble:
-[nimsort_ros.md](nimsort_ros.md)
+Dokumentation des Logik Packages und seinen Modulen im Detail: **[nimsort_logic.md](nimsort_logic.md)**
+Dokumentationd er Beispielimplementierung des Logik Packages mit ROS2 Humble: **[nimsort_ros.md](nimsort_ros.md)**
 Projektplanung:
-README des Repos:
-[README.md](../README.md)
+README des Repos: **[README.md](../README.md)**
 
 ## 7.2 Andere Verlinkte Dateien und Dokumentationen
 Projektinterne Logging Konventionen: [logging.md](../docs/sw_planning/logging.md)
