@@ -36,7 +36,6 @@ class PositionPrediction(PositionPredictionInterface):
             existing.position[0] = (old_x + position[0]) / 2.0
             existing.position[1] = (old_y + position[1]) / 2.0
             
-            # Count the object_type vote
             existing_id = next(
                 (obj_id for obj_id, obj in self._objects.items() if obj is existing),
                 None
@@ -61,7 +60,7 @@ class PositionPrediction(PositionPredictionInterface):
                 position=position,
                 ts=float(ts),
             )
-            # Initialize vote counter for this object
+          
             self._object_type_votes[new_id] = Counter([object_type])
 
         print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {self._object_id_counter} bei X={position[0]:.2f} gespeichert.")
@@ -107,7 +106,6 @@ class PositionPrediction(PositionPredictionInterface):
     def calculate_next_object_positions(self) -> list[tuple[float, float, float, int]]:
         """
         Berechnet die nächsten Positionen der führenden Objekte.
-        Update und Threshold-Entfernung passiert genau einmal hier.
         """
         if self._conveyor_belt_speed is None or self._conveyor_belt_speed < 0:
             raise ValueError("[WARN][PoPr][CNOP----]: Förderband-Geschwindigkeit ungültig.")

@@ -1,4 +1,4 @@
-# PositionPrediction – API-Referenz
+# PositionPrediction 
 
 ---
 
@@ -163,3 +163,50 @@ Sucht ein bestehendes Objekt, dessen X-Position innerhalb von `DUPLICATE_THRESHO
 | `x_position` | `float` | X-Position des neu gemeldeten Objekts |
 
 **Rückgabe:** `MagicObject` – erstes passendes Objekt, oder `None`
+
+ 
+```mermaid
+flowchart TD
+    IN([Eingang: object_type, position, ts])
+    SOD[set_object_data]
+    FSO{_find_similar_object: X-Abstand < DUPLICATE_THRESHOLD?}
+    AVG[X und Y mitteln, Typ-Vote aktualisieren]
+    NEW{position X >= DUPLICATE_THRESHOLD?}
+    DISCARD([Verwerfen])
+ 
+    OBJECTS[("_objects: dict[int, MagicObject]")]
+ 
+    SPEED([Eingang: conveyor_belt_speed])
+    SETSPEED[set_conveyorbelt_speed]
+ 
+    CALC[calculate_next_object_positions]
+    UPDATE[_update_positions: X += speed x DT]
+    CAND[get_next_objects_to_publish n=1]
+    THRESH{X >= PREDICTION_PUBLISH_THRESHOLD?}
+    PLAUS{Plausibilitaetspruefung bestanden?}
+    REMOVE[remove_first_object]
+    SENTINEL([Sentinel: -1,-1,-1,-1])
+    OUT([Rueckgabe: x, y, z, object_type])
+ 
+    IN --> SOD
+    SOD --> FSO
+    FSO -->|ja - aktualisieren| AVG
+    AVG --> OBJECTS
+    FSO -->|nein| NEW
+    NEW -->|ja - neu anlegen| OBJECTS
+    NEW -->|nein| DISCARD
+ 
+    SPEED --> SETSPEED
+ 
+    OBJECTS --> UPDATE
+    SETSPEED --> UPDATE
+    CALC --> UPDATE
+    UPDATE --> OBJECTS
+    OBJECTS --> CAND
+    CAND --> THRESH
+    THRESH -->|nein| SENTINEL
+    THRESH -->|ja| PLAUS
+    PLAUS -->|nein| REMOVE
+    REMOVE --> OBJECTS
+    PLAUS -->|ja| OUT
+```

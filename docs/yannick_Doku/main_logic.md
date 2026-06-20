@@ -1,4 +1,4 @@
-# NimSortMain – API-Referenz
+# NimSortMain 
 
 ## Klasse `NimSortMain`
 
@@ -158,6 +158,7 @@ Prüft:
 **Rückgabe:** `bool` – `True` wenn Prediction gültig und greifbar
 
 ---
+## Gesamtablauf der State Machine 
 
 ```mermaid
 flowchart TD
