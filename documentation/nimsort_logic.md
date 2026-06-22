@@ -38,7 +38,8 @@ Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Beson
 - verarbeiten der berechneten Parameter durch Machine Learning
 
 ## 3.4 Weitere Dokumentation
-- keine
+- [nimsort_model_trainer](../docs/Vision_und_ML_doku/model_trainer.md)
+- [nimsort_feature_detection](../docs/Vision_und_ML_doku/feature_detection.md)
 
 # 4 Modul: nimsort_main
 
@@ -112,4 +113,4 @@ Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Beson
 - Analyse für nächstes Obejkts welches gepicked werden soll.
 
 ## 6.4 Weitere Dokumentation
-- keine
+- [open_cv_pipeline](../docs/Vision_und_ML_doku/open_cv_pipeline.md)

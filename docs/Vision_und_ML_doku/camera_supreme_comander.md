@@ -44,9 +44,7 @@ ros2 run nimsort_vision camera_supreme_commander --ros-args -p camera_index:=0
 
 ---
 
-## Klasse `Vision`
-
-### `__init__()`
+## Klasse `Vision()`
 
 Initialisiert alle Subsysteme in dieser Reihenfolge:
 
