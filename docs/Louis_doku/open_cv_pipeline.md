@@ -67,101 +67,40 @@ Verarbeitet das zuletzt aufgenommene Bild vollständig und gibt die Position der
 | `time_stamp_ms` | `int` | Zeitstempel des zugehörigen Frames |
 | `thresh` | `np.ndarray` | Binärbild nach Otsu-Schwellwert (für Machine Learning) |
 
-**Verarbeitungsschritte im Detail:**
 
-#### 1. ROI-Ausschnitt & Trapezmaske
 
-```python
-roi = self._raw_image[self._roi_slice].copy()
-roi_masked = cv.bitwise_and(roi, roi, mask=self._trapez_mask)
-```
+#### Verarbeitungsschritte im Detail:
 
-Der vorberechnete Array-Slice extrahiert die Bounding Box des Trapezes. `bitwise_and` mit der Trapezmaske stellt sicher, dass nur Pixel innerhalb des definierten ROI-Trapezes verarbeitet werden.
+**1. ROI-Ausschnitt & Trapezmaske**
+- Array-Slice schneidet Bounding Box des Trapezes aus dem Rohbild
+- `bitwise_and` mit Trapezmaske maskiert Pixel außerhalb des ROI
 
-#### 2. Graustufen & Weichzeichnung
+**2. Graustufen & Weichzeichnung**
+- BGR → Graustufen-Konvertierung
+- Gauß-Blur (5×5) reduziert Rauschen vor Schwellwertbildung
 
-```python
-gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
-blur = cv.GaussianBlur(gray, (5, 5), 0)
-```
+**3. Otsu-Schwellwert**
+- Otsu bestimmt optimalen Schwellwert automatisch aus Grauwertverteilung
+- Liegt `otsu_val` unter `MIN_OTSU_THRESHOLD` → Binärbild wird leer gesetzt (verhindert Falschdetektionen bei leerem Band)
 
-Gaussian Blur (5×5 Kernel) reduziert Bildrauschen vor der Schwellwertbildung.
-
-#### 3. Otsu-Schwellwert
-
-```python
-otsu_val, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
-if otsu_val < MIN_OTSU_THRESHOLD:
-    thresh = np.zeros_like(blur)
-```
-
-Otsu bestimmt den optimalen Schwellwert automatisch anhand der Grauwertverteilung. Liegt `otsu_val` unter `MIN_OTSU_THRESHOLD` (konfigurierbar), wird das Binärbild leer gesetzt. Das verhindert Falschdetektionen bei homogenem, objektfreiem Band.
-
-#### 4. Konturerkennung & Filterung
-
-```python
-contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
-contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
-contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
-```
-
+**4. Konturerkennung & Filterung**
 - `RETR_EXTERNAL`: nur äußere Konturen
-- `CHAIN_APPROX_NONE`: alle Konturpunkte (für spätere Schwerpunkt-/Pickpunkt-Berechnung)
-- Filterung nach Mindestfläche (`MIN_CONTOUR_AREA`) entfernt Rauschartefakte
-- Sortierung nach X-Schwerpunkt (links → rechts auf dem Band, absteigend)
+- `CHAIN_APPROX_NONE`: alle Konturpunkte (nötig für spätere Berechnungen)
+- Konturen unter `MIN_CONTOUR_AREA` werden verworfen (Rauschartefakte)
+- Sortierung nach X-Schwerpunkt (rechts → links, absteigend)
 
-#### 5. Schwerpunkt & Pickpunkt-Berechnung
+**5. Schwerpunkt & Pickpunkt**
+- Schwerpunkt aus Bildmomenten (`m10/m00`, `m01/m00`)
+- ROI-lokale Koordinaten → Vollbild-Koordinaten durch Addition von `_rx`, `_ry`
+- Pickpunkt wird vom nächsten Konturpunkt weg Richtung Schwerpunkt verschoben (`PICK_OFFSET_PX`), damit Greifpunkt weiter im Objektinneren liegt
 
-```python
-M = cv.moments(cnt)
-cx_roi = M["m10"] / M["m00"]   # Schwerpunkt im ROI-Koordinatensystem
-cy_roi = M["m01"] / M["m00"]
+**6. Homographie: Pixel → Welt** 
+- `pixelToWorld` wandelt die Pikelkoordinaten in Weltkoordinaten.
+- Z aus Konfigurationskonstante `Z_W_CONSTANT_IN_MM` (Förderbandebene fix)
+- mm → m Konvertierung, Y-Achse invertiert (Pixel-Y ↓, Welt-Y ↑)
 
-cx_px = cx_roi + self._rx       # Rückrechnung in Vollbild-Pixelkoordinaten
-cy_px = cy_roi + self._ry
-```
-
-Der Schwerpunkt wird aus den Bildmomenten berechnet und vom ROI-lokalen Koordinatensystem zurück in das Vollbild-Koordinatensystem transformiert.
-
-Anschließend wird der **Pickpunkt** leicht in Richtung Zentroid verschoben. Weg vom nächstliegenden Konturpunkt:
-
-```python
-# Nächsten Konturpunkt zum Schwerpunkt finden
-richtung = S - naechster_punkt
-richtung_norm = richtung / np.linalg.norm(richtung)
-pick = S + richtung_norm * PICK_OFFSET_PX
-```
-
-> Diese Verschiebung stellt sicher, dass der Greifpunkt nicht am Objektrand, sondern im Inneren des Objekts liegt.
-
-#### 6. Homographie: Pixel → Weltkoordinaten
-
-```python
-X_w, Y_w = self.pixelToWorld(cx_px, cy_px)
-X_w_m, Y_w_m, Z_w_m = self.convert_mm_to_m(X_w, Y_w, Z_W_CONSTANT_IN_MM)
-Y_w_m = -Y_w_m  # Y-Achse invertieren (Pixel-Y läuft nach unten, Welt-Y nach oben)
-```
-
-`pixelToWorld` wendet die Homographie-Matrix `H` an:
-
-```python
-def pixelToWorld(self, u, v):
-    p = np.array([u, v, 1.0])
-    w = self.H @ p
-    w /= w[2]           # Homogene Division
-    return w[0], w[1]
-```
-
-Z wird als Konstante `Z_W_CONSTANT_IN_MM` aus der Konfiguration übernommen (Förderband liegt auf definierter Höhe).
-
-#### 7. Plausibilitätsprüfung
-
-```python
-if not self._plausi.check_position([X_w_m, Y_w_m, Z_w_m]):
-    raise ValueError(f"Unplausible Koordinaten: ({X_w_m:.2f}, {Y_w_m:.2f}, {Z_w_m:.2f})")
-```
-
-Koordinaten außerhalb des erwarteten Arbeitsraums werden verworfen.
+**7. Plausibilitätsprüfung**
+- Koordinaten außerhalb des definierten Arbeitsraums werden mit `ValueError` verworfen
 
 ---
 
@@ -171,7 +110,7 @@ Koordinaten außerhalb des erwarteten Arbeitsraums werden verworfen.
 def getLastImageData(self) -> tuple | None
 ```
 
-Gibt das Ergebnis des letzten `getImageData()`-Aufrufs zurück, ohne erneute Verarbeitung. Nützlich für asynchrone Abfragen aus dem ROS 2-Node.
+Gibt das Ergebnis des letzten `getImageData()`-Aufrufs zurück, ohne erneute Verarbeitung.
 
 ---
 
