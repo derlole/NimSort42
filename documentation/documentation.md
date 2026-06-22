@@ -158,89 +158,38 @@ Jeder Unterordner enthält semantisch logisch seine Pyhton Dateien  zur Realisie
 
 Jede Haupt-logikdatei Implementiert ein im selben ordner Definierte Schnitstelle, diese definiert die Minimale Implementierung an Methoden welche zur vollständigen Verwendungder Logik notwendigen Methoden.
 
-## 2.2 Komponentenbeschreibung u. Anforderungen d. Logik
+## 2.2 Beschreibung u. Anforderungen d. ROS2 Nodes
 
-### 2.2.1 OpenCVPipeline
-
-**Datei**: `nimsort_logic/nimsort_vision/opencv_pipeline.py`
-
-| Anforderungen | Schnittstellen | Programmart | Rückgaben | Abhängigkeiten |
-|------------|--------|--------|--------|------------|
-
-### 2.2.2 FeatureDetection
-
-**Datei**: `nimsort_logic/nimsort_feature_detection/feature_detection.py`
-
-| Anforderungen | Schnittstellen | Programmart | Rückgaben | Abhängigkeiten |
-|------------|--------|--------|--------|------------|
-
-### 2.2.3 PositionPrediction
-
-**Datei**: `nimsort_logic/nimsort_vision/position_prediction_logic.py`
-
-| Anforderungen | Schnittstellen | Programmart | Rückgaben | Abhängigkeiten |
-|------------|--------|--------|--------|------------|
-
-### 2.2.4 MainLogic
-
-**Datei**: `nimsort_logic/nimsort_main/main_logic.py`
-
-| Anforderungen | Schnittstellen | Programmart | Rückgaben | Abhängigkeiten |
-|------------|--------|--------|--------|------------|
-
-### 2.2.5 InitProcess
-
-**Datei**: `nimsort_logic/nimsort_motion/init_process.py`
-
-| Anforderungen | Schnittstellen | Programmart | Rückgaben | Abhängigkeiten |
-|------------|--------|--------|--------|------------|
-
-### 2.2.6 Axis
-
-**Datei**: `nimsort_logic/nimsort_motion/software_axis.py`
-
-| Anforderungen | Schnittstellen | Programmart | Rückgaben | Abhängigkeiten |
-|------------|--------|--------|--------|------------|
-
-### 2.2.6 Controller
-
-**Datei**: `nimsort_logic/nimsort_motion/software_axis.py`
-
-| Anforderungen | Schnittstellen | Programmart | Rückgaben | Abhängigkeiten |
-|------------|--------|--------|--------|------------|
-
-## 2.3 Beschreibung u. Anforderungen d. ROS2 Nodes
-
-### 2.3.1 Vision
+### 2.2.1 Vision
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
 | • Aufnahme von Bildern<br>• Verarbeitet das Bild bis zu Pickpoint und vorverarbeitetem Graustufenbild<br>• Erkennt um welches Objekt es sich handelt<br>• Berechnet die Förderbandgeschwindigkeit | NimSortImageData, NimSortConveyorbeltSpeed | • OpencvPipeline<br>•ConveyorSpeedEstimator<br>• FeatureDetection |
 
-### 2.3.2 PositionPrediction
+### 2.2.2 PositionPrediction
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|--------------------|
 | • Speichern der erkannten Objekte<br>• Berechnung der neuen Positionen mit evtl. ber"ucksichtigung neuer erkantner Daten<br>• Aktualisierung der erkannten Objekte | NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed | • PositionPrediction |
 
-### 2.3.3 Main
+### 2.2.3 Main
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
 |  • Orchestriere und verwalte den Programmfluss <br>• Rufe Systeminitialisierung auf | NimSortMotionState, NimSortPrediction, NimSortConveyorbeltSpeed  | • Main |
 
-### 2.3.4 AxisController
+### 2.2.4 AxisController
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
 | • Erhalte: RobotPos<br>• Halte und verwalte die Axen<br>• Kenne und vermeide verbotene fahrzonen<br>• Publish RobotCmd | NimSortTarget, RobotPos, NimSortMotionState, RobotCmd| • InitProcess<br>• Axis |
 
-## 2.4 Datenfluss und Timing
+## 2.3 Datenfluss und Timing
 
-### 2.4.1 Haupttakt der ROS2 Nodes
+### 2.3.1 Haupttakt der ROS2 Nodes
 Alle ROS2 Nodes sind aktiv Timer gesteuert. Diese timer sind alel auf 10Hz Konfiguriert dementsprechend werden alle Topics im 10Hz takt erwartet und auch gepublished.
 
-### 2.4.2 Datenfluss
+### 2.3.2 Datenfluss
 Allgemein wurde eine Architektur erstellt in welcher die Datenflüsse hauptsächlich eine Richtung kennen. 
 Gelegentlich ist zwar ein feedback notwendig diese ist aber nicht zwangsweise notwendig für die Node. Folgendes Diagramm zeigt die unbedingt notwendigen Datenflüsse im Takt der ROS2 Node pink dargestellt. Die nicht notwendigen Schwarz dargestellt.
 
@@ -269,7 +218,7 @@ flowchart TD
     linkStyle 5 stroke:#ff66aa,stroke-width:2px
 ```
 
-## 2.5 Veratwortlichkeitsbereiche
+## 2.4 Veratwortlichkeitsbereiche
 - **Louis Moser:** Vision, Machine-Learning
 - **Yannick Bachhuber:** PositionPrediction, Main
 - **Benjamin Keppler:** AxisController, Main

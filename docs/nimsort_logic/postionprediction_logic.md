@@ -129,26 +129,6 @@ Gibt die aktuell gesetzte Förderbandgeschwindigkeit zurück.
 
 ---
 
-## Private Methoden
-
-### `_update_positions() -> None`
-
-Erhöht die X-Position aller gespeicherten Objekte um `conveyor_belt_speed * DT`.
-
-**Rückgabe:** `None`
-
----
-
-### `_find_similar_object(x_position: float) -> MagicObject | None`
-
-Sucht ein bestehendes Objekt, dessen X-Position innerhalb von `DUPLICATE_THRESHOLD` liegt.
-
-| Parameter | Typ | Beschreibung |
-|---|---|---|
-| `x_position` | `float` | X-Position des neu gemeldeten Objekts |
-
-**Rückgabe:** `MagicObject` – erstes passendes Objekt, oder `None`
-
 ## Datenfluss 
 ```mermaid
 flowchart TD

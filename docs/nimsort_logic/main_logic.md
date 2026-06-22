@@ -135,28 +135,6 @@ Setzt die State Machine vollständig auf den Startzustand `NimSortState.START` z
 **Rückgabe:** `None`
 
 ---
-
-## Private Methoden
-
-### `_prediction_usefull(x: float, y: float, z: float, object_type: int) -> bool`
-
-Validiert eine eingehende Vision-Prediction.
-
-Prüft:
-- X-Position liegt im Bereich `[0.0, ROBOT_REACH]`
-- Position besteht den `PlausibilityCheck`
-- Mindestabstand zum zuletzt gegriffenen Objekt (`>= 0.051 m`)
-
-| Parameter | Typ | Beschreibung |
-|---|---|---|
-| `x` | `float` | X-Position in Meter |
-| `y` | `float` | Y-Position in Meter |
-| `z` | `float` | Z-Position in Meter |
-| `object_type` | `int` | Objekttyp |
-
-**Rückgabe:** `bool` – `True` wenn Prediction gültig und greifbar
-
----
 ## Gesamtablauf der State Machine 
 
 ```mermaid
