@@ -1,0 +1,176 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usetheme{CambridgeUS}
+\usecolortheme{default}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+
+%\usepackage{twemojis}
+\title[Kurztitel]{Kick-off Präsentation}
+\subtitle{RO45 Robotik Projekt 3 – Automatische Sortieranlage}
+\author{NimSort42}
+\institute{Hochschule Kempten}
+\date{\today}
+
+\setbeamertemplate{section in toc}[ball unnumbered]
+\setbeamertemplate{subsection in toc}[ball unnumbered]
+\setbeamercolor{structure}{fg=black}
+
+
+\begin{document}
+	
+	\begin{frame}
+		\titlepage
+	\end{frame}
+	
+	\begin{frame}{Inhalt}
+		\tableofcontents
+	\end{frame}
+	
+	% --------------------
+	\section{Team \& Projekt}
+	
+	\begin{frame}{Projektteam \& Projektvorstellung}
+		\textbf{Projektteam:}
+		\begin{itemize}
+			\item Bachhuber Yannick
+			\item Keppler Benjamin
+			\item Moser Louis
+		\end{itemize}
+		
+		\vspace{6mm}
+		
+		\textbf{Projektvorstellung:}
+		\begin{itemize}
+			\item Entwicklung einer Software für eine automatische Sortieranlage
+			\item Unterscheidung von Katzen und magischen Einhörnern
+			\item Zielgerichtetes Sortieren über einen Portalroboter
+		\end{itemize}
+	\end{frame}
+	
+	\section{Projektmanagement}
+	
+	\begin{frame}{Meilensteine}
+		\begin{itemize}
+			\item Notwendige Koordinatensysteme festgelegt (30.03.2026)
+			\item Code-Grundlagen realisieren (13.04.2026)
+			\item Prädizierte Positionen im Weltkoordinatensystem ausgeben (27.04.2026)
+			\item Regelung auf einen Punkt im Weltkoordinatensystem (11.05.2026)
+			\item Prozesslogik ist in Python programmiert und getestet (01.06.2026)
+			\item Abschlusspräsentationen (29.06.2026)
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Risikomanagement}
+		\textbf{Mögliche Risiken:}
+		\begin{itemize}
+			\item \begin{tabular}[t]{@{}p{7.5cm} l@{}}
+				Hardware steht nicht rechtzeitig zur Verfügung & $\Rightarrow$ Zeitverzug
+			\end{tabular}
+			\item \begin{tabular}[t]{@{}p{7.5cm} l@{}}
+				Ausfall eines Teammitglieds & $\Rightarrow$ Mehrbelastung des Teams
+			\end{tabular}
+			\item \begin{tabular}[t]{@{}p{7.5cm} l@{}}
+				Professor fällt aus & $\Rightarrow$ Projekt kann nicht bewertet werden
+			\end{tabular}
+			\item \begin{tabular}[t]{@{}p{7.5cm} l@{}}
+				Eingeschränkte Hardwareverfügbarkeit & $\Rightarrow$ Weniger Tests
+			\end{tabular}
+		\end{itemize}
+		\textbf{Umgang:}\\
+		\begin{itemize}
+			\item Akzeptanz
+			\item Puffer eingeplant (4 Wochen)
+		\end{itemize} 
+	\end{frame}
+	
+	\begin{frame}{Stakeholder}
+		\begin{itemize}
+			\item \begin{tabular}[t]{@{}p{3cm} l@{}}
+				Teammitglieder & $\Rightarrow$ Bestehen des Moduls
+			\end{tabular}
+			\item \begin{tabular}[t]{@{}p{3cm} l@{}}
+				Professor & $\Rightarrow$ Durchführung und Bewertung des Projekts
+			\end{tabular}
+			\item \begin{tabular}[t]{@{}p{3cm} l@{}}
+				Kunde (Haribo) & $\Rightarrow$ Zuverlässige Sortieranlage
+			\end{tabular}
+		\end{itemize}
+	\end{frame}
+	
+	
+	\begin{frame}{Hauptverantwortlichkeiten}
+		\begin{tabular}{@{}l l@{}}
+			\textbf{Bachhuber Yannick} & $\Rightarrow$ Prozesslogik, Initialisierung \\ 
+			\textbf{Keppler Benjamin} & $\Rightarrow$ Regelung, Achsensteuerung \\
+			\textbf{Moser Louis} & $\Rightarrow$ Vision-Pipeline, Objekterkennung \\
+		\end{tabular}
+	\end{frame}
+	
+	% --------------------
+	\section{Technische Realisierung}
+	
+	\begin{frame}{Hardware}
+		\begin{itemize}
+			\item Portalroboter mit Sauggreifer (Arbeitsraum: $\SI{0.1}{m}^3$)
+			\item Förderband mit variabler Geschwindigkeit ($0$–$\SI{0.05}{m/s}$)
+			\item Arduino Mega mit Stepper Shield zur Achsansteuerung
+			\item ELP USB-Kamera (2.0 MP) zur Objekterkennung
+			\item Zwei Sortierkisten (Katze / Einhorn) und eine Restkiste
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Software}
+		\begin{itemize}
+			\item Betriebssystem: Ubuntu 22.04
+			\item Framework: ROS2 Humble Hawksbill
+			\item OpenCV/scikit-learn in Python
+			
+		\end{itemize}
+	\end{frame}
+	
+	\begin{frame}{Architektur-Achsen}
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{arch1.png}
+		\end{center}
+	\end{frame}
+	
+	\begin{frame}{Architektur-Prozesslogik}
+		\begin{center}
+			\includegraphics[width=0.85\textwidth]{arch2.png}
+		\end{center}
+	\end{frame}	
+	
+	\begin{frame}{Architektur-Kamera}
+		\begin{center}
+			\includegraphics[width=0.7\textwidth]{arch3.png}
+		\end{center}
+	\end{frame}	
+	
+	\begin{frame}
+		\begin{columns}
+			\begin{column}{0.6\textwidth}
+				\includegraphics[width=0.7\textwidth]{logo_nimsort42.png}
+			\end{column}
+			\begin{column}{0.4\textwidth}
+				\textbf{So leicht haben Sie noch nie sortiert! Wie aus Zauberhand.}\\
+				\vspace{5mm}
+				\textbf{Projektteam:}\\
+				Bachhuber Yannick\\
+				Keppler Benjamin\\
+				Moser Louis\\
+				\vspace{5mm}
+				\textbf{Voraussichtliches Projektende:}\\ 30.03.2026
+				
+			\end{column}
+		\end{columns}
+	\end{frame}
+	
+\end{document}
