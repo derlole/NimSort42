@@ -343,6 +343,7 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 
 ## 3.9 Datenhaltung in der PositionPrediction
 **Entscheidung:**
+Als Datenstrukrut wurde eine Dict ausgewählt. Hier legen wir die Objekte ab die von der Kamera Node erfasst wurden. Vor dem abspeichern der Objekte wird die Plausibiltät geprüft.
 
 **Begründung:**
 
