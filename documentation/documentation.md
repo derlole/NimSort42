@@ -368,7 +368,7 @@ Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 
 # 4 Technische Herleitungen
 
-## 4.1 Conveyorbeld Speed Berechnung und Haltung
+## 4.1 Conveyorbelt Speed Berechnung und Haltung
 
 ## 4.2 Homographie
 
@@ -377,6 +377,12 @@ Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 ## 4.4 PD-Regler
 
 ## 4.5 Pick Prozess
+
+## 4.6 Warum Decision Tree
+
+## 4.7 Warum die gewählten features?
+
+## 4.8 Kommunikation zwischen Main und AxisController
 
 # 5 Lessons Learned
 
@@ -388,7 +394,7 @@ Die Qualität der Anforderungen kann sich auf viele bereiche der Software auswir
 ## 5.2 Kooridnatensysteme
 Spätes angehen der korrekten Koordinaten und Transformationen führt zu mehrfachen anläufen in der korrekten Funktionalität
 
-## 5.3 Runtime Plausibilitätschekcs
+## 5.3 Runtime Plausibilitätscheks
 - Plausibilitätschecks an Schnittstellen oder übergabestellen testet schon früh und imemr zur laufzeit ob funktionen Sinnvolle Werte zurückgeben und ob datensätze verarbeitet werden sollten.
 - In diesem Fall sicherte das die Hardware indem viele Fehlerhafte Koordinaten vor der Übergabe an die Achsen mehrfach auf ihren Sinnhaftigkeit geprüft wurden.
 
@@ -407,19 +413,29 @@ Das Prinzip I von SOLID hilft viel
 - Bei der Verteilung von Daten können kleinere Datensätze durch Interface Segregation schneller an andere Module gegeben werden ohne unnötige abhängigkeiten zu erzuegen
 - Durch kleinere Schnitstellen werden Plausibilitätschecks und Datenhaltung einfacher.
 
-## 5.7 Einheutliche Konzepte
+## 5.7 Open Closed
+Das Prinzip O von SOLID hilft viel
+- bei der späteren Code-Dokumentation, da diese sehr einfach und intuitiv wird
+
+## 5.8 Einheutliche Konzepte
 - Logging Conventions hat das debuggen einfacher gemacht weil fehler oder nicht reviewter Code sich durch nicht angepasst Logs zu erkennen gegeben hat
 - Logging Conventions hat logs schneller zum Code zugeordnet
 - Interfaces haben das fehlen von Funktionen noch vor Programmstart klar gemacht
 - Das einheitliche Verständniss der Anforderungen und die Einordnung im Gesamtsystem haben in der Teamdynamik dazu geführt, dass jeder zu jedem Themenbereich Vorschläge einbringen konnte und haben das generelle Systemverständnis früh auf den selben stand gebracht. -> Missverständnisse konnten reduziert bzw. vermieden werden.
 Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decision.md) [interface.md](../docs/sw_planning/interface.md) [logging.md](../docs/sw_planning/logging.md)
 
-## 5.8 Erhaltung und Überprüfung der Software Architektur
+## 5.9 Erhaltung und Überprüfung der Software Architektur
 - Das erhalten der Softwarearchitektur (soweit es geht) hilft bei der Konsistenz des Codes, der Anforderungen und der Kommunikation.
 - Durch **keine** Umverantwortung von Aufgaben und Verantwortungen gehen keine Anforderungen verloren und diese können klarer Abgearbeitet werden.
 - Wenn Anpassungen an der Architektur vorgenommen werden sollten diese am besten mit dem gesamten Team implementiert werden, damit von seiten aller Verantwortungen bewertet werden kann.
-# 6 Auswertung des Gesamtsystems
 
+## 5.10 Meilensteine in Interne Iterationen Aufteilen
+- bessere projektübersicht innerhalt des teams
+- bessere Trackbarkeit von außen
+- Konstante Enwicklungsarbeit
+- Der nächste Schritt ist immer klar und kann schon angefangen werden.
+
+# 6 Auswertung des Gesamtsystems
 ## 6.1 Funktionalität
 
 ## 6.2 Konsistenz
