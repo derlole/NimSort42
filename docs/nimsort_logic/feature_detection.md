@@ -42,28 +42,6 @@ Lädt das trainierte Klassifikationsmodell.
 
 ---
 
-### `_extract_features_for_contours(binary_image)`
-
-```python
-@staticmethod
-def _extract_features_for_contours(binary_image: np.ndarray) -> list
-```
-
-Extrahiert Features für alle gültigen Konturen im Binärbild.
-
-**Schritte:**
-
-#### 1. Konturerkennung & Filterung
-
-
-- Findet alle äußeren Konturen im Binärbild.
-- Filtert Konturen heraus, deren Fläche kleiner als MIN_CONTOUR_AREA ist.
-- Sortiert die verbleibenden Konturen nach ihrer x-Koordinate des Schwerpunkts, absteigend, also von rechts nach links im Bild
-
-
-
-Analog zur Logik in `opencv_pipeline.py`.
-
 #### 2. Hu-Momente berechnen & logarithmisch transformieren
 
 - Berechnet die 7 Hu-Momente aus den Bildmomenten (moments).
@@ -95,17 +73,7 @@ def getFeature(self, binary_image: np.ndarray) -> list[int]
 
 Klassifiziert alle Objekte im Binärbild und gibt eine Liste von Klassen-IDs zurück.
 
-**Rückgabe:** z.B. `[0, 2, 3]` eine ID pro erkanntem Objekt, in der Reihenfolge der X-Sortierung.
-
-**Ablauf:**
-
-- Ruft `self._extract_features_for_contours(binary_image) auf, um für jede gültige Kontur im Bild einen Feature-Vektor zu erhalten.
-- Iteriert über alle extrahierten Feature-Vektoren (extracted).
-- Führt für jeden Feature-Vektor eine Vorhersage mit dem trainierten Modell durch `self._model.predict(feature_vec)`.
-- Da predict()` ein sklearn-Array zurückgibt, wird mit [0] der erste (und einzige) Wert extrahiert.
-- int() wandelt das Ergebnis (z. B. numpy.int64) in einen normalen Python-Integer um.
-- Die Vorhersage (Klassenlabel als Zahl) wird der Liste features hinzugefügt.
-- Falls keine Konturen im Bild gefunden wurden, bleibt extracted leer → die Schleife läuft nicht, features bleibt eine leere Liste → Rückgabe ist [].
+**Rückgabe:** z.B. `[0, 2, 3, 1]` eine ID pro erkanntem Objekt, in der Reihenfolge der X-Sortierung.
 
 ---
 
