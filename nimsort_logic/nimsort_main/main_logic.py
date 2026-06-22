@@ -6,7 +6,7 @@ from nimsort_vision.magic_object import MagicObject
 from nimsort_main.main_states import NimSortState
 from nimsort_main.edge_detector import EdgeDetectorFall, EdgeDetectorRise, EdgeDetectorWithTHCounter
 
-from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNICORN, Z_PICK, ROBOT_REACH, ZERO_ROBOT_POSITION, Z_PRE_POST_TF, OBJECT_PICK_PRE_ADDITION
+from configs.config_main import INITIAL_POSITION, GENERIC_PICK_PRE_POSITION, POSITION_CAT, POSITION_UNICORN, Z_PICK, ROBOT_REACH, ZERO_ROBOT_POSITION, Z_PRE_PICK_TF, OBJECT_PICK_PRE_ADDITION, Z_POST_PICK_TF
 from configs.config_position_prediction import DUPLICATE_THRESHOLD_LOW
 class NimSortMain(MainInterface):
     """State Machine für NimSort Logik
@@ -116,7 +116,7 @@ class NimSortMain(MainInterface):
                 elif target is not None and target.object_type in (0, 1):
                     print(f"[DEBUG][Main][GTPRP---]: Switch to GO_TO_OBJECT_PICK_PREPOSITION")
                     self.current_state = NimSortState.GO_TO_OBJECT_PICK_PREPOSITION
-                    self._current_pick_pre_position = (target.position[0] + OBJECT_PICK_PRE_ADDITION, target.position[1], Z_PRE_POST_TF)
+                    self._current_pick_pre_position = (target.position[0] + OBJECT_PICK_PRE_ADDITION, target.position[1], Z_PRE_PICK_TF)
 
                 return (*GENERIC_PICK_PRE_POSITION, ProcessId.GO_TO_POS)
             
@@ -152,7 +152,7 @@ class NimSortMain(MainInterface):
                         print(f"[DEBUG][Main][GTPIPO--]: Switch to GO_TO_PICKPREPOSITION")
                         self.current_state = NimSortState.GO_TO_PICKPREPOSITION
 
-                return (self._current_pickabel_object.position[0], self._current_pickabel_object.position[1], Z_PRE_POST_TF, ProcessId.PICKING_DRIVE)
+                return (self._current_pickabel_object.position[0], self._current_pickabel_object.position[1], Z_POST_PICK_TF, ProcessId.PICKING_DRIVE)
             
            
 
