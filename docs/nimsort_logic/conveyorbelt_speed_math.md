@@ -143,10 +143,10 @@ update(x_m, ts_ms):
 - Höher (z.B. 0.7) → schnellere Reaktion auf Änderungen, aber störanfälliger
 - Niedriger (z.B. 0.1) → stabiler, aber langsamere Reaktion
 
-### `median_window = 11`
+### `median_window = 32`
 - Anzahl der Rohwerte, aus denen der Median berechnet wird
 - Größer → mehr Filterung, aber längere Verzögerung
-- Standard 11 ist ein guter Kompromiss
+- Standard 32 ist ein guter Kompromiss
 
 ---
 

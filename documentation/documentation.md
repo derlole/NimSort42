@@ -349,9 +349,12 @@ Als Datenstrukrut wurde eine Dict ausgewählt. Hier legen wir die Objekte ab die
 
 ## 3.10 Feedback von Main zur PositionPrediction
 
-**Entscheidung:**
+**Entscheidung:**Die PositionPredictionNode bekommt ein nicht geplantes Feedback von der MainNode 
 
-**Begründung:**
+**Begründung:** 
+- Die Datenhaltung in der Main wird dadurch drastisch reduziert
+- Die Menge an versendeten Daten wird weniger
+- Die Logik ist kein großer aber ein Logisch konsequenter Schritt in der PositionPrediction
 
 ## 3.11 Pick Process
 
@@ -373,9 +376,56 @@ Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 
 ## 4.2 Homographie
 
-## 4.3 Position Prediction Datenhaltung
+## 4.1 Förderbandgeschwindigkeit – Berechnung und Haltung
+
+Für die Vorhersage von Objektpositionen wird eine zuverlässige Schätzung der aktuellen Förderbandgeschwindigkeit benötigt. Da die Geschwindigkeit nicht direkt gemessen wird, wird sie aus aufeinanderfolgenden Positionsmessungen berechnet.
+
+Die Rohgeschwindigkeit ergibt sich aus der Positionsänderung innerhalb eines Zeitintervalls:
+
+[
+v = \frac{\Delta x}{\Delta t}
+]
+
+Da visuelle Messungen durch Bildrauschen, Detektionsfehler oder kurzzeitige Trackingverluste beeinflusst werden können, wird die berechnete Geschwindigkeit gefiltert. Hierfür wird zunächst ein Medianfilter verwendet, der einzelne Ausreißer unterdrückt. Anschließend erfolgt eine Glättung mittels exponentiellem gleitendem Mittelwert (EMA), um sprunghafte Geschwindigkeitsänderungen zu vermeiden.
+
+Zusätzlich wird eine Persistenzprüfung eingesetzt. Kurzzeitige Geschwindigkeitseinbrüche werden nicht sofort übernommen, sondern erst dann akzeptiert, wenn sie über mehrere aufeinanderfolgende Messungen bestehen bleiben. Dadurch wird verhindert, dass einzelne fehlerhafte Messwerte die Geschwindigkeitsschätzung beeinflussen.
+
+Die Kombination aus Rohgeschwindigkeitsberechnung, Medianfilter, EMA-Glättung und Persistenzprüfung ermöglicht eine robuste und stabile Schätzung der Förderbandgeschwindigkeit. Diese dient als Grundlage für die Positionsvorhersage und die nachgelagerte Regelung des Systems.
+
 
 ## 4.4 PD-Regler
+
+Zur Positionsregelung wird ein PD-Regler (Proportional-Differential-Regler) eingesetzt. Ziel ist es, aus der Positionsabweichung eine Beschleunigungsvorgabe zu berechnen.
+
+Der Regelfehler ergibt sich aus der Differenz zwischen Soll- und Istposition:
+
+\[
+e = x_{soll} - x_{ist}
+\]
+
+Die Reglerausgabe wird als Beschleunigung berechnet:
+
+\[
+a = K_P \cdot e + K_D \cdot \dot e
+\]
+
+Dabei beschreibt der Proportionalanteil \(K_P \cdot e\) die Reaktion auf den aktuellen Positionsfehler, während der Differentialanteil \(K_D \cdot \dot e\) die Änderung des Fehlers berücksichtigt und das System dämpft.
+
+Für die diskrete Implementierung wird die Fehleränderung aus zwei aufeinanderfolgenden Messungen bestimmt:
+
+\[
+\dot e = \frac{e_k - e_{k-1}}{\Delta t}
+\]
+
+Der Regler arbeitet in folgenden Schritten:
+
+1. Empfang der aktuellen Position
+2. Berechnung des Positionsfehlers
+3. Berechnung der Fehleränderung
+4. Berechnung der Beschleunigung mittels PD-Regler
+5. Veröffentlichung der Beschleunigung als Stellgröße
+
+Der Einsatz eines PD-Reglers ist sinnvoll, da der P-Anteil das System zum Zielpunkt führt und der D-Anteil Überschwingen sowie Schwingungen reduziert. Dadurch wird eine stabile und schnelle Annäherung an die Sollposition erreicht.
 
 ## 4.5 Pick Prozess
 
@@ -384,6 +434,9 @@ Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 ## 4.7 Warum die gewählten features?
 
 ## 4.8 Kommunikation zwischen Main und AxisController
+
+## 4.9 FailSafe-Konzept
+Für die Technische Umsetzung inkl. Begründungen können sie in folgender Datei nachschauen: [failsafe_concept.md](../docs/sw_planning/failsafe_concept.md)
 
 # 5 Lessons Learned
 
