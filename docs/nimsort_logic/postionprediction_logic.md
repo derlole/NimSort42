@@ -1,20 +1,5 @@
 # PositionPrediction 
 
----
-
-## Konfiguration (`config_position_prediction`)
-
-| Konstante | Beschreibung |
-|---|---|
-| `DT` | Zeitschritt für die Positionsaktualisierung |
-| `X_THRESHOLD` | X-Grenzwert – Objekte jenseits werden entfernt |
-| `DUPLICATE_THRESHOLD` | Maximaler X-Abstand, ab dem zwei Objekte als identisch gelten |
-| `SENTINEL_POSITION` | Platzhalterposition für ungültige Objekte |
-| `SENTINEL_TYPE` | Platzhalter-Objekttyp für ungültige Objekte |
-| `PREDICTION_PUBLISH_THRESHOLD` | Mindest-X-Position, ab der ein Objekt zur Ausgabe freigegeben wird |
-
----
-
 ## Klasse `PositionPrediction`
 
 Erbt von `PositionPredictionInterface`.
