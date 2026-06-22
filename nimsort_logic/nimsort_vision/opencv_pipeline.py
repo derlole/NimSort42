@@ -29,7 +29,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         print(f"[OcvP][__init__]: Kamera {camera_index} geöffnet, warte auf Stabilisierung...")
 
         # Homographie berechnen
-        self.H, _ = cv.findHomography(PIXEL_PUNKTE, WELT_PUNKTE)
+        self.H, _ = cv.findHomography(PIXEL_PUNKTE, WELT_PUNKTE) #TODO Try catch für Homographie
 
         # Bounding Box des Trapezes einmalig vorberechnen (für effizienten Slice)
         x, y, w, h = cv.boundingRect(ROI_TRAPEZ)

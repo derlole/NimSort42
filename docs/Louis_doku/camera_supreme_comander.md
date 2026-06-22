@@ -2,9 +2,9 @@
 
 ## Zweck
 
-Dieser ROS2-Node ist der zentrale Orchestrator der NimSort-Visioon. Er koordiniert den Kamera-Pipeline, die Geschwindigkeitsschätzung des Förderbands und die Objektklassifikation, publiziert die Ergebnisse als ROS-Topics an nachgelagerte Systeme.
+Diese ROS2-Node ist der zentrale Orchestrator der NimSort-Visioon. Er koordiniert die Kamera-Pipeline, die Geschwindigkeitsschätzung des Förderbands und die Objektklassifikation, publiziert die Ergebnisse als ROS-Topics an nachgelagerte Systeme.
 
-Der Node trägt den Namen `camera_supreme_commander` und läuft als `Vision`-Klasse, die von `rclpy.node.Node` erbt.
+Die Node trägt den Namen `camera_supreme_commander` und läuft als `Vision`-Klasse, die von `rclpy.node.Node` erbt.
 
 ---
 
@@ -28,10 +28,6 @@ Der Node trägt den Namen `camera_supreme_commander` und läuft als `Vision`-Kla
 |-------|-------------|--------|
 | `/NimSortImageData` | `NimSortImageData` | Position (x, y, z in m), Objekttyp (int), Zeitstempel (ms) |
 | `/NimSortConveyorbeltSpeed` | `NimSortConveyorbeltSpeed` | Aktuelle Bandgeschwindigkeit in m/s |
-
-### Queue-Size
-
-Beide Publisher verwenden `queue_size=10`. Bei Verarbeitungsrückstau werden ältere Nachrichten verworfen.
 
 ---
 
@@ -77,7 +73,7 @@ objects, ts, image = self.pipeline.getImageData()
 
 - `objects`: Liste von `(X_m, Y_m, Z_m)` --> Pickpoint aller erkannten Objekte in Weltkoordinaten
 - `ts`: Unix-Zeitstempel in ms des aufgenommenen Frames
-- `image`: Binärbild (Otsu) für die nachgelagerte Klassifikation
+- `image`: Binärbild für die nachgelagerte Klassifikation
 
 Bei `ValueError` (keine Konturen / unplausible Koordinaten) wird ein Dummy-Datensatz `(-1, -1, -1, -1, -1)` publiziert, um nachgelagerte Nodes über das Ausbleiben eines Objekts zu informieren.
 
@@ -131,7 +127,7 @@ Befüllt eine `NimSortImageData`-Message und publiziert sie auf `/NimSortImageDa
 
 | Feld | Typ | Inhalt |
 |------|-----|--------|
-| `current_position_wcs` | `Point` | X, Y, Z in Metern (Weltkoordinaten) |
+| `current_pickpoin_wcs` | `Point` | X, Y, Z in Metern (Weltkoordinaten) |
 | `object_type` | `int` | Klassen-ID aus `FeatureDetection` |
 | `ts` | `int` | Unix-Zeitstempel in ms |
 

@@ -42,7 +42,7 @@ Lädt das trainierte Klassifikationsmodell.
 
 ---
 
-### `_extract_features_for_contours(binary_image)` *(statisch)*
+### `_extract_features_for_contours(binary_image)`
 
 ```python
 @staticmethod
@@ -55,35 +55,35 @@ Extrahiert Features für alle gültigen Konturen im Binärbild.
 
 #### 1. Konturerkennung & Filterung
 
-```python
-contours, _ = cv.findContours(binary_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
-contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)
-```
 
-Analog zur Logik in `opencv_pipeline.py`: externe Konturen, Mindestfläche, Sortierung nach X-Schwerpunkt (rechts → links).
+- Findet alle äußeren Konturen im Binärbild.
+- Filtert Konturen heraus, deren Fläche kleiner als MIN_CONTOUR_AREA ist.
+- Sortiert die verbleibenden Konturen nach ihrer x-Koordinate des Schwerpunkts, absteigend, also von rechts nach links im Bild
+
+
+
+Analog zur Logik in `opencv_pipeline.py`.
 
 #### 2. Hu-Momente berechnen & logarithmisch transformieren
 
-```python
-hu_raw = cv.HuMoments(moments).flatten()
-with np.errstate(divide="ignore"):
-    hu_log = -np.sign(hu_raw) * np.log10(np.abs(hu_raw) + 1e-10)
-```
+- Berechnet die 7 Hu-Momente aus den Bildmomenten (moments).
+- Wendet eine Log-Transformation an, um den riesigen Wertebereich der Hu-Momente (bis zu 10⁻³⁰) auf eine für ML-Modelle praktikable Größenordnung zu komprimieren.
+- Formel: hu_log[i] = -sign(hu[i]) · log₁₀(|hu[i]| + 1e-10).
 
-Diese Hu-Momente sind rotations-, translations-, skalierungs- und spiegelungsinvariant, decken aber einen sehr großen Wertebereich ab (bis 10⁻³⁰). Die Transformation `hu_log[i] = -sign(hu[i]) · log₁₀(|hu[i]| + ε)` komprimiert diesen Bereich auf eine für ML-Modelle handhabbare Größenordnung. Der Term `+1e-10` verhindert `log10(0)`, `np.errstate` unterdrückt die entsprechende NumPy-Warnung.
+- sign(hu[i]) erhält das Vorzeichen der ursprünglichen Werte.
+- log₁₀(|hu[i]| + 1e-10) komprimiert den Betrag; das +1e-10 verhindert log10(0) (undefiniert).
+
+
+- np.errstate(divide="ignore") unterdrückt NumPy-Warnungen, die durch sehr kleine/grenzwertige Werte beim Logarithmus entstehen können.
+- Ergebnis (hu_log) sind die transformierten, ML-tauglichen Hu-Momente, die rotations-, translations-, skalierungs- und spiegelungsinvariant sind
+
 
 #### 3. Feature-Vektor
 
-```python
-hu_0 = hu_log[0]   # Form-Komplexität / Kompaktheit
-hu_3 = hu_log[3]   # Asymmetrie höherer Ordnung
-feature_vec = np.array([[hu_0, hu_3]], dtype=np.float32)
-```
-
-Von den sieben Hu-Momenten werden nur `hu_0` und `hu_3` verwendet, da sich diese beiden in der Trainingsphase als ausreichend trennscharf für die Objektklassen erwiesen haben.
-
-**Rückgabe:** `list[np.ndarray]` ein Feature-Vektor der Form `(1, 2)` pro gültiger Kontur.
+- Extrahiert aus den log-transformierten Hu-Momenten (hu_log) nur zwei ausgewählte Werte: hu_0 und hu_3.
+- Begründung: Diese beiden Momente haben sich in der Trainingsphase als ausreichend trennscharf zur Unterscheidung der Objektklassen erwiesen, die übrigen fünf Hu-Momente werden verworfen.
+- Baut daraus einen Feature-Vektor als NumPy-Array der Form (1, 2) mit Datentyp float32.
+- Rückgabewert: list[np.ndarray], pro gültiger Kontur ein solcher Feature-Vektor.
 
 ---
 
@@ -99,22 +99,13 @@ Klassifiziert alle Objekte im Binärbild und gibt eine Liste von Klassen-IDs zur
 
 **Ablauf:**
 
-```python
-extracted = self._extract_features_for_contours(binary_image)
-
-for feature_vec in extracted:
-    prediction = int(self._model.predict(feature_vec)[0])
-    features.append(prediction)
-```
-
-Für jeden Feature-Vektor wird `model.predict()` aufgerufen. Die Ausgabe ist ein Sklearn-Array, `[0]` holt den skalaren Wert, `int()` konvertiert ihn.
-
-**Logging:** Pro Objekt wird ausgegeben:
-```
-[FD]: hu_0=1.2345, hu_3=3.4567 → 2 (Katze)
-```
-
-Wenn keine Konturen gefunden werden, wird eine leere Liste zurückgegeben.
+- Ruft `self._extract_features_for_contours(binary_image) auf, um für jede gültige Kontur im Bild einen Feature-Vektor zu erhalten.
+- Iteriert über alle extrahierten Feature-Vektoren (extracted).
+- Führt für jeden Feature-Vektor eine Vorhersage mit dem trainierten Modell durch `self._model.predict(feature_vec)`.
+- Da predict()` ein sklearn-Array zurückgibt, wird mit [0] der erste (und einzige) Wert extrahiert.
+- int() wandelt das Ergebnis (z. B. numpy.int64) in einen normalen Python-Integer um.
+- Die Vorhersage (Klassenlabel als Zahl) wird der Liste features hinzugefügt.
+- Falls keine Konturen im Bild gefunden wurden, bleibt extracted leer → die Schleife läuft nicht, features bleibt eine leere Liste → Rückgabe ist [].
 
 ---
 
@@ -149,17 +140,6 @@ binary_image (von getImageData())
                     └─► Klassen-ID (int)
                         └─► return [id_0, id_1, ...]
 ```
-
----
-
-## Feature-Auswahl: Warum `hu_0` und `hu_3`? #TODO
-
-| Moment | Eigenschaft |
-|--------|-------------|
-| `hu_0` | Verhältnis von Umfang zu Fläche misst grob die Kompaktheit/Komplexität einer Form |
-| `hu_3` | Empfindlich für Asymmetrie und Ausrichtung höherer Ordnung |
-
-Die Kombination dieser beiden Momente reicht aus, um die in NimSort vorkommenden Objektklassen im zweidimensionalen Feature-Raum zu trennen, ohne das Modell zu überparametrisieren.
 
 ---
 

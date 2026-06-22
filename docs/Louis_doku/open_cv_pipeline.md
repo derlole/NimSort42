@@ -2,7 +2,7 @@
 
 ## Zweck
 
-Dieses Modul implementiert die zentrale OpenCV-Bildverarbeitungs-Pipeline. Es kapselt den gesamten Weg vom Rohframe der Förderbandkamera bis zur Ausgabe von den Schwerpunkten der Objekte in  Weltkoordinaten.
+Dieses Modul implementiert die zentrale OpenCV-Bildverarbeitungs-Pipeline. Es kapselt den gesamten Weg vom Rohframe der Förderbandkamera bis zur Ausgabe von den Aktuellen Position der Objekte in  Weltkoordinaten.
 
 Die Klasse `OpencvPipeline` implementiert das Interface `OpencvPipelineInterface` und arbeitet eng mit `PlausibilityCheck` sowie den Kamera-Konfigurationsparametern aus `config_camera` zusammen.
 
@@ -43,13 +43,11 @@ Initialisiert die Pipeline und bereitet alle rechenintensiven Strukturen einmali
 def captureImage(self)
 ```
 
-Liest exklusiv den nächsten Rohframe von der Kamera und speichert Bild und Zeitstempel intern.
+Liest exklusiv den nächsten Rohframe von der Kamera ein und speichert den Zeitstempel.
 
-- Setzt `self._raw_image` und `self.time_stamp_ms` (Unix-Zeit in ms)
-- Inkrementiert internen `_test_counter` (für Debug-Dateinamen)
-- Wirft `Exception` wenn `cap.read()` fehlschlägt
-
-> Bewusst schlank gehalten, enthält keine Bildverarbeitung, damit Latenz und Zeitstempel-Genauigkeit maximiert werden.
+- Setzt `self._raw_image` und `self.time_stamp_ms` (Unix-Zeit in ms).
+- Inkrementiert internen `_test_counter` (für Debug-Dateinamen).
+- Wirft `Exception` wenn `cap.read()` fehlschlägt.
 
 ---
 
@@ -59,7 +57,7 @@ Liest exklusiv den nächsten Rohframe von der Kamera und speichert Bild und Zeit
 def getImageData(self) -> tuple[list, int, np.ndarray]
 ```
 
-Verarbeitet das zuletzt aufgenommene Bild vollständig und gibt den Pickpoint der erkannten Objekte in Weltkoordinaten zurück.
+Verarbeitet das zuletzt aufgenommene Bild vollständig und gibt die Position der erkannten Objekte in Weltkoordinaten zurück.
 
 **Rückgabe:** `(objects, time_stamp_ms, thresh)`
 
