@@ -19,7 +19,7 @@
 
 Erbt von `PositionPredictionInterface`.
 
-Verwaltet erkannte Förderbandt-Objekte, aktualisiert deren Positionen zeitschrittweise und liefert Vorhersagen für den nächsten Pick-Zyklus.
+Verwaltet von der Kamera erkannte Objekte welche auf dem Förderband l, aktualisiert deren Positionen zeitschrittweise und liefert Vorhersagen für den nächsten Pick-Zyklus an die Main State-Machine.
 
 **Interne Datenstrukturen:**
 
@@ -164,7 +164,7 @@ Sucht ein bestehendes Objekt, dessen X-Position innerhalb von `DUPLICATE_THRESHO
 
 **Rückgabe:** `MagicObject` – erstes passendes Objekt, oder `None`
 
- 
+## Datenfluss 
 ```mermaid
 flowchart TD
     IN([Eingang: object_type, position, ts])

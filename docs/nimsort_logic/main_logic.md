@@ -3,8 +3,7 @@
 ## Klasse `NimSortMain`
 
 Erbt von `MainInterface`.
-
-State Machine für die NimSort-Sortierlogik. Verwaltet Bewegungszustände und entscheidet anhand von Vision-Predictions, ob ein Objekt gegriffen werden kann.
+Diese Klasse enthält eine State Machine für die NimSort-Sortierlogik. Verwaltet Bewegungszustände und entscheidet anhand von Vision-Predictions, ob ein Objekt gegriffen werden kann und kommandiert die Achsen an die Positionen aufgrund der bestehenden Datenlage.
 
 ---
 
