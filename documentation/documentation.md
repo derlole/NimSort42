@@ -2,10 +2,10 @@
 
 # NIMSORT42 Projekt - Dokumentations-Grundgerüst
 
-**Projektversion**: 1.0.1  
-**Datum**: 11.06.2026
-**Status**: Projektabschluss
-**Status-d-Doc**: In Development
+**Projektversion**: 1.0.1    
+**Datum**: 11.06.2026  
+**Status**: Projektabschluss  
+**Status-d-Doc**: In Development  
 
 ---
 
@@ -164,7 +164,7 @@ Jede Haupt-logikdatei Implementiert ein im selben ordner Definierte Schnitstelle
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
-| • Aufnahme von Bildern<br>• Verarbeitet das Bild bis zu Pickpoint und vorverarbeitetem Graustufenbild<br>• Erkennt um welches Objekt es sich handelt<br>• Berechnet die Förderbandgeschwindigkeit | NimSortImageData, NimSortConveyorbeltSpeed | • OpencvPipeline<br>•ConveyorSpeedEstimator<br>• FeatureDetection |
+| • Aufnahme von Bildern<br>• Verarbeitet das Bild bis zu Pickpoint und vorverarbeitetem Graustufenbild<br>• Erkennt um welches Objekt es sich handelt<br>• Berechnet die Förderbandgeschwindigkeit | <br>NimSortImageData<br> NimSortConveyorbeltSpeed | • OpencvPipeline<br>• FeatureDetection<br>• ConveyorSpeedEstimator  |
 
 ### 2.2.2 PositionPrediction
 
@@ -187,7 +187,7 @@ Jede Haupt-logikdatei Implementiert ein im selben ordner Definierte Schnitstelle
 ## 2.3 Datenfluss und Timing
 
 ### 2.3.1 Haupttakt der ROS2 Nodes
-Alle ROS2 Nodes sind aktiv Timer gesteuert. Diese timer sind alel auf 10Hz Konfiguriert dementsprechend werden alle Topics im 10Hz takt erwartet und auch gepublished.
+Alle ROS2 Nodes sind aktiv Timer gesteuert. Diese timer sind alle auf 10Hz Konfiguriert dementsprechend werden alle Topics im 10Hz takt erwartet und auch gepublished.
 
 ### 2.3.2 Datenfluss
 Allgemein wurde eine Architektur erstellt in welcher die Datenflüsse hauptsächlich eine Richtung kennen. 
@@ -242,14 +242,19 @@ flowchart TD
 - Gut genuges Ergebniss mit PD-Regler
 
 ## 3.3 Keine Aruco Marker sondern Homographie
-**Entscheidung:** Keine Verwendung von Aruco Markern. Ersatz durch eine Homographie durch vorhandene erkennbare Bildpunkte.
+**Entscheidung:** Keine Verwendung von Aruco Markern für die Koordinatentransfürmation. Ersatz durch eine Homographie durch vorhandene erkennbare Bildpunkte.
 
 **Begründung:**
+- Die Koordinatentransformation (Pixel → Kamera → Welt) über Aruco Marker erwies sich als zu fehleranfällig, da die Positionsschätzung der Marker relativ zur Kamera unter realen Bedingungen unzuverlässig war.
+- NimSort arbeitet ausschließlich in 2D, eine vollständige 3D-Transformation ist daher nicht erforderlich.
+- Eine Homographie auf Basis vorhandener Bildpunkte ist für diesen Anwendungsfall vollkommen ausreichend und deutlich robuster.
 
 ## 3.4 Decision Tree
-**Entscheidung:** Verwendung eines Entscheidungsbaumes als Machine Learning Modell zur differenzierung von den drei Klassen, Einhorn, Katze und Rest
+**Entscheidung:** Verwendung eines Entscheidungsbaumes als Machine Learning Modell zur differenzierung von den drei Klassen, Einhorn, Katze und Rest (Kreis und Quadrat).
 
 **Begründung:**
+- Die Klassen sind anhand der verwendeten Merkmale (Hu-Momente) klar voneinander unterscheidbar, wodurch die Entscheidungslogik gut durch binäre Ja/Nein-Verzweigungen abgebildet werden kann.
+- Ein Entscheidungsbaum ist für diesen Anwendungsfall ausreichend und bietet den Vorteil, dass die Klassifikationsentscheidungen nachvollziehbar und interpretierbar bleiben.
 
 ## 3.5 Sentinels
 **Entscheidung:** Definieren von Sentinels zum Publishen von nicht-Fehler werten, aber leeren Werten
@@ -338,6 +343,29 @@ Zusätzlich wird eine Persistenzprüfung eingesetzt. Kurzzeitige Geschwindigkeit
 Die Kombination aus Rohgeschwindigkeitsberechnung, Medianfilter, EMA-Glättung und Persistenzprüfung ermöglicht eine robuste und stabile Schätzung der Förderbandgeschwindigkeit. Diese dient als Grundlage für die Positionsvorhersage und die nachgelagerte Regelung des Systems.
 
 ## 4.2 Homographie
+
+Zur Umrechnung von Bildkoordinaten (Pixel) in reale Weltkoordinaten (mm) wird eine Homographie verwendet. Da NimSort ausschließlich in 2D arbeitet, ist dieses Verfahren vollkommen ausreichend.
+
+Als Referenzpunkte dienen die schwarz-weißen Quadrate des unteren Schachbrettmusters ouf dem Förderband (siehe Abbildung). Für fünf Quadrate wurden jeweils die vier Eckpunkte sowohl in Pixelkoordinaten als auch in realen Weltkoordinaten (mm) manuell vermessen:
+
+| Quadrat | Pixel (Ecke oben-links) | Welt (Ecke oben-links) |
+|--------|--------------------------|------------------------|
+| 1 | (66, 131) | (59,0 mm, 0 mm) |
+| 2 | (153, 129) | (97,7 mm, 0 mm) |
+| 3 | (238, 128) | (136,3 mm, 0 mm) |
+| 4 | (321, 127) | (175,1 mm, 0 mm) |
+| 5 | (400, 126) | (213,8 mm, 0 mm) |
+
+
+![Hopographie](../misc/pictures/homography.jpg)
+
+Aus diesen 20 Punktepaaren (5 × 4 Ecken) wird mittels `cv2.findHomography()` die Homographiematrix **H** berechnet. Diese beschreibt die projektive Transformation zwischen Bildebene und Weltebene:
+
+```
+x_welt = H · x_pixel
+```
+
+Zur Laufzeit wird jede detektierte Pixelkoordinate mit dieser Matrix in eine reale Weltposition in mm umgerechnet. Die Homographie bleibt konstant, solange Kameraposition und -ausrichtung unverändert bleiben.
 
 ## 4.3 Position Prediction – Datenhaltung
 
@@ -438,7 +466,28 @@ Der Einsatz eines PD-Reglers ist sinnvoll, da der P-Anteil das System zum Zielpu
 
 ## 4.6 Warum Decision Tree
 
+Die Wahl eines Entscheidungsbaumes als Klassifikationsmodell lässt sich anhand der Merkmalsverteilung der Trainingsdaten begründen. Der Feature-Plot (hu_0 vs. hu_3) zeigt, dass die vier Klassen (Einhorn, Katze, Rest (Kreis & Quadrat)) im Merkmalsraum klar voneinander getrennte Cluster bilden, es gibt kaum Überlappungen zwischen den Klassen.
+
+Da die Klassentrennungen im gewählten Merkmalsraum zudem näherungsweise achsparallel verlaufen, sind sie durch einfache Schwellwertentscheidungen der Form `hu_0 < θ` abbildbar. Genau diese Struktur wird von einem Entscheidungsbaum durch seine binären Verzweigungen nativ abgedeckt.
+
+Ein komplexeres Modell (z. B. SVM, neuronales Netz) wäre für diesen Anwendungsfall unnötiger Overhead. Der Entscheidungsbaum liefert bei klar separierbaren, achsenparallel trennbaren Klassen eine ausreichende und gut interpretierbare Lösung.
+
 ## 4.7 Warum die gewählten features?
+
+Als Features werden die Hu-Momente **hu_0** und **hu_3** verwendet. Hu-Momente sind aus den Bildmomenten eines Konturs abgeleitete Invarianten, die gegenüber Translation, Skalierung, Rotation und Spiegelung stabil sind. Damit eignen sie sich gut für die Klassifikation von Objektformen unabhängig von ihrer Lage im Bild.
+
+Der Feature-Plot zeigt, dass bereits diese zwei Merkmale ausreichen, um die vier Klassen klar zu trennen:
+
+| Klasse | hu_0 | hu_3 |
+|--------|------|------|
+| Katze | ~0,625 – 0,680 | ~3,2 – 3,7 |
+| Einhorn | ~0,695 – 0,750 | ~4,3 – 4,9 |
+| Quadrat | ~0,775 – 0,780 | ~6,4 – 8,2 |
+| Kreis | ~0,780 – 0,800 | ~6,6 – 9,1 |
+
+![feature plot](../misc/pictures/feature-Plot.png)
+
+Die Kombination beider Merkmale erzeugt im 2D-Merkmalsraum klar separierte, kompakte Cluster ohne nennenswerte Überlappung, ein idealer Ausgangspunkt für einen Entscheidungsbaum.
 
 ## 4.8 Kommunikation zwischen Main und AxisController
 
@@ -495,6 +544,18 @@ Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decisio
 - bessere Trackbarkeit von außen
 - Konstante Enwicklungsarbeit
 - Der nächste Schritt ist immer klar und kann schon angefangen werden.
+
+## 5.11 Koordinatentransformation und Homographie
+- Die ursprünglich geplante Koordinatentransformation (Pixel → Kamera → Welt) war in der Praxis zu fehleranfällig: Bildverzerrungen sowie die aufwendige Kalibrierung der Kamerapose haben die Methode unzuverlässig gemacht.
+- Die Homographie bildet Pixelkoordinaten direkt auf reale Weltkoordinaten ab und umgeht damit die fehleranfällige Zwischentransformation über die Kamerapose.
+- Als Kompromiss muss die Kamera vor jedem Start einmalig manuell ausgerichtet werden ([Camera_Alignment](../docs/explanations/camera_alignment.md)), damit die vorberechnete Homographiematrix gültig bleibt, dieser Aufwand ist jedoch deutlich geringer als eine vollständige Neukalibrierung.
+
+
+## 5.12 Verarbeitungsgeschwindigkeit der Bildverarbeitung
+- Die Bildverarbeitung war initial zu langsam, da die Homographiematrix für jedes eingehende Bild neu berechnet wurde.
+- Da die Homographie von der Kameraposition abhängt und diese im Betrieb konstant bleibt, muss sie nur einmalig berechnet werden.
+- Durch Auslagerung der Homographieberechnung in die Initialisierung (`__init__`) konnte die Verarbeitungsgeschwindigkeit deutlich gesteigert werden.
+
 
 # 6 Auswertung des Gesamtsystems
 ## 6.1 Funktionalität
