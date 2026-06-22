@@ -1,45 +1,44 @@
-### Starting and unsing Camera Node
+### Starting and using the Camera node
 #### Parameter
-camera_index: default 4
+`camera_index` (default: 4)
 
-starting as following to run with camera_index 4 as default
+Start (default camera index 4):
 ```bash
 ros2 run nimsort_nodes nimsort_vision
 ```
-Starting as following to use any camera indexs as integer
-
+Start with explicit camera index:
 ```bash
-ros2 run nimsort_nodes nimsort_vision --ros-args  -p camera_index:=2
+ros2 run nimsort_nodes nimsort_vision --ros-args -p camera_index:=2
 ```
-When does the Node Stops?
-Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.
+When does the node stop?
+Either when you press Ctrl+C or when the implemented failsafe causes the node to terminate.
 
-### Starting and unsing PositionPrediction Node
+### Starting the PositionPrediction node
 
-starting as following to run PositionPredictionNode
+Start:
 ```bash
 ros2 run nimsort_nodes nimsort_position_prediction
 ```
 
-When does the Node Stops?
-Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.
+When does the node stop?
+Either when you press Ctrl+C or when the implemented failsafe causes the node to terminate.
 
-### Starting and unsing Main Node
+### Starting the Main node
 
-starting as following to MainNode
+Start:
 ```bash
 ros2 run nimsort_nodes nimsort_main
 ```
 
-When does the Node Stops?
-Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.
+When does the node stop?
+Either when you press Ctrl+C or when the implemented failsafe causes the node to terminate.
 
-### Starting and unsing PositionPrediction Node
+### Starting the AxisController node
 
-starting as following to run AxisControllerNode
+Start:
 ```bash
 ros2 run nimsort_nodes nimsort_axis_controller
 ```
 
-When does the Node Stops?
-Either when you press Ctrl+C in the Terminal or the Implemented Fail-Save Concept leads to a self kill of the Node.
+When does the node stop?
+Either when you press Ctrl+C or when the implemented failsafe causes the node to terminate.

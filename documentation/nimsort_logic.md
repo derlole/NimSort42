@@ -1,7 +1,7 @@
 # 1 Inhalt
 
-In dieser Dokumentation finden sie welche Anforderungen die Module der Logik Packages Implementieren und wo die Limitierungen dieser Liegen.
-Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Besonderheiten oder Beispilee erklährt werden.
+In dieser Dokumentation finden Sie, welche Anforderungen die Module der Logik-Packages implementieren und wo die Limitierungen liegen.
+Zudem finden Sie für jedes Modul Verlinkungen zu Dateien, in welchen die Nutzung, Besonderheiten und Beispiele erklärt werden.
 
 # 2 Modul: configs
 
@@ -33,9 +33,9 @@ Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Beson
 - FeatureDetectionInterface
 
 ## 3.3 Abstrakte Funktionen
-- annehmen eines Graustufenbildes
-- berechnugn von benötigten Parametern
-- verarbeiten der berechneten Parameter durch Machine Learning
+- Annahme eines Graustufenbildes
+- Berechnung von benötigten Parametern
+- Verarbeitung der berechneten Parameter durch Machine Learning
 
 ## 3.4 Weitere Dokumentation
 - [nimsort_model_trainer](../docs/nimsort_logic/model_trainer.md)
@@ -54,9 +54,9 @@ Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Beson
 - MainInterface
 
 ## 4.3 Abstrakte Funktionen
-- hält den aktuellen Status des Roboters
-- verarbeitete alle Statusrelevanten Informationen
-- Kannd den Fahrmodus der Achse vorgeben
+- Verwaltung des aktuellen Roboter-Status
+- Verarbeitung aller Statusinformationen
+- Vorgabe des Fahrmodus der Achse
 
 ## 4.4 Weitere Dokumentation
 - keine
@@ -66,12 +66,12 @@ Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Beson
 ## 5.1 Umgesetzte Anforderungen
 | Anforderung | Datei |
 |-----------|-----------|
-| System-initalizationprocess | init_process.py |
+| System initialization process | init_process.py |
 | hold axis data (position, velocity, acceleration) | axis.py |
-| calculate acceleration form position | trajectory_planner.py |
-| calculate target in the RCS  | axis.py |
-| control position acceleration | controller.py |
-| Absctract 3 Axis down to one with Wrapper class | software_axis.py |
+| calculate acceleration from position | trajectory_planner.py |
+| calculate target in RCS | axis.py |
+| control position/acceleration | controller.py |
+| abstract 3 axes into one wrapper class | software_axis.py |
 
 ## 5.2 Interfaces / Schnittstellen nach außen
 - TrajectoryPlannerInterface
@@ -80,13 +80,13 @@ Zudem finden sie je Modul verlinkungen zu Dateien, in welchen die Nutzung, Beson
 - AxisInterface
 
 ## 5.3 Abstrakte Funktionen
-- Regelung der Programmierten Achse/n auf einen Komandierten Punkt
-- Anbieten eines Wrappers für drei Achsen, welche Konfiguriert werden können.
-- Verarbeitung des Grippers 
-- Unterschiedliche Verfahrmöglichkeiten die sich in der Definition des erreichens der Achse auszeichnen
+- Regelung der Achsen auf einen kommandierten Punkt
+- Bereitstellung eines Wrappers für drei Achsen (konfigurierbar)
+- Verarbeitung des Greifers
+- Verschiedene Fahrmodi mit unterschiedlichen Erreichungskriterien
 
 ## 5.4 Weitere Dokumentation
-- Detailierterer Breakedown der Klassen und der Nutzung dieser: [nimsort_motion](../docs/nimsort_logic/nimsort_motion.md)
+- Detaillierter Überblick der Klassen und deren Nutzung: [nimsort_motion](../docs/nimsort_logic/nimsort_motion.md)
 
 # 6 Modul: nimsort_vision
 

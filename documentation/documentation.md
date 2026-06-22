@@ -5,7 +5,7 @@
 **Projektversion**: 1.0.1  
 **Datum**: 11.06.2026
 **Status**: Projektabschluss
-**Status-d-Doc**: In Dev
+**Status-d-Doc**: In Development
 
 ---
 
@@ -17,7 +17,7 @@
 4. [Technische Herleitungen](#4-technische-herleitungen)
 5. [Lessons Learned](#5-lessons-learned)
 6. [Auswertung des Gesamtsystems](#6-auswertung-des-gesamtsystems)
-7. [Documente und Referenzen](#7-documente-und-referenzen)
+7. [Dokumente und Referenzen](#7-dokumente-und-referenzen)
 
 ---
 
@@ -33,13 +33,13 @@ Dokumentation der beispielhaften Implementierung mit ROS2: **[nimsort_ros.md](ni
 
 ### 1.1.1 Ziele
 - Entwicklung einer Sortieranlage basierend auf einem Portalroboter und einem Kamerasystem. 
-- Unabhängige Entwicklung der Pyhton logik mit klaren und leichtgewichtigen Schnittstellen
-- Entwickeln eines Prototypen mit der Middleware ROS2 Humble für ein gesamtsystem
+- Unabhängige Entwicklung der Python-Logik mit klaren und leichtgewichtigen Schnittstellen
+- Entwicklung eines Prototypen mit der Middleware ROS2 Humble für ein Gesamtsystem
 
 ### 1.1.2 Projektumfang
 - **Kernkomponenten**: Logik In Python organisiert in Modulen in einem Python Package
-- **Vision-Systeme**: Bild-Verarbeitung, Homographie, Machine Learning
-- **ROS2-Integration**: ROS2 Nodes für Datenasutausch und übergeordnete Software Architektur
+- **Vision-Systeme**: Bildverarbeitung, Homographie, Machine Learning
+- **ROS2-Integration**: ROS2 Nodes für Datenaustausch und übergeordnete Softwarearchitektur
 - **Dokumentation**: Design-Spezifikationen, Deployment-Guides
 
 ### 1.1.3 Stakeholder
@@ -76,12 +76,12 @@ Dokumentation der beispielhaften Implementierung mit ROS2: **[nimsort_ros.md](ni
 | Project-Flow | Termin | Status | Beschreibung |
 |------------|--------|--------|------------|
 | PF2.1 | 06.04.2026 | ✅ |  • Eine Kommunikation mit der Hardware kann hergestellt werden<br>• die msg Informationen der Hardware Schnittstelle können empfangen und gesendet werden<br>• Kamerabild kann gemacht werden |
-| PF2.2 | 13.04.2026 | ✅ |  • Kamerakoordinatensystem (Kameraausrichtung) ist festgelegt.<br>• Bild Pipeline bis Kantendetektion der Objekte ist Programmiert.<br>• Ros Konten inkl. Sub/Pub ist programmiert und getestet. |
+| PF2.2 | 13.04.2026 | ✅ |  • Kamerakoordinatensystem (Kameraausrichtung) festgelegt.<br>• Bildpipeline bis Kantendetektion implementiert.<br>• ROS-Nodes (incl. Publisher/Subscriber) implementiert und getestet. |
 
 ### Meilenstein: Prädizierte Positionen im Weltkoordiantensystem Ausgeben ( 27.04.2026 ) ✅
 | Project-Flow | Termin | Status | Beschreibung |
 |------------|--------|--------|------------|
-| PF3.1 | 20.04.2026 | ✅ |  • Berechnung / Bestimmung durch Koordinatentransformation von allen Koordinatensystemen ins Weltkooridnatensystem<br>• Weitergabe der koordinaten bis zur main node und anschließende konstante ausgabe der Prädizierten Koordinaten eines Objekts. |
+| PF3.1 | 20.04.2026 | ✅ |  • Berechnung / Bestimmung durch Koordinatentransformation zwischen Bezugssystemen ins Weltkoordinatensystem<br>• Weitergabe der Koordinaten zur Main-Node und kontinuierliche Ausgabe der vorhergesagten Koordinaten. |
 | PF3.2 | 27.04.2026 | ✅ |  • Die gesamte Anlage hat eine funktionierende initiale Kalibrierung der Achsen. |
 
 ### Meilenstein: Regelung auf einen Punkt im Weltkoordinatensystem ( 25.05.2026 ) ✅
@@ -321,10 +321,6 @@ Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 
 # 4 Technische Herleitungen
 
-## 4.1 Conveyorbelt Speed Berechnung und Haltung
-
-## 4.2 Homographie
-
 ## 4.1 Förderbandgeschwindigkeit – Berechnung und Haltung
 
 Für die Vorhersage von Objektpositionen wird eine zuverlässige Schätzung der aktuellen Förderbandgeschwindigkeit benötigt. Da die Geschwindigkeit nicht direkt gemessen wird, wird sie aus aufeinanderfolgenden Positionsmessungen berechnet.
@@ -340,6 +336,68 @@ Da visuelle Messungen durch Bildrauschen, Detektionsfehler oder kurzzeitige Trac
 Zusätzlich wird eine Persistenzprüfung eingesetzt. Kurzzeitige Geschwindigkeitseinbrüche werden nicht sofort übernommen, sondern erst dann akzeptiert, wenn sie über mehrere aufeinanderfolgende Messungen bestehen bleiben. Dadurch wird verhindert, dass einzelne fehlerhafte Messwerte die Geschwindigkeitsschätzung beeinflussen.
 
 Die Kombination aus Rohgeschwindigkeitsberechnung, Medianfilter, EMA-Glättung und Persistenzprüfung ermöglicht eine robuste und stabile Schätzung der Förderbandgeschwindigkeit. Diese dient als Grundlage für die Positionsvorhersage und die nachgelagerte Regelung des Systems.
+
+## 4.2 Homographie
+
+## 4.3 Position Prediction – Datenhaltung
+
+Die Klasse `PositionPrediction` verwaltet alle erkannten Förderbandobjekte intern über zwei miteinander verknüpfte Datenstrukturen.
+
+---
+
+### Primärspeicher: `_objects`
+
+Alle aktiven Objekte werden in einem `dict` gespeichert. Der Key ist eine monoton steigende ganzzahlige ID (`_object_id_counter`), der Value ist ein `MagicObject` mit den Feldern `object_type`, `position [x, y, z]` und `ts`.
+
+---
+
+### Sekundärspeicher: `_object_type_votes`
+
+Zu jeder Objekt-ID existiert ein `Counter`, der die bisher empfangenen `object_type`-Werte zählt. Da die Vision-Pipeline denselben Gegenstand mehrfach mit leicht abweichendem Typ melden kann, wird über alle Messungen abgestimmt. Der häufigste Wert wird als finaler `object_type` im `MagicObject` gespeichert.
+
+
+---
+
+### Tertiärspeicher: `_over_threshold_objects`
+
+Objekte, die den `X_THRESHOLD` überschritten haben und aus `_objects` entfernt wurden, werden hier archiviert. Im Gegensatz zu `_objects` ist dies eine einfache `list` – eine stabile ID wird nicht benötigt, da diese Objekte nicht mehr aktiv verwaltet werden. Die Liste wächst nur – Einträge werden nicht gelöscht.
+
+---
+
+### Verknüpfung der Strukturen
+
+Beide `dict`s teilen dieselbe ID als Key. Ein Objekt mit `_objects[id]` hat immer einen zugehörigen Vote-Eintrag unter `_object_type_votes[id]`. Diese Verknüpfung wird beim Entfernen atomar aufgelöst – `remove_first_object` löscht beide Einträge gemeinsam.
+
+```
+_objects:             { 0: MagicObject, 1: MagicObject, 2: MagicObject }
+_object_type_votes:   { 0: Counter,     1: Counter,     2: Counter     }
+                            ↑                ↑                ↑
+                         gleiche ID als gemeinsamer Schlüssel                      
+```
+
+---
+
+### Lebenszyklus eines Objekts
+
+```mermaid
+flowchart LR
+    A([Vision meldet Objekt]) --> B{Duplikat?\nX-Abstand < DUPLICATE_THRESHOLD}
+    B -->|ja| C[X und Y mitteln ,Typ-Vote aktualisieren]
+    B -->|nein| D{X >= DUPLICATE_THRESHOLD?}
+    D -->|ja| E[Neues MagicObject anlegen,Counter initialisieren]
+    D -->|nein| F([Verwerfen])
+    E --> G[("_objects + _object_type_votes")]
+    C --> G
+    G --> H[_update_positions\nX += speed x DT]
+    H --> G
+    G --> I{X >= PREDICTION_PUBLISH_THRESHOLD und Plausibilität ok?}
+    I -->|ja| J([Ausgabe als Prediction])
+    I -->|nein| K[remove_first_object beide Einträge löschen]
+    K --> L([Objekt entfernt])
+```
+
+---
+
 
 
 ## 4.4 PD-Regler

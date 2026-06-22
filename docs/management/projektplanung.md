@@ -1,83 +1,81 @@
 ## Projektplanung
 
-### Meilenstein Plan von (16.03) bis (29.06)
-#### Bedeutung der Dati
-**(*Wahrscheinliches Startdatum (kann nach vorne rücken)*) bis (*Enddatum (Fix)*)**:
+### Meilensteinplan (16.03 – 29.06)
 
-1. Notwendige Koordinatensysteme festgelegt **(16.03) bis (23.03)**
-- Die Notwendigen Koordinatensysteme für das Robotik Projekt 3 sind klassifiziert und festgelegt.
-- Die Entscheidungen sind begründet Dokumentiert
-- Ein Projektplan mit Meilensteinen wurde erstellt
+#### Bedeutung der Daten
+(*Wahrscheinliches Startdatum — kann vorgezogen werden* bis *Enddatum — fix*)
 
-2. Kickoff Präsentation mit Softwarearchitektur **(24.03) bis (30.03)**
-- Die Kickoff Präsentation ist gehalten
-- Eine vorläufige akzeptierte Softwarearchitektur ist erstellt
+1. Notwendige Koordinatensysteme festlegen (16.03 – 23.03)
+- Die benötigten Koordinatensysteme für das Projekt wurden identifiziert und dokumentiert.
+- Entscheidungen sind begründet dokumentiert.
+- Ein Projektplan mit Meilensteinen wurde erstellt.
 
-3. Kommunikation mit der Hardware **(31.03) bis (06.04)**
-- Eine Kommunikation mit der Hardware kann hergestellt werden
-- die msg Informationen der Hardware Schnittstelle können empfangen und gesendet werden
-- Kamerabild kann gemacht werden
+2. Kickoff-Präsentation mit Softwarearchitektur (24.03 – 30.03)
+- Kickoff-Präsentation durchgeführt.
+- Vorläufige Softwarearchitektur verabschiedet.
 
-4. Vision Basis und Ros Architektur Programmieren **(07.04) bis (13.04)**
-- Kamerakoordinatensystem (Kameraausrichtung) ist festgelegt.
-- Bild Pipeline bis Kantendetektion der Objekte ist Programmiert.
-- Ros Konten inkl. Sub/Pub ist programmiert und getestet.
+3. Kommunikation mit der Hardware (31.03 – 06.04)
+- Hardwarekommunikation hergestellt; Nachrichten der Hardwareschnittstelle können gesendet und empfangen werden.
+- Kameraaufnahmen möglich.
 
-5. Prädizierte Positionen im Weltkoordiantensystem Ausgeben **(14.04) bis (20.04)**
-- Berechnung / Bestimmung durch Koordinatentransformation von allen Koordinatensystemen ins Weltkooridnatensystem
-- Weitergabe der koordinaten bis zur main node und anschließende konstante ausgabe der Prädizierten Koordinaten eines Objekts.
+4. Vision-Basis und ROS-Architektur (07.04 – 13.04)
+- Kamerakoordinatensystem und Ausrichtung festgelegt.
+- Bildpipeline bis Kantendetektion implementiert.
+- ROS-Topics (Publisher/Subscriber) implementiert und getestet.
 
-6. Initiale Kalibrierung des Gesamtsystems **(21.04) bis (27.04)**
-- Die gesamte Anlage hat eine funktionierende initiale Kalibrierung der Achsen.
+5. Prädizierte Positionen im Weltkoordinatensystem ausgeben (14.04 – 20.04)
+- Koordinatentransformationen zwischen Bezugssystemen implementiert.
+- Weitergabe der Koordinaten an die Main-Node und kontinuierliche Ausgabe der vorhergesagten Position eines Objekts.
 
-7. Regelung auf einen Punkt im Weltkoordinatensystem **(28.04) bis (11.05)**
-- Die Regelung auf einen Punkt im Koordinatensystem ist Programmiert.
-- Achsen können auf einen kommandierten Punkt fahren
-- Anwendungsspezifische Punkte sind festgelegt.
+6. Initiale Kalibrierung des Gesamtsystems (21.04 – 27.04)
+- Systeminitialisierung und Kalibrierung der Achsen durchgeführt.
 
-8. Vision Modell fertigstellen und feinjustieren **(12.05) bis (25.05)**
-- Feature / Shape Matching ist programmiert.
-- Klassifikation der Form funktioniert zuverlässig.
-- Greifprozess ist programmiert und getestet
+7. Regelung zu einem Punkt im Weltkoordinatensystem (28.04 – 11.05)
+- Regelung auf Zielpunkte implementiert; Achsen fahren zu kommandierten Punkten.
 
-9. Prozesslogik ist in Python Programmiert und getestet **(26.05) bis (01.06)**
-- alle daten aus Kamera pipeline, Sensorlogik u.a. werden in einer statemachine der Prozesslogik zusammengefasst.
+8. Vision-Modell fertigstellen und feinjustieren (12.05 – 25.05)
+- Feature- / Shape-Matching implementiert und getestet.
+- Klassifikation zuverlässig, Greifprozess implementiert.
 
-Puffer **(01.06 bis 15.06)**
+9. Prozesslogik in Python implementiert und getestet (26.05 – 01.06)
+- Daten aus Kamera, Sensorlogik etc. werden in einer State Machine zusammengeführt.
 
-10. Finaler Test und Doku **(16.06) bis (22.06)**
-- Alle Software tests sind geschrieben
-- Praktische Tests sind ausreichend durchgeführt
-- Dokumentation ist vollständig
+Puffer (01.06 – 15.06)
 
-11. Abschlusspräsentationen **(23.06) bis (29.06)**
-- Beide Abschließenden Präsentationen sind gehalten.
+10. Finaler Test und Dokumentation (16.06 – 22.06)
+- Software-Tests geschrieben.
+- Praktische Tests durchgeführt.
+- Dokumentation vervollständigt.
 
-Puffer **(30.06 bis 13.07)**
+11. Abschlusspräsentationen (23.06 – 29.06)
 
-### Meilensteine
-1. Notwendige Koordinatensysteme festgelegt *1/2* (30.03)
-2. Grundlagen realisieren. *3/4* (13.04)
-3. Prädizierte Positionen im Weltkoordiantensystem Ausgeben *5/6* (27.04)
-4. Regelung auf einen Punkt im Weltkoordinatensystem *7/8* (25.05)
-5. Prozesslogik ist in Python Programmiert und getestet *9* (01.06)
-6. Abschlusspräsentationen *10/11* (29.06)
+Puffer (30.06 – 13.07)
+
+### Meilensteine (Kurz)
+1. Koordinatensysteme festgelegt (30.03)
+2. Grundlagen realisiert (13.04)
+3. Prädizierte Positionen verfügbar (27.04)
+4. Regelung auf Punkt implementiert (25.05)
+5. Prozesslogik implementiert (01.06)
+6. Abschlusspräsentationen (29.06)
 
 ### Risikomanagement
-- Hardware versagt oder wird nicht früh genug bereit gestellt-> Zeitplan geht nicht auf
-- Team Mitglied fällt aus -> Zeitplan geht nicht auf
-- Professor fällt aus -> Projekt nicht bewertbar
-- Zu geringe Hardwareverfügbarkeit -> zu wenig praktisches testen möglich
--> 2 + 2 Wochen Puffer 
+- Hardwareausfall oder verspätete Bereitstellung → Verzögerungen im Zeitplan
+- Ausfall eines Teammitglieds → Verzögerungen
+- Unvorhergesehene Betreuungsausfälle → Bewertung gefährdet
+- Eingeschränkte Hardwareverfügbarkeit → weniger Tests möglich
+
+Maßnahme: 2 Wochen Puffer + zusätzliche Reservezeit
+
 ### Stakeholder
-- Teammitglieder -> Tolles Note <= 4.0
-- Professor -> Möchte seinen Lehrauftrag erfüllen 
-- Kunde (Haribo) -> möchte Einhorn Gummibärchen sortieren
+- Team: erfolgreiche Abgabe (Note)
+- Betreuer: Durchführung der Lehrveranstaltung
+- Kunde (z. B. Testkunde) – Anforderungen an Sortierfunktion
 
-### Arbeitsmethode
--> Iterativ
+### Arbeitsweise
+Iterativ, inkrementelle Entwicklung mit regelmäßigen Tests
 
-### Hauptverantwortlichkeiten (Wichtig nicht ausschließlicher Arbeitsbereich)
-- Louis: Vision Pipeline( Machine Learing Modell) 
-- Yannick: Prozesslogik(Main)/Postion Predition
-- Benjamin: Regelung/AxisController
+### Hauptverantwortlichkeiten (Beispiel)
+- Louis: Vision / ML-Modell
+- Yannick: Prozesslogik (Main) / Position Prediction
+- Benjamin: Regelung / AxisController
