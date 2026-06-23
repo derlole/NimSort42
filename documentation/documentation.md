@@ -320,8 +320,6 @@ Hier war es wichtig nur eine Node für die Datenhaltung zu haben, da sonst die G
 - Die Umsetzung erlaubt es im allgemeinen Saubere Main States zu Formulieren welche gut den Gesamtablauf der Maschiene representieren. 
 - Die Axis änderungen sind minimal und können bei einer Revidierung der Entscheidung ohne veränderungen erhalten bleiben oder einfach zurückgesetz werden. Insofern ist es ein reines Feature was nicht zwangsweise benutzt werden muss.
 
-**Files:** Eine etwas tiefere Beschriebung der gedankengänge zum Pickprocess sind hier zu lesen: [pick_process.md](../docs/state_machines/pick_process.md)
-
 ## 3.12 Weitere
 Weitere Entscheidungen sind hier zu finden: [decisions.md](../docs/decisions.md)
 
