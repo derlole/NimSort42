@@ -599,9 +599,8 @@ Alle definierten Systemanforderungen wurden erfolgreich umgesetzt und getestet.
 | Axis | calculate in Robot Coordinate System |
 | Axis | abstract 3-axis into wrapper |
 | Controller | control acceleration |
-
 ## 6.4 Performance
-Die Performance wird anhand der Sortier- und Erfolgsrate bewertet, da keine klasswh 11 von 12 Objekten korrekt erkannt, aufgenommen und sortiert, was einer Erfolgsrate von 91,67% entspricht. Fehlversuche traten vereinzelt durch Erkennungsunsicherheiten auf, beeinträchtigen jedoch nicht die Gesamtfunktionalität. Im entsprechenden Hardswaretest wurde keine Objekte falsch klassifiziert.
+Die Performance wird anhand der Sortier- und Erfolgsrate bewertet, da keine klassische Laufzeitoptimierung im Fokus steht. In den durchgeführten Hardware-Tests wurden 11 von 12 Objekten korrekt erkannt, aufgenommen und sortiert, was einer Erfolgsrate von 91,67 % entspricht. Fehlversuche traten vereinzelt durch Erkennungsunsicherheiten auf, beeinträchtigen jedoch nicht die Gesamtfunktionalität. Im entsprechenden Hardwaretest wurde kein Objekt falsch klassifiziert.
 
 
 # 7 Documente und Referenzen
