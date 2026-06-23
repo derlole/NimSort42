@@ -11,8 +11,7 @@
 \usepackage{amsmath}
 \usepackage{siunitx}
 \usepackage{booktabs}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows.meta, positioning, shapes.cylinders}
+
 
 %\usepackage{twemojis} 
 \title[Kurztitel]{Technische Präsentation}
@@ -50,16 +49,16 @@
 			\begin{column}{0.48\textwidth}
 				\textbf{State Machines}
 				\begin{itemize}
-					\item Klarer Cases der Prozesse
+					\item Klarer Case pro Prozess
 					\item Einfaches Debugging
-					\item Weniger Fehleranfällig
 				\end{itemize}
 			\end{column}
 			\begin{column}{0.48\textwidth}
 				\textbf{Sentinel}
 				\begin{itemize}
-					\item Bei Fehlern in der Verarbeitungskette
-					\item Wenn nichts gesendet wird geht die Anlage in den Fail Safe Zustand
+					\item Neagtive Wert 1 egal in welchem Format
+					\item Keine Daten von der vorgehenden Node
+					\item Wenn keine Daten dann Fail Safe Zustand
 				\end{itemize}
 			\end{column}
 		\end{columns}
@@ -68,44 +67,8 @@
 
 	\begin{frame}{Datenhaltung in der PositionPrediction}
 		
-    \centering
-    \resizebox{\textwidth}{!}{%
-    \begin{tikzpicture}[
-        node distance=0.6cm and 0.8cm,
-        every node/.style={font=\small},
-        startstop/.style={ellipse, draw, fill=blue!10, minimum width=1.8cm, minimum height=0.7cm, align=center},
-        process/.style={rectangle, draw, fill=blue!10, minimum width=2.2cm, minimum height=0.7cm, align=center},
-        decision/.style={diamond, draw, fill=blue!10, aspect=2, align=center},
-        database/.style={cylinder, draw, fill=blue!10, shape border rotate=90, minimum width=1.8cm, minimum height=0.7cm, align=center},
-        arrow/.style={->, >=stealth}
-    ]
-        \node[startstop] (A) {Vision\\meldet Objekt};
-        \node[decision, right=of A] (B) {Duplikat?\\X $<$ DUPL\_THRESH};
-        \node[process, above right=0.3cm and 0.8cm of B] (C) {X/Y mitteln\\Typ-Vote++};
-        \node[process, below right=0.3cm and 0.8cm of B] (E) {Neues MagicObject\\Counter init};
-        \node[database, right=3.2cm of B] (G) {\_objects\\\_type\_votes};
-        \node[process, right=3.2cm of B] (G) {\_objects\\\_type\_votes};
-        \node[decision, right=of H] (I) {X $\geq$ PRED\_THRESH\\Plausibel?};
-        \node[startstop, above right=0.3cm and 0.8cm of I] (J) {Prediction\\ausgeben};
-        \node[process, below right=0.3cm and 0.8cm of I] (K) {remove\_first\_object\\beide Einträge löschen};
-        \node[startstop, right=of K] (L) {Objekt\\entfernt};
-
-        \draw[arrow] (A) -- (B);
-        \draw[arrow] (B) -- node[above left]{\tiny ja} (C);
-        \draw[arrow] (B) -- node[below left]{\tiny nein} (E);
-        \draw[arrow] (C) -| (G);
-        \draw[arrow] (E) -| (G);
-        \draw[arrow] (G) -- (H);
-        \draw[arrow] (H) -- (I);
-        \draw[arrow] (H.north) -- ++(0,0.4) -| (G.north);
-        \draw[arrow] (I) -- node[above left]{\tiny ja} (J);
-        \draw[arrow] (I) -- node[below left]{\tiny nein} (K);
-        \draw[arrow] (K) -- (L);
-    \end{tikzpicture}
-    }%
-
+    
 	\end{frame}
-
 	\begin{frame}{Pick Prozess}
 		Inhalt...
 	\end{frame}
@@ -220,7 +183,8 @@
 	\end{frame}
 
 	\begin{frame}{PositionPrediction Daten}
-		Inhalt...
+		\centering
+    \includegraphics[width=\textwidth]{../../pictures/Datafluss.png}
 	\end{frame}
 
 	\begin{frame}{PD-Regler}											% Übernahme Benji
