@@ -297,9 +297,10 @@ die Kamera reproduzierbar auf eine definierte Position auszurichten.
 
 ## 3.9 Datenhaltung in der PositionPrediction
 **Entscheidung:**
-Als Datenstrukrut wurde eine Dict ausgewählt. Hier legen wir die Objekte ab die von der Kamera Node erfasst wurden. Vor dem abspeichern der Objekte wird die Plausibiltät geprüft.
+Die Datenhaltung findet ausschließlich in der PositionPrediction statt. Die MainNode bekommt ein Feedback von der PositionPredictionNode, ob die vorhergesagte Position eines Objekts erfolgreich an die MainNode weitergegeben wurde.
 
 **Begründung:**
+Hier war es wichtig nur eine Node für die Datenhaltung zu haben, da sonst die Gefahr besteht, dass die Datenhaltung in der MainNode und der PositionPredictionNode nicht synchron sind oder durch Verzögerungen beeinflusst werden. Die MainNode bekommt ein Feedback von der PositionPredictionNode, ob die vorhergesagte Position eines Objekts entfent werden kann da es schon verarbeitet wurde. Die PostionPrediction Node kann nun das Objekt aus der Datenstruktur entfernen und ein neues Objekt an die Main schicken. 
 
 ## 3.10 Feedback von Main zur PositionPrediction
 
@@ -407,7 +408,7 @@ _object_type_votes:   { 0: Counter,     1: Counter,     2: Counter     }
 
 ```mermaid
 flowchart LR
-    A([Vision meldet Objekt]) --> B{Duplikat?\nX-Abstand < DUPLICATE_THRESHOLD}
+    A([Vision meldet Objekt]) --> B{Duplikat? X-Abstand < DUPLICATE_THRESHOLD}
     B -->|ja| C[X und Y mitteln ,Typ-Vote aktualisieren]
     B --> |nein| E[Neues MagicObject anlegen,Counter initialisieren]
     E --> G[("_objects + _object_type_votes")]
@@ -455,6 +456,7 @@ Der Regler arbeitet in folgenden Schritten:
 Der Einsatz eines PD-Reglers ist sinnvoll, da der P-Anteil das System zum Zielpunkt führt und der D-Anteil Überschwingen sowie Schwingungen reduziert. Dadurch wird eine stabile und schnelle Annäherung an die Sollposition erreicht.
 
 ## 4.5 Pick Prozess
+Dies ist hier beschreiben: [pick_process.md](../docs/state_machines/pick_process.md)
 
 ## 4.6 Warum Decision Tree
 
@@ -482,6 +484,17 @@ Der Feature-Plot zeigt, dass bereits diese zwei Merkmale ausreichen, um die vier
 Die Kombination beider Merkmale erzeugt im 2D-Merkmalsraum klar separierte, kompakte Cluster ohne nennenswerte Überlappung, ein idealer Ausgangspunkt für einen Entscheidungsbaum.
 
 ## 4.8 Kommunikation zwischen Main und AxisController
+Die  Umsetzung der Kommunikation zwischen Main und AxisController erfolgt über die ROS2 Topics `/NimSortTarget` und `/MotionState`.
+- Main publisht die Sollpositionen als `NimSortTarget` an den AxisController mit einer ID. Diese ID hat folgende Bedeutung:
+    - 0= Initialisierung der Main Node
+    - 1= Initialisierung der Achsen
+    - 2= Fahren zu einer Position
+    - 3= ist das Fahren zu einer Positon mit einer speziellen Regelung. Hier wird die X-Achse beim Reached nicht beachtet.#TODO[#188](https://github.com/derlole/NimSort42/issues/188)
+    - 4= Fahren zu einer Position mit mit aktivierem Greifer
+    - 5= Greifer deaktivieren
+- AxisController publisht wenn er die Sollposition erreicht hat die aktuelle Position als `Reached` an die Main Node zurück.
+- Im Feedback ist außer dem der Status des Greifers um in der Main deteministisch zu arbeiten. Die wird in der Message mit `gripper_active`als einfache Boolean Variable mitgegeben.
+
 
 ## 4.9 FailSafe-Konzept
 Für die Technische Umsetzung inkl. Begründungen können sie in folgender Datei nachschauen: [failsafe_concept.md](../docs/sw_planning/failsafe_concept.md)
