@@ -1,11 +1,11 @@
 # Inhalt
 
-[Enums](#1-enums)
-[class Controller](#2-class-controller)
-[class TrajectoryPlanner](#3-class-trajectoryplanner)
-[class Axis](#4-class-axis)
-[class InitProcess](#5-class-initprocess)
-[class SoftwareAxis](#6-class-softwareaxis)
+[Enums](#1-enums)  
+[class Controller](#2-class-controller)  
+[class TrajectoryPlanner](#3-class-trajectoryplanner)  
+[class Axis](#4-class-axis)  
+[class InitProcess](#5-class-initprocess)  
+[class SoftwareAxis](#6-class-softwareaxis)  
 
 Das Package nimsort_motion enthält insgesamt alle datien excl. der Konfigurationsdateien die für die Logik einer oder mehrerer Achsen nötig sind.
 
