@@ -168,4 +168,4 @@ flowchart TD
     DU -->|reached & gripper_not_active| GTPRP
     DC -->|reached & gripper_not_active| GTPRP
 ```
-##Rücksprung zur Dokumentation: [NimSort_42](../NimSort42/documentation/documentation.md)
+
