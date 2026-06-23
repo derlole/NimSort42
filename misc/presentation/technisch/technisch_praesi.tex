@@ -13,11 +13,11 @@
 \usepackage{booktabs}
 
 %\usepackage{twemojis} 
-\title[Kurztitel]{Kick-off Präsentation}
+\title[Kurztitel]{Technische Präsentation}
 \subtitle{RO45 Robotik Projekt 3 – Automatische Sortieranlage}
 \author{NimSort42}
 \institute{Hochschule Kempten}
-\date{30.06.2026}
+\date{29. Juni 2026}
 
 \setbeamertemplate{section in toc}[ball unnumbered]
 \setbeamertemplate{subsection in toc}[ball unnumbered]
@@ -35,38 +35,169 @@
 	\end{frame}
 	
 	% --------------------
-	
-	\section{Designentscheidungen}
-	\begin{frame}{SW-Architektur}
+	\section{Software Architektur}
+	\begin{frame}{Software Architektur}
 		Inhalt...
 	\end{frame}
+
+	\section{Designentscheidungen}
+	\begin{frame}{State Machines}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Sentinels}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Datenhaltung in der PositionPrediction}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Pick Prozess}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Feedback von Main zur PositionPrediciton}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Fail-Safe statt Fail-Operational}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{PD-Regler vs. PDF-Regler}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Homographie}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Decision Tree}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Kameraausrichtung}
+		Inhalt...
+	\end{frame}
+
 	
 	\section{Technische Details}
-	\begin{frame}{Sachen}
+	\begin{frame}{Decisiontree}
 		Inhalt...
 	\end{frame}
+
+	\begin{frame}{Gewählte Features}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Homographie}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Pick Prozess}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Kommunikation Main und AxisController}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{PositionPrediction Daten}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{PD-Regler}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Förderbandgeschwindigkeit}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Fail-Safe Konzept}
+		Inhalt...
+	\end{frame}
+
 	
 	\section{Anpassungen \& Schwierigkeiten}
 	\begin{frame}{Anpassungen}
-		- topic feedbacks
-		- softwareaxis 
-		- Koorinatensysteme (Kamera)
-
+		\begin{itemize}
+			\item Topic Feedbacks
+			\item Softwareaxis
+			\item Koordinatensysteme
+			\item Berechnung der Förderbandgeschwindigkeit
+		\end{itemize}
 	\end{frame}
 	\begin{frame}{Schwierigkeiten}
-		- Hardware
+		\begin{itemize}
+			\item Hardwareprobleme
+			\item Kamerakalibrierung
+		\end{itemize}
 		 
 	\end{frame}
 	
 	\section{Lessons Learned}
-	\begin{frame}{Sachen3}
+
+	\begin{frame}{Einheitlichen Konzepte}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Fehlerhafte Hardware}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Github \& Branches}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Plausibilitätschecks}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Meilensteine in Iteraitonen Aufteilen}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Verarbeitungsgeschwindigkeit der Bildverarbearbeitung}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Koordinatentransformation und Homographie}
+		Inhalt...
+	\end{frame}
+
+	\begin{frame}{Belichtung}
 		Inhalt...
 	\end{frame}
 	
 	\section{Zusammenfassung}
-	\begin{frame}{Sachen4}
-		Inhalt...
+	\begin{frame}{Zusammenfassung}
+
+	\begin{block}{Erreichte Ziele}
+	\begin{itemize}
+		\item Themen aus der Vorlesung wurden umgesetzt
+		\item Software- und Hardwareintegration erfolgreich durchgeführt
+		\item Objekterkennung und Sortierung realisiert
+		\item Modulare Architektur entwickelt
+		\item Gute Teamarbeit :)
+	\end{itemize}
+	\end{block}
+
+	\vfill
+
+	\begin{columns}[b]
+		\begin{column}{0.75\textwidth}
+			\footnotesize\itshape
+			Naiv implementierte Mustererkennung sortiert Objekte
+			random trotz 42 Verkabelungsproblemen.
+		\end{column}
+		\begin{column}{0.25\textwidth}
+			\raggedleft
+			\includegraphics[width=0.8\linewidth]{../../pictures/micdrop.png}
+		\end{column}
+	\end{columns}
+
 	\end{frame}
-	
 	
 \end{document}

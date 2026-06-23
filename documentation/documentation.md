@@ -519,7 +519,7 @@ Das Prinzip I von SOLID hilft viel
 Das Prinzip O von SOLID hilft viel
 - bei der späteren Code-Dokumentation, da diese sehr einfach und intuitiv wird
 
-## 5.8 Einheutliche Konzepte
+## 5.8 Einheitliche Konzepte
 - Logging Conventions hat das debuggen einfacher gemacht weil fehler oder nicht reviewter Code sich durch nicht angepasst Logs zu erkennen gegeben hat
 - Logging Conventions hat logs schneller zum Code zugeordnet
 - Interfaces haben das fehlen von Funktionen noch vor Programmstart klar gemacht
