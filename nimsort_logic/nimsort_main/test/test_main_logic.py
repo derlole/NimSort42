@@ -83,10 +83,30 @@ def make_sut():
             rose = val and not self._last
             self._last = val
             return rose
+        
+    class _EdgeDetectorWithTHCounter(_EdgeDetectorRise):
+        def __init__(self, threshold):
+            super().__init__()
+            self.counter = 0
+            self.threshold = threshold
+
+        def update(self, current):
+            res_iter = False
+
+            if self.counter >= self.threshold:
+                res_iter = super().update(current)
+
+            if current:
+                self.counter = 0
+            else:
+                self.counter += 1
+
+            return res_iter
 
     edge_mod = types.ModuleType("nimsort_main.edge_detector")
     edge_mod.EdgeDetectorRise = _EdgeDetectorRise
     edge_mod.EdgeDetectorFall = MagicMock()
+    edge_mod.EdgeDetectorWithTHCounter = _EdgeDetectorWithTHCounter
 
     # --- PlausibilityCheck ---
     class _PlausibilityCheck:

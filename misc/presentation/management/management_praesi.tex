@@ -13,11 +13,13 @@
 \usepackage{booktabs}
 
 %\usepackage{twemojis} 
-\title[Kurztitel]{Kick-off Präsentation}
+\title[Kurztitel]{
+	\textbf{Management Präsentation}
+}
 \subtitle{RO45 Robotik Projekt 3 – Automatische Sortieranlage}
 \author{NimSort42}
 \institute{Hochschule Kempten}
-\date{30.06.2026}
+\date{29 Juni 2026}
 
 \setbeamertemplate{section in toc}[ball unnumbered]
 \setbeamertemplate{subsection in toc}[ball unnumbered]
@@ -58,13 +60,63 @@
 	\section{Technische Highlights}
 	
 	\begin{frame}{Technische Highlights}
-		Inhalt...
+
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Software-Unabhängigkeit}}
+				\begin{itemize}
+					\item Open Source
+					\item Erweiterbar
+				\end{itemize}
+			\end{block}
+		\end{column}
+
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Modulare Softwarearchitektur}}
+				\begin{itemize}
+					\item Klare Schnittstellen
+					\item Austauschbare Module
+					\item Einfache Wartung
+				\end{itemize}
+			\end{block}
+		\end{column}
+	\end{columns}
+
+	\vspace{0.3cm}
+
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Fail-Safe Mechanismen}}
+				\begin{itemize}
+					\item Fehlererkennung
+					\item Notfallstrategien
+				\end{itemize}
+			\end{block}
+		\end{column}
+
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Präzises ML-Modell}}
+				\begin{itemize}
+					\item Einfaches und Robustes Modell
+					\item Voting durch mehrere Bilder
+				\end{itemize}
+			\end{block}
+		\end{column}
+	\end{columns}
+
 	\end{frame}
 	
 	\section{Rahmenbedingungen}
 	
 	\begin{frame}{Rahmenbedingungen}
-		Inhalt...
+		\begin{itemize}
+			\item Code für serielle Schnittstelle muss vorhanden sein
+			\item Beleuchtung muss konstant und korrekt sein
+			\item Kamera muss korrekt eingestellt sein
+			\item Förderbandgeschwindigkeit konstant zwischen 0.01 m/s und 0.05 m/s
+			\item Strom und Druckluftzufuhr
+			\item Rechner mit ROS2 Humble muss konstant angeschlossen sein
+		\end{itemize}
 	\end{frame}
 	
 	\section{Performance}

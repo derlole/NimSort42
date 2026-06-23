@@ -409,9 +409,7 @@ _object_type_votes:   { 0: Counter,     1: Counter,     2: Counter     }
 flowchart LR
     A([Vision meldet Objekt]) --> B{Duplikat?\nX-Abstand < DUPLICATE_THRESHOLD}
     B -->|ja| C[X und Y mitteln ,Typ-Vote aktualisieren]
-    B -->|nein| D{X >= DUPLICATE_THRESHOLD?}
-    D -->|ja| E[Neues MagicObject anlegen,Counter initialisieren]
-    D -->|nein| F([Verwerfen])
+    B --> |nein| E[Neues MagicObject anlegen,Counter initialisieren]
     E --> G[("_objects + _object_type_votes")]
     C --> G
     G --> H[_update_positions\nX += speed x DT]
@@ -558,7 +556,7 @@ Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decisio
 
 ## 6.3 Anforderungserfüllung
 
-## 6.4 performance
+## 6.4 Performance
 
 
 # 7 Documente und Referenzen
