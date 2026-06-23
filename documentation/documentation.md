@@ -226,7 +226,7 @@ flowchart TD
 # 3 Designentscheidungen
 
 ## 3.1 State Machines
-**Entscheidung:** Verwendung von einer State Machine ausschließlich in der Main Logic
+**Entscheidung:** Verwendung von einer State Machine in der Main Logic
 
 **Begründung:**
 - Vorhersagbares Verhalten
