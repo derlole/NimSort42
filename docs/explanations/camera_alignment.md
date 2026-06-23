@@ -23,3 +23,8 @@
 |-------|---------------------------------|
 | `ESC` | Programm beenden                |
 | `F`   | Vollbild / Fenstermodus wechseln |
+
+
+### Weiere Details
+
+[Camere Alignment](../nimsort_logic/cam_alignment.md)

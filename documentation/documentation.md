@@ -170,19 +170,19 @@ Jede Haupt-logikdatei Implementiert ein im selben ordner Definierte Schnitstelle
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|--------------------|
-| • Speichern der erkannten Objekte<br>• Berechnung der neuen Positionen mit evtl. ber"ucksichtigung neuer erkantner Daten<br>• Aktualisierung der erkannten Objekte | NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed | • PositionPrediction |
+| • Speichern der erkannten Objekte<br>• Berechnung der neuen Positionen mit evtl. berücksichtigung neuer erkantner Daten<br>• Aktualisierung der erkannten Objekte | NimSortPrediction <br> NimSortImageData <br> NimSortConveyorbeltSpeed | • PositionPrediction |
 
 ### 2.2.3 Main
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
-|  • Orchestriere und verwalte den Programmfluss <br>• Rufe Systeminitialisierung auf | NimSortMotionState, NimSortPrediction, NimSortConveyorbeltSpeed  | • Main |
+|  • Orchestriere und verwalte den Programmfluss <br>• Rufe Systeminitialisierung auf | NimSortMotionState<br> NimSortPrediction<br> NimSortConveyorbeltSpeed  | • Main |
 
 ### 2.2.4 AxisController
 
 | Anforderungen | Schnittstellen | Logik Implementierungen |
 |------------|--------|------------|
-| • Erhalte: RobotPos<br>• Halte und verwalte die Axen<br>• Kenne und vermeide verbotene fahrzonen<br>• Publish RobotCmd | NimSortTarget, RobotPos, NimSortMotionState, RobotCmd| • InitProcess<br>• Axis |
+| • Erhalte: RobotPos<br>• Halte und verwalte die Axen<br>• Kenne und vermeide verbotene fahrzonen<br>• Publish RobotCmd | NimSortTarget<br> RobotPos<br> NimSortMotionState<br> RobotCmd| • InitProcess<br>• Axis |
 
 ## 2.3 Datenfluss und Timing
 
@@ -303,7 +303,7 @@ Als Datenstrukrut wurde eine Dict ausgewählt. Hier legen wir die Objekte ab die
 
 ## 3.10 Feedback von Main zur PositionPrediction
 
-**Entscheidung:**Die PositionPredictionNode bekommt ein nicht geplantes Feedback von der MainNode 
+**Entscheidung:** Die PositionPredictionNode bekommt ein nicht geplantes Feedback von der MainNode 
 
 **Begründung:** 
 - Die Datenhaltung in der Main wird dadurch drastisch reduziert
@@ -312,7 +312,7 @@ Als Datenstrukrut wurde eine Dict ausgewählt. Hier legen wir die Objekte ab die
 
 ## 3.11 Pick Process
 
-**Entscheidung:** Der Picking Process wird in seiner Substanz dargestellt als unterschiedliche Drive Modi der AxisNode. Diese kann unterschiedliche Targes unterschiedlich anfahren und damit einen Picking Drive realisieren.
+**Entscheidung:** Der Picking Process wird in seiner Substanz dargestellt als unterschiedliche Drive Modi der AxisNode. Diese kann unterschiedliche Targets unterschiedlich anfahren und damit einen Picking Drive realisieren.
 
 **Begründung:**
 - Die Architektur lässt es einfach zu nicht sicherheitsnotwendige Feedbacks zu senden, und Gleichzeitig allgemein notwendige Feedbacks hinzuzufügen. 
@@ -332,9 +332,7 @@ Für die Vorhersage von Objektpositionen wird eine zuverlässige Schätzung der 
 
 Die Rohgeschwindigkeit ergibt sich aus der Positionsänderung innerhalb eines Zeitintervalls:
 
-[
-v = \frac{\Delta x}{\Delta t}
-]
+$v = \frac{\Delta x}{\Delta t}$
 
 Da visuelle Messungen durch Bildrauschen, Detektionsfehler oder kurzzeitige Trackingverluste beeinflusst werden können, wird die berechnete Geschwindigkeit gefiltert. Hierfür wird zunächst ein Medianfilter verwendet, der einzelne Ausreißer unterdrückt. Anschließend erfolgt eine Glättung mittels exponentiellem gleitendem Mittelwert (EMA), um sprunghafte Geschwindigkeitsänderungen zu vermeiden.
 
@@ -434,23 +432,19 @@ Zur Positionsregelung wird ein PD-Regler (Proportional-Differential-Regler) eing
 
 Der Regelfehler ergibt sich aus der Differenz zwischen Soll- und Istposition:
 
-\[
-e = x_{soll} - x_{ist}
-\]
+
+$e = x_{soll} - x_{ist}$
+
 
 Die Reglerausgabe wird als Beschleunigung berechnet:
 
-\[
-a = K_P \cdot e + K_D \cdot \dot e
-\]
+$a = K_P \cdot e + K_D \cdot \dot e$
 
 Dabei beschreibt der Proportionalanteil \(K_P \cdot e\) die Reaktion auf den aktuellen Positionsfehler, während der Differentialanteil \(K_D \cdot \dot e\) die Änderung des Fehlers berücksichtigt und das System dämpft.
 
 Für die diskrete Implementierung wird die Fehleränderung aus zwei aufeinanderfolgenden Messungen bestimmt:
 
-\[
-\dot e = \frac{e_k - e_{k-1}}{\Delta t}
-\]
+$\dot e = \frac{e_k - e_{k-1}}{\Delta t}$
 
 Der Regler arbeitet in folgenden Schritten:
 
@@ -577,11 +571,11 @@ Projektplanung:
 README des Repos: **[README.md](../README.md)**
 
 ## 7.2 Andere Verlinkte Dateien und Dokumentationen
-Projektinterne Logging Konventionen: [logging.md](../docs/sw_planning/logging.md)
-Dokumentation der Logik Interfaces: [interface.md](../docs/sw_planning/interface.md)
-Entscheidungen und Anforderungen in der Softwarearchitektur: [architecture_decisions.md](../docs/sw_planning/architecture-decision.md)
-Dokumentationen der an der Hardware vorgenommenen änderungen: [hardware_fixes.md](../docs/hardware_fixes.md)
-Dokumentation der Im Porjekt relevanten oder größeren Entscheidungen: [decisions.md](../docs/decisions.md)
-Definition der im Projekt verwendeten Koordinatensysteme: [CSSystem.md](../docs/sw_planning/CSSystem.md)
-Dokumentation der Gedanken zum Fail-save konzept: [failsave_concept.md](../docs/sw_planning/failsafe_concept.md)
-Dokumentation der Projektplanung: [projektplanung.md](../docs/management/projektplanung.md)
+Projektinterne Logging Konventionen: [logging.md](../docs/sw_planning/logging.md)  
+Dokumentation der Logik Interfaces: [interface.md](../docs/sw_planning/interface.md)  
+Entscheidungen und Anforderungen in der Softwarearchitektur: [architecture_decisions.md](../docs/sw_planning/architecture-decision.md)  
+Dokumentationen der an der Hardware vorgenommenen änderungen: [hardware_fixes.md](../docs/hardware_fixes.md)  
+Dokumentation der Im Porjekt relevanten oder größeren Entscheidungen: [decisions.md](../docs/decisions.md)  
+Definition der im Projekt verwendeten Koordinatensysteme: [CSSystem.md](../docs/sw_planning/CSSystem.md)  
+Dokumentation der Gedanken zum Fail-save konzept: [failsave_concept.md](../docs/sw_planning/failsafe_concept.md)  
+Dokumentation der Projektplanung: [projektplanung.md](../docs/management/projektplanung.md)  
