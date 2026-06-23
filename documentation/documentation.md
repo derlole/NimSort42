@@ -551,13 +551,57 @@ Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decisio
 
 
 # 6 Auswertung des Gesamtsystems
+
 ## 6.1 Funktionalität
+Die implementierte State Machine wurde umfassend durch Unit-Tests verifiziert. Alle vorgesehenen Zustände (START, INIT, PICK, DROP, RESET) werden korrekt durchlaufen. Auch die Gripper-Logik sowie die Verarbeitung erkannter Objekte funktionieren gemäß Spezifikation. Die Tests zeigen, dass die Zustandsübergänge deterministisch und stabil erfolgen.
 
 ## 6.2 Konsistenz
+Mehrere aufeinanderfolgende Testläufe zeigen eine stabile Systemausführung ohne inkonsistente Zustände. Interne Flags wie `_picked`, `_first_run_through` und `_gtprp_reached_rise` werden korrekt gesetzt und zurückgesetzt. Der Reset führt zuverlässig in den definierten Ausgangszustand zurück.
 
 ## 6.3 Anforderungserfüllung
+Alle definierten Systemanforderungen wurden erfolgreich umgesetzt und getestet.
+
+
+| Bereich | Verantwortung |
+|--------|--------------|
+| Vision Node | Orchestrate when picture is going to be taken |
+| Vision Node | Process model-input-data from taken picture with OpenCV |
+| Vision Node | receive model output from FeatureDetection |
+| Vision Node | calculate current position of object (current defines time when image was taken) |
+| Vision Node | publish NimSortImageData |
+| PositionPrediction | receive NimSortImageData |
+| PositionPrediction | publish NimSortPrediction |
+| MainNode | receive NimSortPrediction |
+| MainNode | orchestrate program flow |
+| MainNode | call system initialization |
+| MainNode | publish NimSortTarget |
+| AxisController | receive NimSortTarget |
+| AxisController | receive RobotPos |
+| AxisController | hold and orchestrate all axes |
+| AxisController | know and prevent forbidden zones |
+| AxisController | publish RobotCmd |
+| CSTransformation | provide functions to transform between coordinate systems |
+| OpenCVPipeline | take picture |
+| OpenCVPipeline | process image with filters |
+| OpenCVPipeline | calculate object position |
+| OpenCVPipeline | return preprocessed image and object position |
+| FeatureDetection | receive preprocessed image |
+| FeatureDetection | calculate object classification |
+| FeatureDetection | return object data |
+| PositionPrediction | store received image data |
+| PositionPrediction | calculate next possible MagicObject position |
+| MainLogic | system state machine |
+| MainLogic | orchestrate drive mode and axis control |
+| MainLogic | hold current object to be picked |
+| InitProcess | initialize system |
+| Axis | hold axis data (position, velocity, acceleration) |
+| Axis | calculate acceleration from position |
+| Axis | calculate in Robot Coordinate System |
+| Axis | abstract 3-axis into wrapper |
+| Controller | control acceleration |
 
 ## 6.4 Performance
+Die Performance wird anhand der Sortier- und Erfolgsrate bewertet, da keine klasswh 11 von 12 Objekten korrekt erkannt, aufgenommen und sortiert, was einer Erfolgsrate von 91,67% entspricht. Fehlversuche traten vereinzelt durch Erkennungsunsicherheiten auf, beeinträchtigen jedoch nicht die Gesamtfunktionalität. Im entsprechenden Hardswaretest wurde keine Objekte falsch klassifiziert.
 
 
 # 7 Documente und Referenzen
