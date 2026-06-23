@@ -37,7 +37,9 @@
 	% --------------------
 	\section{Software Architektur}										% Thema: Sw-Arch
 	\begin{frame}{Software Architektur}
-		Inhalt...
+		\begin{center}
+			\includegraphics[width=0.8\textwidth]{../../../documentation/sw-arch_11062026.png}
+		\end{center}
 	\end{frame}
 
 	\section{Designentscheidungen}										% Thema Designentscheidungen
@@ -57,23 +59,86 @@
 		Inhalt...
 	\end{frame}
 
-	\begin{frame}{Feedback von Main zur PositionPrediciton}				% Übernahme Benji
-		Inhalt...
+	\begin{frame}{Feedback von Main zur PositionPrediction} % TODO Menge an Text grenzweertig, aber geht noch ig
+
+		\textbf{Designentscheidung}
+
+		\vspace{0.5em}
+
+		Die PositionPredictionNode erhält zusätzlich Feedback von der MainNode.
+
+		\vspace{1em}
+
+		\textbf{Vorteile}
+		\begin{itemize}
+			\item Reduzierte Datenhaltung in der MainNode
+			\item Weniger Datenübertragung 
+			\item Zustandsinformationen näher an Fachlogik
+		\end{itemize}
+
+		\vspace{0.5em}
+
+		\textbf{Bewertung}
+		\begin{itemize}
+			\item Komplexität gering
+			\item Architektur bleibt konsistent
+			\item Logische Erweiterung der PositionPrediction
+		\end{itemize}
+
+		\vfill
+
 	\end{frame}
 
 	\begin{frame}{PD-Regler vs. PDF-Regler}
-		Inhalt...
+
+		\textbf{Warum PD-Regler?}
+
+		\begin{itemize}
+			\item Einfache Parametrierung
+			\item Stabiler Betrieb im Testaufbau
+			\item Ausreichend gut
+			\item Erweiterung auf PDF möglich
+		\end{itemize}
+
+		\vspace{0.8em}
+
+		\textbf{Warum kein PDF-Regler?}
+
+		\begin{itemize}
+			\item Unsicherheiten mit dem Gefundenen Multiplikator 0.8
+			\item Zusätzlicher Aufwand
+			\item Nicht notwendig
+		\end{itemize}
+
 	\end{frame}
 		
 	\begin{frame}{Fail-Safe statt Fail-Operational}
-		Inhalt...
+
+	\textbf{Entscheidung}
+
+	\vspace{0.5em}
+
+	Verzicht auf Fail-Operational zugunsten eines
+	definierten Safe-States mit anschließendem Neustart.
+
+	\vspace{1em}
+	\textbf{Warum?}
+	\begin{itemize}
+		\item Kritische Fehler können entlang der gesamten Verarbeitungskette entstehen
+			(Vision $\rightarrow$ Prediction $\rightarrow$ Main $\rightarrow$ AxisController)
+		\item Nach Fehler ist Neustart erforderlich
+		\item Fail-Operational bringt wenig Vorteile aber höhere Komplexität % in dem speziellen Fall
+		\item Ermöglicht automatisch Rückkehr in sichere Maschienenposition
+	\end{itemize}
+
+	\vfill
+	\centering
+	\Large
+	Fehler erkannt $\rightarrow$ Safe-State $\rightarrow$ Neustart möglich
+
 	\end{frame}
 
 	\begin{frame}{Homographie}											% Übernahme Louis
-		Inhalt...
-	\end{frame}
-
-	\begin{frame}{Decision Tree}
 		Inhalt...
 	\end{frame}
 
