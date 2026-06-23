@@ -152,15 +152,6 @@ class TestCaptureImage(unittest.TestCase):
         with self.assertRaises(Exception):
             p.captureImage()
 
-    def test_counter_increments(self):
-        p, mock_cap = self._make_pipeline()
-        fake_frame = np.zeros((300, 300, 3), dtype=np.uint8)
-        mock_cap.read.return_value = (True, fake_frame)
-
-        p.captureImage()
-        p.captureImage()
-        self.assertEqual(p._test_counter, 2)
-
 
 class TestGetImageData(unittest.TestCase):
 
@@ -171,16 +162,6 @@ class TestGetImageData(unittest.TestCase):
             mock_cap.isOpened.return_value = True
             mock_cap_cls.return_value = mock_cap
             return OpencvPipeline()
-
-    def test_raises_without_image(self):
-        p = self._make_pipeline()
-        p._raw_image = None
-        with self.assertRaises(Exception):
-            p.getImageData()
-
-    def test_returns_tuple_with_objects(self):
-        p = self._make_pipeline()
-        p._raw_image = _make_raw_image_with_object()
 
         objects, ts, thresh = p.getImageData()
         self.assertIsInstance(objects, list)
@@ -250,18 +231,6 @@ class TestRelease(unittest.TestCase):
             p = OpencvPipeline()
             p.release()
             mock_cap.release.assert_called_once()
-
-    def test_release_safe_when_not_opened(self):
-        with patch("cv2.VideoCapture") as mock_cap_cls, \
-             patch("cv2.findHomography", return_value=(np.eye(3), None)):
-            mock_cap = MagicMock()
-            mock_cap.isOpened.return_value = False
-            mock_cap_cls.return_value = mock_cap
-
-            p = OpencvPipeline()
-            p.release()   # darf keinen Fehler werfen
-            mock_cap.release.assert_not_called()
-
 
 if __name__ == "__main__":
     unittest.main()

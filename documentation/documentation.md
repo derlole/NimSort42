@@ -538,6 +538,7 @@ Siehe auch: [architecture_decisions.md](../docs/sw_planning/architecture-decisio
 - Der nächste Schritt ist immer klar und kann schon angefangen werden.
 
 ## 5.11 Koordinatentransformation und Homographie
+### Das Nachfolgende Lessons Leardn basiert auf der entscheidung keine Aruco-Marcer zu verwenden [Entscheidung](#33-keine-aruco-marker-sondern-homographie)
 - Die ursprünglich geplante Koordinatentransformation (Pixel → Kamera → Welt) war in der Praxis zu fehleranfällig: Bildverzerrungen sowie die aufwendige Kalibrierung der Kamerapose haben die Methode unzuverlässig gemacht.
 - Die Homographie bildet Pixelkoordinaten direkt auf reale Weltkoordinaten ab und umgeht damit die fehleranfällige Zwischentransformation über die Kamerapose.
 - Als Kompromiss muss die Kamera vor jedem Start einmalig manuell ausgerichtet werden ([Camera_Alignment](../docs/explanations/camera_alignment.md)), damit die vorberechnete Homographiematrix gültig bleibt, dieser Aufwand ist jedoch deutlich geringer als eine vollständige Neukalibrierung.
