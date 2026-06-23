@@ -113,7 +113,7 @@ Dokumentation der beispielhaften Implementierung mit ROS2: **[nimsort_ros.md](ni
 - 🎯 Kritischer Meilenstein (Deadline)
 
 ---
-
+## 1.3 Interne Dokumentation
 Um die Projektinterne Dokumentation für das Projektmanagement zu sehen, schauen sie hier: [projektplanung.md](../docs/management/projektplanung.md)
 
 # 2 Software-Architektur
@@ -374,7 +374,7 @@ Die Klasse `PositionPrediction` verwaltet alle erkannten Förderbandobjekte inte
 
 ### Primärspeicher: `_objects`
 
-Alle aktiven Objekte werden in einem `dict` gespeichert. Der Key ist eine monoton steigende ganzzahlige ID (`_object_id_counter`), der Value ist ein `MagicObject` mit den Feldern `object_type`, `position [x, y, z]` und `ts`.
+Alle aktiven Objekte werden in einem `dict` gespeichert. Der Key ist eine monoton steigende ganzzahlige ID (`_object_id_counter`), der Value ist ein `MagicObject` [MagicObject](../docs/nimsort_logic/magic_object.md)
 
 ---
 
@@ -634,3 +634,5 @@ Dokumentation der Im Porjekt relevanten oder größeren Entscheidungen: [decisio
 Definition der im Projekt verwendeten Koordinatensysteme: [CSSystem.md](../docs/sw_planning/CSSystem.md)  
 Dokumentation der Gedanken zum Fail-save konzept: [failsave_concept.md](../docs/sw_planning/failsafe_concept.md)  
 Dokumentation der Projektplanung: [projektplanung.md](../docs/management/projektplanung.md)  
+
+## Zurück zur [README.md](../README.md)

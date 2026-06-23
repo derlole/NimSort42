@@ -161,3 +161,5 @@ getImageData()
 ## Einordnung im NimSort-System
 
 `OpencvPipeline` ist das Herzstück der Sensorik. Die ROS2-Node `camera_supreme_commander.py` ruft `captureImage()` und `getImageData()` in seiner Timer-Callback-Schleife auf und publiziert die zurückgegebenen Weltkoordinaten als ROS-Topics.
+
+## Rücksprung zur [nimsort_logic](../../documentation/nimsort_logic.md#64-weitere-dokumentation)

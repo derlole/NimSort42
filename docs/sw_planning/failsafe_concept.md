@@ -28,3 +28,5 @@ As the robot_position data is far more critical than the other node dependecys t
 # pre_shutdown_sequence
 To establish to not drive any crashes while killing the AxisController. The AxisController reexecutes the init-logic and bypassing the Axis Classes. This leads to safe accelerations into the as home defined endstops.
 After the acceleration publishes the AxisController node can die but in the best case the node survieves until the homing is done and kills itself after.
+
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md#49-failsafe-konzept)

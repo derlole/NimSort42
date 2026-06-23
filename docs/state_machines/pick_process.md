@@ -24,3 +24,5 @@ Flow between nodes
 - **[A]**: Axis continues, still ignoring X in the `reached` evaluation.
 - **[M]**: After liftoff is completed (interpreted `reached_rise`), Main commands a drop point with a ProcessID for normal drive while keeping `gripper_active = true`.
 - **[A]**: Axis keeps `gripper_active` and — after the drop drive begins — includes X again in the `reached` evaluation.
+
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md#311-pick-process)

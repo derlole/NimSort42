@@ -169,3 +169,4 @@ flowchart TD
     DC -->|reached & gripper_not_active| GTPRP
 ```
 
+## Rücksprung zur [nimsort_logic](../../documentation/nimsort_logic.md#44-weitere-dokumentation)

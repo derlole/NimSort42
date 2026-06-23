@@ -123,3 +123,5 @@ binary_image (von getImageData())
 ## Einordnung im NimSort-System
 
 `FeatureDetection` wird nach `getImageData()` aufgerufen und empfängt dessen `thresh`-Binärbild direkt. Die zurückgegebene Klassen-ID-Liste wird vom der ROS2-Node `camera_supreme_commander.py` zusammen mit den Weltkoordinaten aus der OpenCV-Pipeline zu einem vollständigen Objektdatensatz zusammengeführt.
+
+## Rücksprung zur [nimsort_logic](../../documentation/nimsort_logic.md#34-weitere-dokumentation)

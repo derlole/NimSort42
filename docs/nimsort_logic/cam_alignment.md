@@ -75,3 +75,6 @@ Kamera-Index `4` ist fest kodiert (`cv2.VideoCapture(4)`). Falls die Kamera unte
 ## Einordnung im NimSort-System
 
 Dieser Code gehört zur **Kamera-Ausrichtung**, der vor dem eigentlichen Pipeline-Betrieb ausgeführt wird.
+
+## Rücksprung zum [Camera Alignment](../explanations/camera_alignment.md)
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md)

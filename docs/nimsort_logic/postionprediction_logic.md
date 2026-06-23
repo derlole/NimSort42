@@ -175,3 +175,4 @@ flowchart TD
     REMOVE --> OBJECTS
     PLAUS -->|ja| OUT
 ```
+## Rücksprung zur [nimsort_logic](../../documentation/nimsort_logic.md#64-weitere-dokumentation)

@@ -79,3 +79,5 @@ Iterativ, inkrementelle Entwicklung mit regelmäßigen Tests
 - Louis: Vision / ML-Modell
 - Yannick: Prozesslogik (Main) / Position Prediction
 - Benjamin: Regelung / AxisController
+
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md#13-interne-dokumentation)

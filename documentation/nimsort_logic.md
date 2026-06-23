@@ -59,7 +59,7 @@ Zudem finden Sie für jedes Modul Verlinkungen zu Dateien, in welchen die Nutzun
 - Vorgabe des Fahrmodus der Achse
 
 ## 4.4 Weitere Dokumentation
-- keine
+- [NimsortLogic](../docs/nimsort_logic/main_logic.md)
 
 # 5 Modul: nimsort_motion
 
@@ -114,3 +114,6 @@ Zudem finden Sie für jedes Modul Verlinkungen zu Dateien, in welchen die Nutzun
 
 ## 6.4 Weitere Dokumentation
 - [open_cv_pipeline](../docs/nimsort_logic/open_cv_pipeline.md)
+- [position_prediction.md](../docs/nimsort_logic/postionprediction_logic.md)
+
+## Rücksprung zur [Dokumentation](./documentation.md#zugehörige-projekt-codedokumentationen)

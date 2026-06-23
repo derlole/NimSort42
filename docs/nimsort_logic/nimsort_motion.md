@@ -422,3 +422,4 @@ Sie verwendet intern die Klassen:
 
 und stellt diese Funktionalität als gemeinsame Steuerungseinheit für das Gesamtsystem bereit.
 
+## Rücksprung zur [nimsort_logic](../../documentation/nimsort_logic.md#54-weitere-dokumentation)

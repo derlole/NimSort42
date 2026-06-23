@@ -154,3 +154,5 @@ features.csv  (677 Samples, 19 Spalten)
 ## Einordnung im NimSort-System
 
 Dieses Skript steht am Anfang der ML-Kette: Es verbraucht die von einem separaten Feature-Extraktionsskript erzeugte `features.csv` und produziert `object_classifier.joblib`, das von `feature_detection.py` zur Laufzeit geladen wird. Es muss nur erneut ausgeführt werden, wenn neue Trainingsdaten vorliegen oder das Modell angepasst werden soll.
+
+## Rücksprung zur [nimsort_logic](../../documentation/nimsort_logic.md#34-weitere-dokumentation)

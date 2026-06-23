@@ -163,7 +163,7 @@ self.get_logger().info("CONTENT")
 self.get_logger().error("CONTENT")
 ```
 
-Der Content ist so gecshrieben, dass das Gesamtbild des Logs den Logging Konventionen, die in [logging.md](../sw_planning/logging.md) beschrieben sind.
+Der Content ist so geschrieben, dass das Gesamtbild des Logs den Logging Konventionen, die in [logging.md](../sw_planning/logging.md) beschrieben sind.
 
 ## Integration mit nimsort_logic
 
@@ -171,3 +171,5 @@ Alle Nodes nutzen direkt die zugehörigen Python-Klassen, wie in [nimsort_logic.
 
 Die Nodes sind **Wrapper** dieser Logik, nicht Neu-Implementierung, damit ncah bedarf möglichst einfach auf eine andere Middleware gewechselt werden kann.
 
+## Rücksprung zur [nimsort_ros](../../documentation/nimsort_ros.md)
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md)
