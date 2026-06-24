@@ -44,35 +44,92 @@
 	\end{frame}
 
 	\section{Designentscheidungen}							% Thema: Designentscheidungen	
-	\begin{frame}{State Machines \& Sentinel}
-		\begin{columns}
-			\begin{column}{0.48\textwidth}
-				\textbf{State Machines}
-				\begin{itemize}
-					\item Klarer Case pro Prozess
-					\item Einfaches Debugging
-				\end{itemize}
-			\end{column}
-			\begin{column}{0.48\textwidth}
-				\textbf{Sentinel}
-				\begin{itemize}
-					\item Neagtive Wert 1 egal in welchem Format
-					\item Keine Daten von der vorgehenden Node
-					\item Wenn keine Daten dann Fail Safe Zustand
-				\end{itemize}
-			\end{column}
-		\end{columns}
-	\end{frame}
+		\begin{frame}{State Machines}
+    \textbf{Designentscheidung:}
+
+    State Machine für den gesamten Prozessablauf
+    \vspace{0.5em}
+
+    \textbf{Vorteile:}
+    \begin{itemize}
+        \item Prozessablauf ist sequentiell
+        \item Klare Abgrenzung der Prozessschritte
+        \item Einfaches Debugging
+        \item Einfache Erweiterung
+    \end{itemize}
+    \vspace{0.5em}
+
+    \textbf{Bewertung:}
+    \begin{itemize}
+        \item Komplexität gering
+        \item Funktionsweise leicht verständlich
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Sentinel}
+    \textbf{Designentscheidung:}
+
+    Sentinel senden anstatt keine Nachricht, falls kein Objekt erkannt wurde.
+    Bei keiner Nachricht kontrolliertes Abbrechen des Prozesses.
+    \vspace{0.5em}
+
+    \textbf{Vorteile:}
+    \begin{itemize}
+        \item Prozessschritte können auf Sentinel reagieren
+        \item Keine Abhängigkeit von der Reihenfolge der Nachrichten
+        \item Einfaches Debugging
+    \end{itemize}
+    \vspace{0.5em}
+
+    \textbf{Bewertung:}
+    \begin{itemize}
+        \item Funktioniert zuverlässig
+        \item Simple Umsetzung
+    \end{itemize}
+\end{frame}
+		
 	
 
-	\begin{frame}{Datenhaltung in der PositionPrediction}
+	\begin{frame}{Datenhaltung in der PositionPrediction }
 		
-    
-	\end{frame}
-	\begin{frame}{Pick Prozess}
-		Inhalt...
+		\textbf{Designentscheidung:} 
+		
+		Datenhaltung in der PositionPrediction
+		\vspace{0.5em}
+
+		\textbf{Vorteile:}
+		\begin{itemize}
+			\item Singuläre Datenhaltung an einem Ort 
+			\item Berechnungsprozess aus der Vision/ ML auslagern
+			\item Arbeitsteilung im Projekt leichter
+		\end{itemize}
+
+		\textbf{{Bewertung:}}
+		\begin{itemize}
+			\item Esenzielle Berechnung
+		\end{itemize}
 	\end{frame}
 
+	\begin{frame}{Pick Prozess}
+		\textbf{Designentscheidung:}
+		
+		Drive by Pick Prozess anstatt One-Shot Pick Prozess
+		\vspace{0.5em}
+
+		\textbf{Vorteile:}
+		\begin{itemize}
+			\item Zuverlässiger als One-Shot Pick Prozess
+			\item Leichter da Förderbandgeschwindigkeit bekannt 
+			\item Ungenauigkeiten ausgleichen
+		\end{itemize}
+		\textbf{Bewertung:}
+		\begin{itemize}
+			\item 
+			\item 
+		\end{itemize}
+		
+	\end{frame}
+	
 	\begin{frame}{Feedback von Main zur PositionPrediction} % TODO Menge an Text grenzweertig, aber geht noch ig
 
 		\textbf{Designentscheidung}
