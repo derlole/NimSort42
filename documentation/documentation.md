@@ -242,7 +242,7 @@ flowchart TD
 - Gut genuges Ergebniss mit PD-Regler
 
 ## 3.3 Keine Aruco Marker sondern Homographie
-**Entscheidung:** Keine Verwendung von Aruco Markern für die Koordinatentransfürmation. Ersatz durch eine Homographie durch vorhandene erkennbare Bildpunkte.
+**Entscheidung:** Keine Verwendung von Aruco Markern für die Koordinatentransvormation. Ersatz durch eine Homographie durch vorhandene erkennbare Bildpunkte.
 
 **Begründung:**
 - Die Koordinatentransformation (Pixel → Kamera → Welt) über Aruco Marker erwies sich als zu fehleranfällig, da die Positionsschätzung der Marker relativ zur Kamera unter realen Bedingungen unzuverlässig war.

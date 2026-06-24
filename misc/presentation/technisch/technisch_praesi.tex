@@ -209,26 +209,111 @@
 
 	\end{frame}
 
-	\begin{frame}{Homographie}											% Übernahme Louis
-		Inhalt...
+	\begin{frame}{Keine Aruco Marker – Homographie stattdessen}
+	\textbf{Entscheidung:} Koordinatentransformation via Homographie statt Aruco Marker
+		
+	\vspace{1em}
+	\begin{columns}[T]
+	\begin{column}{0.48\textwidth}
+	    \textit{Aruco Marker (verworfen)}
+	    \begin{itemize}
+			\item Pixel $\to$ Kamera $\to$ Welt via Marker-Pose
+	        \item Positionsschätzung unzuverlässig
+	        \item 3D-Transformation für 2D unnötig
+	    \end{itemize}
+	\end{column}
+	\begin{column}{0.48\textwidth}
+	    \textit{Homographie (gewählt)}
+	    \begin{itemize}
+	        \item Direkte Pixel $\to$ Welt Transformation
+	        \item Robuster, kein Aruco Marker nötig
+	        \item Für NimSort42 fölig ausreichend 
+	    \end{itemize}
+	\end{column}
+	\end{columns}
 	\end{frame}
-
-	\begin{frame}{Kameraausrichtung}
-		Inhalt...
+	
+	
+	\begin{frame}{Kamera-Ausrichtung mit digitalem Overlay}
+	\textbf{Entscheidung:} Kameraposition wird per digitalem Overlay kontrolliert / justiert
+	
+	\vspace{1em}
+	\begin{itemize}
+	    \item Homographie erfordert reproduzierbare Kameraposition
+	    \item Overlay ermöglicht schnelle visuelle Kontrolle
+	    \item Reduziert Positionsfehler als Fehlerquelle
+	\end{itemize}
 	\end{frame}
-
 	
 	\section{Technische Details}										% Thema: Technische Details
-	\begin{frame}{Decisiontree}
-		Inhalt...
+	\begin{frame}{Warum Decision Tree?}
+	\textbf{Merkmalsraum:} \texttt{hu\_0} vs.\ \texttt{hu\_3} zeigt klar getrennte Cluster
+
+	\vspace{1em}
+	\begin{itemize}
+	    \item Klassen sind im Merkmalsraum kaum bzw. nicht überlappend
+	    \item Trennungen verlaufen achsparallel
+	    \item[$\Rightarrow$] Einfache Schwellwertentscheidungen der Form $hu\_0 < \theta$ genügen
+	    \item[$\Rightarrow$] Decision Tree bildet genau diese Struktur ab
+	\end{itemize}
+
+	\vspace{1em}
+	Komplexere Modelle (SVM, neuronales Netz) wären unnötiger Overhead, da sie deutlich rechenintensiver sind. 
 	\end{frame}
 
-	\begin{frame}{Gewählte Features}
-		Inhalt...
+	\begin{frame}{Warum hu\_0 und hu\_3?}
+	\textbf{Hu-Momente:} Invariant gegenüber Translation, Skalierung, Rotation und Spiegelung
+
+	\vspace{0.5em}
+	\begin{columns}[T]
+	\begin{column}{0.45\textwidth}
+	    Bereits zwei Merkmale reichen zur klaren Trennung:
+
+	    \vspace{0.5em}
+	    \begin{tabular}{lcc}
+	        \textbf{Klasse} & \textbf{hu\_0} & \textbf{hu\_3} \\
+	        \hline
+	        Katze   & 0{,}63–0{,}68 & 3{,}2–3{,}7 \\
+	        Einhorn & 0{,}70–0{,}75 & 4{,}3–4{,}9 \\
+	        Quadrat & 0{,}775–0{,}780 & 6{,}4–8{,}2 \\
+	        Kreis   & 0{,}780–0{,}800 & 6{,}6–9{,}1 \\
+	    \end{tabular}
+	\end{column}
+	\begin{column}{0.52\textwidth}
+	    \includegraphics[width=\textwidth]{../../pictures/feature-Plot.png}
+	\end{column}
+	\end{columns}
 	\end{frame}
 
-	\begin{frame}{Homographie}
-		Inhalt...
+	\begin{frame}{Homographie – Pixel zu Weltkoordinaten}
+	\textbf{Ziel:} Pixelkoordinaten $\to$ reale Weltkoordinaten (mm) via $3{\times}3$-Matrix $H$
+
+	\vspace{0.5em}
+	\begin{columns}[T]
+	\begin{column}{0.48\textwidth}
+	    \textbf{Kalibrierung:}
+	    \begin{itemize}
+	        \item 5 Schachbrettquadrate, je 4 Eckpunkte
+	        \item 20 Punktepaare (Pixel $\leftrightarrow$ mm) manuell vermessen
+	        \item $H$ berechnet via \texttt{cv2.findHomography()}
+	    \end{itemize}
+
+	    \vspace{0.5em}
+	    \textbf{Laufzeit:}
+	    \begin{itemize}
+	        \item Jede Pixelkoordinate wird mit $H$ transformiert
+	        \item $H$ bleibt konstant solange Kamera unverändert
+	    \end{itemize}
+
+	    \vspace{0.5em}
+	    \[
+	        \mathbf{x}_{\mathrm{welt}} = H \cdot \mathbf{x}_{\mathrm{pixel}}
+	    \]
+	\end{column}
+	\begin{column}{0.48\textwidth}
+	    \includegraphics[width=\textwidth]{../../pictures/homography.jpg}
+	\end{column}
+	\end{columns}
 	\end{frame}
 
 	\begin{frame}{Pick Prozess}											% Übernahme Yaba
@@ -436,16 +521,36 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
 		Inhalt...
 	\end{frame}
 
-	\begin{frame}{Verarbeitungsgeschwindigkeit der Bildverarbearbeitung}% Übernahme Louis
-		Inhalt...
+	\begin{frame}{Verarbeitungsgeschwindigkeit der Bildverarbeitung}	% Übernahme Louis
+	\textbf{Problem:} Homographiematrix wurde für jedes Bild neu berechnet
+
+	\vspace{1em}
+	\begin{itemize}
+	    \item Kameraposition bleibt im Betrieb konstant – $H$ ändert sich nie
+	    \item[$\Rightarrow$] Berechnung einmalig in \texttt{\_\_init\_\_()} ausgelagert
+	    \item[$\Rightarrow$] Deutliche Steigerung der Verarbeitungsgeschwindigkeit
+	\end{itemize}
 	\end{frame}
 
-	\begin{frame}{Koordinatentransformation und Homographie}
-		Inhalt...
+	\begin{frame}{Koordinatentransformation – Lessons Learned}
+	\textbf{Bezug:} Entscheidung keine verwendung von Aruco Markern
+
+	\vspace{1em}
+	\begin{itemize}
+	    \item Pixel $\to$ Kamera $\to$ Welt war in der Praxis zu fehleranfällig
+	          (Bildverzerrung, aufwendige Kamerapose-Kalibrierung)
+	    \item Homographie umgeht die Zwischentransformation: direkt Pixel $\to$ Welt
+	    \item Kompromiss: Kamera muss vor jedem Start einmalig manuell ausgerichtet werden
+	    \item[$\Rightarrow$] Deutlich geringerer Aufwand
+	\end{itemize}
 	\end{frame}
 
-	\begin{frame}{Belichtung}
-		Inhalt...
+	\begin{frame}{Belichtung – Lessons Learned}
+	\begin{itemize}
+	    \item Pipeline funktionierte zunächst korrekt aber nach kurzer Zeit keine Erkennung mehr
+	    \item Ursache: veränderte Belichtung (z.\,B. Sonneneinstrahlung, Raumbeleuchtung, etc.)
+	    \item Konsistente Belichtung ist neben der Kameraausrichtung der wichtigste Faktor für zuverlässige Objekterkennung
+	\end{itemize}
 	\end{frame}
 	
 	\section{Zusammenfassung}											% Thema Zusammenfassung
