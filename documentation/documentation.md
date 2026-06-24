@@ -335,9 +335,8 @@ $v = \frac{\Delta x}{\Delta t}$
 
 Da visuelle Messungen durch Bildrauschen, Detektionsfehler oder kurzzeitige Trackingverluste beeinflusst werden können, wird die berechnete Geschwindigkeit gefiltert. Hierfür wird zunächst ein Medianfilter verwendet, der einzelne Ausreißer unterdrückt. Anschließend erfolgt eine Glättung mittels exponentiellem gleitendem Mittelwert (EMA), um sprunghafte Geschwindigkeitsänderungen zu vermeiden.
 
-Zusätzlich wird eine Persistenzprüfung eingesetzt. Kurzzeitige Geschwindigkeitseinbrüche werden nicht sofort übernommen, sondern erst dann akzeptiert, wenn sie über mehrere aufeinanderfolgende Messungen bestehen bleiben. Dadurch wird verhindert, dass einzelne fehlerhafte Messwerte die Geschwindigkeitsschätzung beeinflussen.
 
-Die Kombination aus Rohgeschwindigkeitsberechnung, Medianfilter, EMA-Glättung und Persistenzprüfung ermöglicht eine robuste und stabile Schätzung der Förderbandgeschwindigkeit. Diese dient als Grundlage für die Positionsvorhersage und die nachgelagerte Regelung des Systems.
+Die Kombination aus Rohgeschwindigkeitsberechnung, Medianfilter und EMA-Glättung ermöglicht eine robuste und stabile Schätzung der Förderbandgeschwindigkeit. Diese dient als Grundlage für die Positionsvorhersage und die nachgelagerte Regelung des Systems.
 
 ## 4.2 Homographie
 
