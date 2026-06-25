@@ -107,7 +107,8 @@
 
 		\textbf{{Bewertung:}}
 		\begin{itemize}
-			\item Esenzielle Berechnung
+			\item gute Nachvollziehbarkeit
+			\item Parallele Entwicklung möglich
 		\end{itemize}
 	\end{frame}
 
@@ -125,8 +126,8 @@
 		\end{itemize}
 		\textbf{Bewertung:}
 		\begin{itemize}
-			\item 
-			\item 
+			\item Größer Chance zu Greifen
+			\item Robuste Logik
 		\end{itemize}
 		
 	\end{frame}
@@ -317,12 +318,55 @@
 	\end{columns}
 	\end{frame}
 
-	\begin{frame}{Pick Prozess}											% Übernahme Yaba
-		Inhalt...
-	\end{frame}
+\begin{frame}{Kommunikation Main und AxisController}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Ziel}
 
-	\begin{frame}{Kommunikation Main und AxisController}
-		Inhalt...
+            Eindeutige Kommunikation ohne Annahmen zu treffen
+            \vspace{0.5em}
+
+            \textbf{Umsetzung}
+
+            Die Kommunikation besteht aus zwei Messages. Die als Request-Answer gesendet werden.
+            \vspace{0.3em}
+
+            \texttt{NimSortTarget:}
+            \begin{itemize}
+                \item \texttt{geometry\_msgs/Point} target\_point
+                \item \texttt{int32} process\_id
+            \end{itemize}
+            \vspace{0.3em}
+
+            \texttt{NimSortMotionState:}
+            \begin{itemize}
+                \item \texttt{bool} reached
+                \item \texttt{bool} gripper\_active
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Process IDs}
+            \begin{itemize}
+                \item 0 = Initialisierung Main Node
+                \item 1 = Initialisierung Achsen
+                \item 2 = Fahren zu einer Position
+                \item 3 = Fahren mit spezieller Regelung
+                \item 4 = Fahren mit aktiviertem Greifer
+                \item 5 = Greifer deaktivieren
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+	\begin{frame}{Pick Prozess}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \includegraphics[width=\textwidth]{../../pictures/Kommunikation main_axiscontroller1.png}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \includegraphics[width=\textwidth]{../../pictures/Kommunikation main_axiscontroller2.png}
+        \end{column}
+    \end{columns}
 	\end{frame}
 
 	\begin{frame}{PositionPrediction Daten}
@@ -618,12 +662,73 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
 
 \end{frame}
 
-	\begin{frame}{Plausibilitätschecks}									% Übernahme Yaba
-		Inhalt...
-	\end{frame}
+	\begin{frame}{Plausibilitätschecks}
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Motivation}
 
-	\begin{frame}{Meilensteine in Iteraitonen Aufteilen}
-		Inhalt...
+            Fehlerhafte Koordinaten aus Bildverarbeitung oder Koordinatentransfo sind möglich.
+           
+            \vspace{0.5em}
+
+            \textbf{Umsetzung}
+            \begin{itemize}
+                \item Prüfung auf 3 Elemente
+                \item X- und Y-Koordinaten werden gegen konfigurierbare
+                      Grenzwerte geprüft
+                \item Bei Verstoß: Warnung und Verwerfung des Objekts
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Lesson Learned}
+            \vspace{0.3em}
+			
+            Der Realtime Plausibilitätscheck erkennt Fehler und Crashs werden verhindert. 
+			Auch während dem Entwicklungsprozess. 
+            \vspace{0.5em}
+
+            \textbf{Fazit}
+            \begin{itemize}
+                \item Geringer Implementierungsaufwand
+                \item Hoher Sicherheitsgewinn
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+	\begin{frame}{Meilensteine in Iteraitonen aufteilen}
+		\begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{Vorgehen}
+
+            Die Projektmeilensteine in Iterationen unterteilt.
+            Iteration mit Ziel und Ergebnis
+            \vspace{0.5em}
+
+            \textbf{Vorteile}
+            \begin{itemize}
+                \item Klare Struktur im Projektverlauf
+                \item Frühzeitiges Erkennen von Problemen
+                \item Simultane Aufgabenverteilung im Team
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Lesson Learned}
+            \vspace{0.3em}
+
+            Große Meilensteine wirken übersichtlich sind aber schwer nachzuvollziehne
+            \vspace{0.5em}
+
+            \textbf{Empfehlung}
+            \begin{itemize}
+                \item Meilensteine bauen sich zusammen.
+                \item Iterationen wurde in GitHub Project getrackt
+                \item Regelmäßige Zwischenziele motivieren
+                      und halten den Überblick
+            \end{itemize}
+        \end{column}
+    \end{columns}
+		
 	\end{frame}
 
 	\begin{frame}{Verarbeitungsgeschwindigkeit der Bildverarbeitung}	% Übernahme Louis
