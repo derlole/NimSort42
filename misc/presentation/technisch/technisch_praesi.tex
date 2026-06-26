@@ -240,15 +240,15 @@
 	    \textit{Aruco Marker (verworfen)}
 	    \begin{itemize}
 			\item Pixel $\to$ Kamera $\to$ Welt via Marker-Pose
-	        \item Positionsschätzung unzuverlässig
-	        \item 3D-Transformation für 2D unnötig
+			\item Positionsschätzung unter realen Bedingungen unzuverlässig
+			\item ROS\,2 \texttt{tf2} für diesen Anwendungsfall überdimensioniert
 	    \end{itemize}
 	\end{column}
 	\begin{column}{0.48\textwidth}
 	    \textit{Homographie (gewählt)}
 	    \begin{itemize}
 	        \item Direkte Pixel $\to$ Welt Transformation
-	        \item Robuster, kein Aruco Marker nötig
+	        \item Kein Aruco Marker nötig
 	        \item Für NimSort42 fölig ausreichend 
 	    \end{itemize}
 	\end{column}
@@ -280,7 +280,7 @@
 	\end{itemize}
 
 	\vspace{1em}
-	Komplexere Modelle (SVM, neuronales Netz) wären unnötiger Overhead, da sie deutlich rechenintensiver sind. 
+	Komplexere Modelle (SVM, neuronales Netz) wären für klar separierbare Klassen unnötiger Rechenaufwand.
 	\end{frame}
 
 	\begin{frame}{Warum hu\_0 und hu\_3?}
@@ -295,10 +295,10 @@
 	    \begin{tabular}{lcc}
 	        \textbf{Klasse} & \textbf{hu\_0} & \textbf{hu\_3} \\
 	        \hline
-	        Katze   & 0{,}63–0{,}68 & 3{,}2–3{,}7 \\
-	        Einhorn & 0{,}70–0{,}75 & 4{,}3–4{,}9 \\
-	        Quadrat & 0{,}775–0{,}780 & 6{,}4–8{,}2 \\
-	        Kreis   & 0{,}780–0{,}800 & 6{,}6–9{,}1 \\
+	        Katze   & 0{,}615 – 0{,}680 & 3{,}20 – 3{,}70 \\
+	        Einhorn & 0{,}685 – 0{,}740 & 4{,}10 – 4{,}90 \\
+	        Quadrat & 0{,}770 – 0{,}780 & 6{,}40 – 8{,}20 \\
+	        Kreis   & 0{,}780 – 0{,}800 & 6{,}60 – 9{,}10 \\
 	    \end{tabular}
 	\end{column}
 	\begin{column}{0.52\textwidth}
