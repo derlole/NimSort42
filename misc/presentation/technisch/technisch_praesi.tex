@@ -229,7 +229,7 @@
 
 	\end{frame}
 
-	\begin{frame}{Keine Aruco Marker – Homographie stattdessen}
+	\begin{frame}{Keine Aruco Marker $\rightarrow$ Homographie }
 	\textbf{Designentscheidung:} 
 	
 	Koordinatentransformation via Homographie statt Aruco Marker
@@ -240,8 +240,7 @@
 	    \textit{Aruco Marker (verworfen)}
 	    \begin{itemize}
 			\item Pixel $\to$ Kamera $\to$ Welt via Marker-Pose
-			\item Positionsschätzung unter realen Bedingungen unzuverlässig
-			\item ROS\,2 \texttt{tf2} für diesen Anwendungsfall überdimensioniert
+			\item Overhead bei ROS\,2 \texttt{tf2}
 	    \end{itemize}
 	\end{column}
 	\begin{column}{0.48\textwidth}
@@ -249,7 +248,7 @@
 	    \begin{itemize}
 	        \item Direkte Pixel $\to$ Welt Transformation
 	        \item Kein Aruco Marker nötig
-	        \item Für NimSort42 fölig ausreichend 
+	        \item Für Projekt ausreichend 
 	    \end{itemize}
 	\end{column}
 	\end{columns}
@@ -257,7 +256,9 @@
 	
 	
 	\begin{frame}{Kamera-Ausrichtung mit digitalem Overlay}
-	\textbf{Designentscheidung:} Kameraposition wird per digitalem Overlay kontrolliert / justiert
+	\textbf{Designentscheidung:} 
+	
+	Kameraposition wird per digitalem Overlay kontrolliert / justiert
 	
 	\vspace{1em}
 	\begin{itemize}
@@ -268,14 +269,16 @@
 	\end{frame}
 	
 	\section{Technische Details}										% Thema: Technische Details
-	\begin{frame}{Warum Decision Tree?}
-	\textbf{Merkmalsraum:} \texttt{hu\_0} vs.\ \texttt{hu\_3} zeigt klar getrennte Cluster
+	\begin{frame}{Decision Tree \& Features}
+	\textbf{Merkmalsraum:} 
+	
+	\texttt{hu\_0} vs.\ \texttt{hu\_3} zeigt klar getrennte Cluster
 
 	\vspace{1em}
 	\begin{itemize}
-	    \item Klassen sind im Merkmalsraum kaum bzw. nicht überlappend
+	    \item Klassen sind im Merkmalsraum differenzierbar
 	    \item Trennungen verlaufen achsparallel
-	    \item[$\Rightarrow$] Einfache Schwellwertentscheidungen der Form $hu\_0 < \theta$ genügen
+	    \item[$\Rightarrow$] Einfache Schwellwertentscheidungen ($hu\_0 < \theta$) 
 	    \item[$\Rightarrow$] Decision Tree bildet genau diese Struktur ab
 	\end{itemize}
 
@@ -283,7 +286,7 @@
 	Komplexere Modelle (SVM, neuronales Netz) wären für klar separierbare Klassen unnötiger Rechenaufwand.
 	\end{frame}
 
-	\begin{frame}{Warum hu\_0 und hu\_3?}
+	\begin{frame}{Decision Tree \& Features}
 	\textbf{Hu-Momente:} Invariant gegenüber Translation, Skalierung, Rotation und Spiegelung
 
 	\vspace{0.5em}
@@ -343,12 +346,12 @@
         \begin{column}{0.48\textwidth}
             \textbf{Ziel}
 
-            Eindeutige Kommunikation ohne Annahmen zu treffen
+            Eindeutige Kommunikation ohne Annahmen zu treffen.
             \vspace{0.5em}
 
             \textbf{Umsetzung}
 
-            Die Kommunikation besteht aus zwei Messages. Die als Request-Answer gesendet werden.
+            Die Kommunikation besteht aus zwei Messages.
             \vspace{0.3em}
 
             \texttt{NimSortTarget:}
@@ -370,7 +373,7 @@
                 \item 0 = Initialisierung Main Node
                 \item 1 = Initialisierung Achsen
                 \item 2 = Fahren zu einer Position
-                \item 3 = Fahren mit spezieller Regelung
+                \item 3 = Fahren mit speziellem \texttt{reached}
                 \item 4 = Fahren mit aktiviertem Greifer
                 \item 5 = Greifer deaktivieren
             \end{itemize}
@@ -429,7 +432,6 @@
 			\item Fehler berechnen
 			\item Fehleränderung bestimmen
 			\item Beschleunigung berechnen
-			\item Stellgröße veröffentlichen
 		\end{enumerate}
 		\end{column}
 		\end{columns}
@@ -477,7 +479,7 @@
 
 	\begin{frame}{Fail-Safe Konzept}
 	\begin{columns}
-	\begin{column}{0.55\textwidth}
+	\begin{column}{0.51\textwidth}
 	\textbf{Grundidee}: Safe-State durch Homing nach Fehler
 
 	\vspace{0.5em}
@@ -687,7 +689,7 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
         \begin{column}{0.48\textwidth}
             \textbf{Motivation}
 
-            Fehlerhafte Koordinaten aus Bildverarbeitung oder Koordinatentransfo sind möglich.
+            Fehlerhafte Koordinaten aus Bildverarbeitung oder Koordinatentrafo sind möglich.
            
             \vspace{0.5em}
 
@@ -736,7 +738,7 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
             \textbf{Lesson Learned}
             \vspace{0.3em}
 
-            Große Meilensteine wirken übersichtlich sind aber schwer nachzuvollziehne
+            Große Meilensteine wirken übersichtlich sind aber schwer nachzuvollziehen
             \vspace{0.5em}
 
             \textbf{Empfehlung}
@@ -756,30 +758,17 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
 
 	\vspace{1em}
 	\begin{itemize}
-	    \item Kameraposition bleibt im Betrieb konstant – $H$ ändert sich nie
+	    \item Kameraposition bleibt im Betrieb konstant: $H$ ändert sich nie
 	    \item[$\Rightarrow$] Berechnung einmalig in \texttt{\_\_init\_\_()} ausgelagert
-	    \item[$\Rightarrow$] Deutliche Steigerung der Verarbeitungsgeschwindigkeit
+	    \item[$\Rightarrow$] Konstante Ergebnisse nur einmalig berechnen
 	\end{itemize}
 	\end{frame}
 
-	\begin{frame}{Koordinatentransformation – Lessons Learned}
-	\textbf{Bezug:} Entscheidung keine verwendung von Aruco Markern
-
-	\vspace{1em}
-	\begin{itemize}
-	    \item Pixel $\to$ Kamera $\to$ Welt war in der Praxis zu fehleranfällig
-	          (Bildverzerrung, aufwendige Kamerapose-Kalibrierung)
-	    \item Homographie umgeht die Zwischentransformation: direkt Pixel $\to$ Welt
-	    \item Kompromiss: Kamera muss vor jedem Start einmalig manuell ausgerichtet werden
-	    \item[$\Rightarrow$] Deutlich geringerer Aufwand
-	\end{itemize}
-	\end{frame}
-
-	\begin{frame}{Belichtung – Lessons Learned}
+	\begin{frame}{Belichtung}
 	\begin{itemize}
 	    \item Pipeline funktionierte zunächst korrekt aber nach kurzer Zeit keine Erkennung mehr
 	    \item Ursache: veränderte Belichtung (z.\,B. Sonneneinstrahlung, Raumbeleuchtung, etc.)
-	    \item Konsistente Belichtung ist neben der Kameraausrichtung der wichtigste Faktor für zuverlässige Objekterkennung
+	    \item[$\Rightarrow$] Konsistente Belichtung ist neben der Kameraausrichtung der wichtigste Faktor für zuverlässige Objekterkennung
 	\end{itemize}
 	\end{frame}
 	
@@ -802,7 +791,7 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
 		\begin{column}{0.75\textwidth}
 			\footnotesize\itshape\color{gray}
 			\textbf{N}aiv \textbf{i}mplementierte \textbf{M}ustererkennung \textbf{s}ortiert \textbf{O}bjekte
-			\textbf{r}andom \text{t}rotz \textbf{42} Verkabelungsproblemen.
+			\textbf{r}andom \textbf{t}rotz \textbf{42} Verkabelungsproblemen.
 		\end{column}
 		\begin{column}{0.25\textwidth}
 			\raggedleft

@@ -486,7 +486,7 @@ Die  Umsetzung der Kommunikation zwischen Main und AxisController erfolgt über 
     - 0= Initialisierung der Main Node
     - 1= Initialisierung der Achsen
     - 2= Fahren zu einer Position
-    - 3= ist das Fahren zu einer Positon mit einer speziellen Regelung. Hier wird die X-Achse beim Reached nicht beachtet.#TODO[#188](https://github.com/derlole/NimSort42/issues/188)
+    - 3= ist das Fahren zu einer Positon mit einer speziellem reached. Hier wird die X-Achse beim Reached nicht beachtet.
     - 4= Fahren zu einer Position mit mit aktivierem Greifer
     - 5= Greifer deaktivieren
 - AxisController publisht wenn er die Sollposition erreicht hat die aktuelle Position als `Reached` an die Main Node zurück.
