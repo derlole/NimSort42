@@ -12,7 +12,7 @@
 \usepackage{siunitx}
 \usepackage{booktabs}
 \usepackage{xcolor}
-
+\usepackage{tikz}
 
 %\usepackage{twemojis} 
 \title[NimSort42 - Technische Präsentation]{Technische Präsentation}
@@ -65,29 +65,51 @@
         \item Komplexität gering
         \item Funktionsweise leicht verständlich
     \end{itemize}
-\end{frame}
+	\end{frame}
 
-\begin{frame}{Sentinel}
-    \textbf{Designentscheidung:}
+	\begin{frame}{Sentinel}
 
-    Sentinel senden anstatt keine Nachricht, falls kein Objekt erkannt wurde.
-    Bei keiner Nachricht kontrolliertes Abbrechen des Prozesses.
-    \vspace{0.5em}
+		\textbf{Designentscheidung:}
 
-    \textbf{Vorteile:}
-    \begin{itemize}
-        \item Prozessschritte können auf Sentinel reagieren
-        \item Keine Abhängigkeit von der Reihenfolge der Nachrichten
-        \item Einfaches Debugging
-    \end{itemize}
-    \vspace{0.5em}
+		Sentinel senden anstatt keine Nachricht, falls kein Objekt erkannt wurde.
+		Bei keiner Nachricht kontrolliertes Abbrechen des Prozesses.
+		\vspace{0.5em}
 
-    \textbf{Bewertung:}
-    \begin{itemize}
-        \item Funktioniert zuverlässig
-        \item Simple Umsetzung
-    \end{itemize}
-\end{frame}
+		\textbf{Vorteile:}
+		\begin{itemize}
+			\item Prozessschritte können auf Sentinel reagieren
+			\item Keine Abhängigkeit von der Reihenfolge der Nachrichten
+			\item Einfaches Debugging
+		\end{itemize}
+		\vspace{0.5em}
+
+		\textbf{Bewertung:}
+		\begin{itemize}
+			\item Funktioniert zuverlässig
+			\item Simple Umsetzung
+		\end{itemize}
+
+
+		\definecolor{CambridgeRed}{RGB}{162,0,0}
+
+
+		\begin{tikzpicture}[remember picture,overlay]
+			\node[
+				anchor=south east,
+				xshift=-0.5cm,
+				yshift=0.5cm,
+				draw=CambridgeRed,
+				very thick,
+				rounded corners=4pt,
+				fill=CambridgeRed!8,
+				inner sep=8pt,
+				text=CambridgeRed,
+				font=\ttfamily\bfseries\large
+			] at (current page.south east)
+			{[-1.0,\,-1.0,\,-1.0,\,-1]};
+		\end{tikzpicture}
+
+	\end{frame}
 		
 	
 
@@ -95,14 +117,13 @@
 		
 		\textbf{Designentscheidung:} 
 		
-		Datenhaltung in der PositionPrediction
+		Objektdaten werden als Dataclass in einem Dictionary organisiert.
 		\vspace{0.5em}
 
 		\textbf{Vorteile:}
 		\begin{itemize}
 			\item Singuläre Datenhaltung an einem Ort 
-			\item Berechnungsprozess aus der Vision/ ML auslagern
-			\item Arbeitsteilung im Projekt leichter
+			\item Speicherprozess aus der Vision/ ML auslagern
 		\end{itemize}
 
 		\textbf{{Bewertung:}}
@@ -121,8 +142,7 @@
 		\textbf{Vorteile:}
 		\begin{itemize}
 			\item Zuverlässiger als One-Shot Pick Prozess
-			\item Leichter da Förderbandgeschwindigkeit bekannt 
-			\item Ungenauigkeiten ausgleichen
+			\item Leichter da nur Positionsgesteuert
 		\end{itemize}
 		\textbf{Bewertung:}
 		\begin{itemize}
@@ -134,24 +154,21 @@
 	
 	\begin{frame}{Feedback von Main zur PositionPrediction} % TODO Menge an Text grenzweertig, aber geht noch ig
 
-		\textbf{Designentscheidung}
-
-		\vspace{0.5em}
+		\textbf{Designentscheidung:}
 
 		Die PositionPredictionNode erhält zusätzlich Feedback von der MainNode.
 
-		\vspace{1em}
+		\vspace{0.5em}
 
-		\textbf{Vorteile}
+		\textbf{Vorteile:}
 		\begin{itemize}
 			\item Reduzierte Datenhaltung in der MainNode
 			\item Weniger Datenübertragung 
-			\item Zustandsinformationen näher an Fachlogik
 		\end{itemize}
 
 		\vspace{0.5em}
 
-		\textbf{Bewertung}
+		\textbf{Bewertung:}
 		\begin{itemize}
 			\item Komplexität gering
 			\item Architektur bleibt konsistent
@@ -163,13 +180,16 @@
 	\end{frame}
 
 	\begin{frame}{PD-Regler vs. PDF-Regler}
+		\textbf{Designentscheidung:}
+
+		Für die Regelung der Achsen wird ein PD-Regler verwendet, nicht wie ursprüngliche geplant ein PDF-Regler
+
+		\vspace{0.5em}
 
 		\textbf{Warum PD-Regler?}
-
 		\begin{itemize}
 			\item Einfache Parametrierung
 			\item Stabiler Betrieb im Testaufbau
-			\item Ausreichend gut
 			\item Erweiterung auf PDF möglich
 		\end{itemize}
 
@@ -178,30 +198,28 @@
 		\textbf{Warum kein PDF-Regler?}
 
 		\begin{itemize}
-			\item Unsicherheiten mit dem Gefundenen Multiplikator 0.8
+			\item Unsicherheiten mit dem gefundenen Multiplikator 0.8
 			\item Zusätzlicher Aufwand
-			\item Nicht notwendig
 		\end{itemize}
 
 	\end{frame}
 		
 	\begin{frame}{Fail-Safe statt Fail-Operational}
 
-	\textbf{Entscheidung}
-
-	\vspace{0.5em}
+	\textbf{Designentscheidung:}
 
 	Verzicht auf Fail-Operational zugunsten eines
 	definierten Safe-States mit anschließendem Neustart.
 
-	\vspace{1em}
-	\textbf{Warum?}
+	\vspace{0.5em}
+
+	\textbf{Begründung:}
 	\begin{itemize}
-		\item Kritische Fehler können entlang der gesamten Verarbeitungskette entstehen
+		\item Kritische Fehler entlang:
 			(Vision $\rightarrow$ Prediction $\rightarrow$ Main $\rightarrow$ AxisController)
 		\item Nach Fehler ist Neustart erforderlich
 		\item Fail-Operational bringt wenig Vorteile aber höhere Komplexität % in dem speziellen Fall
-		\item Ermöglicht automatisch Rückkehr in sichere Maschienenposition
+		\item Automatisch Rückkehr in sichere Maschienenposition
 	\end{itemize}
 
 	\vfill
@@ -212,7 +230,9 @@
 	\end{frame}
 
 	\begin{frame}{Keine Aruco Marker – Homographie stattdessen}
-	\textbf{Entscheidung:} Koordinatentransformation via Homographie statt Aruco Marker
+	\textbf{Designentscheidung:} 
+	
+	Koordinatentransformation via Homographie statt Aruco Marker
 		
 	\vspace{1em}
 	\begin{columns}[T]
@@ -237,7 +257,7 @@
 	
 	
 	\begin{frame}{Kamera-Ausrichtung mit digitalem Overlay}
-	\textbf{Entscheidung:} Kameraposition wird per digitalem Overlay kontrolliert / justiert
+	\textbf{Designentscheidung:} Kameraposition wird per digitalem Overlay kontrolliert / justiert
 	
 	\vspace{1em}
 	\begin{itemize}
