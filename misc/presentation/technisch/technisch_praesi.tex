@@ -15,7 +15,7 @@
 \usepackage{tikz}
 
 %\usepackage{twemojis} 
-\title[NimSort42 - Technische Präsentation]{Technische Präsentation}
+\title[NimSort42 - Technische Präsentation]{\textbf{Technische Präsentation}}
 \subtitle{RO45 Robotik Projekt 3 – Automatische Sortieranlage}
 \author{NimSort42}
 \institute{Hochschule Kempten}
@@ -37,8 +37,8 @@
 	\end{frame}
 	
 	% --------------------
-	\section{Software Architektur}										% Thema: Sw-Arch
-	\begin{frame}{Software Architektur}
+	\section{Softwarearchitektur}										% Thema: Sw-Arch
+	\begin{frame}{Softwarearchitektur}
 		\begin{center}
 			\includegraphics[width=0.8\textwidth]{../../../documentation/sw-arch_11062026.png}
 		\end{center}
@@ -142,11 +142,11 @@
 		\textbf{Vorteile:}
 		\begin{itemize}
 			\item Zuverlässiger als One-Shot Pick Prozess
-			\item Leichter da nur Positionsgesteuert
+			\item Leichter, da nur Positionsgesteuert
 		\end{itemize}
 		\textbf{Bewertung:}
 		\begin{itemize}
-			\item Größer Chance zu Greifen
+			\item Größer Chance zu greifen
 			\item Robuste Logik
 		\end{itemize}
 		
@@ -182,7 +182,7 @@
 	\begin{frame}{PD-Regler vs. PDF-Regler}
 		\textbf{Designentscheidung:}
 
-		Für die Regelung der Achsen wird ein PD-Regler verwendet, nicht wie ursprüngliche geplant ein PDF-Regler
+		Für die Regelung der Achsen wird ein PD-Regler verwendet, nicht wie ursprünglich geplant ein PDF-Regler
 
 		\vspace{0.5em}
 
@@ -219,7 +219,7 @@
 			(Vision $\rightarrow$ Prediction $\rightarrow$ Main $\rightarrow$ AxisController)
 		\item Nach Fehler ist Neustart erforderlich
 		\item Fail-Operational bringt wenig Vorteile aber höhere Komplexität % in dem speziellen Fall
-		\item Automatisch Rückkehr in sichere Maschienenposition
+		\item Automatische Rückkehr in sichere Maschinenposition
 	\end{itemize}
 
 	\vfill
@@ -652,7 +652,7 @@
     \item Branches für parallele Entwicklung
     \item Einfache und intuitive Merge-Strategie
     \item Änderungen isoliert entwickelbar
-    \item lauffähiger/getesteter Entwicklungsstand
+    \item Lauffähiger/getesteter Entwicklungsstand
 \end{itemize}
 
 \end{column}
@@ -702,7 +702,7 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
             \textbf{Lesson Learned}
             \vspace{0.3em}
 			
-            Der Realtime Plausibilitätscheck erkennt Fehler und Crashs werden verhindert. 
+            Der Realtime Plausibilitätscheck erkennt Fehler und Crashes werden verhindert. 
 			Auch während dem Entwicklungsprozess. 
             \vspace{0.5em}
 
@@ -715,7 +715,7 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
     \end{columns}
 \end{frame}
 
-	\begin{frame}{Meilensteine in Iteraitonen aufteilen}
+	\begin{frame}{Meilensteine in Iterationen aufteilen}
 		\begin{columns}
         \begin{column}{0.48\textwidth}
             \textbf{Vorgehen}
@@ -735,13 +735,13 @@ Parallele Entwicklung $\rightarrow$ Kontrollierte Merges $\Rightarrow$ Stabiler 
             \textbf{Lesson Learned}
             \vspace{0.3em}
 
-            Große Meilensteine wirken übersichtlich sind aber schwer nachzuvollziehen
+            Große Meilensteine wirken übersichtlich, sind aber schwer nachzuvollziehen
             \vspace{0.5em}
 
             \textbf{Empfehlung}
             \begin{itemize}
                 \item Meilensteine bauen sich zusammen.
-                \item Iterationen wurde in GitHub Project getrackt
+                \item Iterationen wurden in GitHub Project getrackt
                 \item Regelmäßige Zwischenziele motivieren
                       und halten den Überblick
             \end{itemize}
