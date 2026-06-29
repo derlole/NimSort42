@@ -269,22 +269,6 @@
 	\end{frame}
 	
 	\section{Technische Details}										% Thema: Technische Details
-	\begin{frame}{Decision Tree \& Features}
-	\textbf{Merkmalsraum:} 
-	
-	\texttt{hu\_0} vs.\ \texttt{hu\_3} zeigt klar getrennte Cluster
-
-	\vspace{1em}
-	\begin{itemize}
-	    \item Klassen sind im Merkmalsraum differenzierbar
-	    \item Trennungen verlaufen achsparallel
-	    \item[$\Rightarrow$] Einfache Schwellwertentscheidungen ($hu\_0 < \theta$) 
-	    \item[$\Rightarrow$] Decision Tree bildet genau diese Struktur ab
-	\end{itemize}
-
-	\vspace{1em}
-	Komplexere Modelle (SVM, neuronales Netz) wären für klar separierbare Klassen unnötiger Rechenaufwand.
-	\end{frame}
 
 	\begin{frame}{Decision Tree \& Features}
 	\textbf{Hu-Momente:} Invariant gegenüber Translation, Skalierung, Rotation und Spiegelung
@@ -308,6 +292,23 @@
 	    \includegraphics[width=\textwidth]{../../pictures/feature-Plot.png}
 	\end{column}
 	\end{columns}
+	\end{frame}
+
+	\begin{frame}{Decision Tree \& Features}
+	\textbf{Merkmalsraum:} 
+	
+	\texttt{hu\_0} vs.\ \texttt{hu\_3} zeigt klar getrennte Cluster
+
+	\vspace{1em}
+	\begin{itemize}
+	    \item Klassen sind im Merkmalsraum differenzierbar
+	    \item Trennungen verlaufen achsparallel
+	    \item[$\Rightarrow$] Einfache Schwellwertentscheidungen ($hu\_0 < \theta$) 
+	    \item[$\Rightarrow$] Decision Tree bildet genau diese Struktur ab
+	\end{itemize}
+
+	\vspace{1em}
+	Komplexere Modelle (SVM, neuronales Netz) wären für klar separierbare Klassen unnötiger Rechenaufwand.
 	\end{frame}
 
 	\begin{frame}{Homographie – Pixel zu Weltkoordinaten}
