@@ -55,3 +55,13 @@ qtcreator-*
 
 # Catkin custom files
 CATKIN_IGNORE
+
+
+misc/presentation/management/*
+!misc/presentation/management/management_praesi.tex
+
+misc/presentation/kickoff/*
+!misc/presentation/kickoff/kickoff_praesi.tex
+
+misc/presentation/technisch/*
+!misc/presentation/technisch/technisch_praesi.tex

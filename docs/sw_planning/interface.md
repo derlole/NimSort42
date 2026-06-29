@@ -73,3 +73,5 @@ This interface defines two impoirtant functions
 - `the set_target()` to define a target to which one should be traveld
 - `step()` calculates the values which would be necessary to stay on the trajectory for the last given target
 - two porpertys to get the last given target_position and reached to check wether the last given point is reached.
+
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md#58-einheitliche-konzepte)

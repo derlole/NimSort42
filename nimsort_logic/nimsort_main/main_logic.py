@@ -1,4 +1,3 @@
-import threading
 from nimsort_main.main_interface import MainInterface
 from nimsort_vision.plausibility_check import PlausibilityCheck
 from nimsort_main.process_id import ProcessId
@@ -19,7 +18,6 @@ class NimSortMain(MainInterface):
         super().__init__()
         self.current_motion_state = None
         self.current_state = NimSortState.START
-        self.lock = threading.Lock()
         self.reached = False
         self.reached_edge_detector = EdgeDetectorWithTHCounter(5)
         self.gripper_active = False
@@ -207,6 +205,9 @@ class NimSortMain(MainInterface):
         """Setzt State Machine zurück auf START"""
         self.current_motion_state = None
         self.current_state = NimSortState.START
+        self._first_run_through = False
+        self._gtprp_reached_rise = False
+        self._picked_object = None
         self._first_run_through = False
         self._gtprp_reached_rise = False
         self._picked_object = None

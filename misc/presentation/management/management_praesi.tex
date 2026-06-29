@@ -1,0 +1,225 @@
+\documentclass[aspectratio=169]{beamer}
+
+\usepackage[ngerman]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usetheme{CambridgeUS}
+\usecolortheme{default}
+
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{booktabs}
+
+%\usepackage{twemojis} 
+\title[NimSort42 - Management Präsentation]{
+	\textbf{Management Präsentation}
+}
+\subtitle{RO45 Robotik Projekt 3 – Automatische Sortieranlage}
+\author{NimSort42}
+\institute{Hochschule Kempten}
+\date{29 Juni 2026}
+
+\setbeamertemplate{section in toc}[ball unnumbered]
+\setbeamertemplate{subsection in toc}[ball unnumbered]
+\setbeamercolor{structure}{fg=black}
+
+
+\begin{document}
+	
+	\begin{frame}
+		\titlepage
+	\end{frame}
+	
+	\begin{frame}{Inhalt}
+		\tableofcontents
+	\end{frame}
+	
+	% --------------------
+	\section{Team \& Projekt}
+	
+	\begin{frame}{Projektteam \& Projektvorstellung}
+		\textbf{Projektteam:}
+		\begin{itemize}
+			\item Bachhuber Yannick
+			\item Keppler Benjamin
+			\item Moser Louis
+		\end{itemize}
+		
+		\vspace{6mm}
+		
+		\textbf{Projektvorstellung:}
+		\begin{itemize}
+			\item Entwicklung einer Software für eine automatische Sortieranlage
+			\item Unterscheidung der Haribo Produkte Katzen- und magischen Einhorn-Gummibären
+			\item Sortieren über einen Portalroboter
+		\end{itemize}
+
+	\end{frame}
+
+	
+	\begin{frame}{Projektmanagement \& Stakeholder}
+		\begin{columns}
+			\begin{column}{0.55\textwidth}
+				\textbf{Projektmanagement:}
+				\begin{itemize}
+					\item Meilensteine erreicht
+					\item In Time trotz Hardwareproblemen
+					\item GitHub Projects für Projektplan Tracking und Transparenz
+				\end{itemize}
+				\vspace{6mm}
+				\textbf{Stakeholder:}
+				\begin{itemize}
+					\item Professor Dr. Lorenzen
+					\item Nimsort42 Projektteam
+					\item HARIBO GmbH \& Co. KG
+				\end{itemize}
+			\end{column}
+			\begin{column}{0.4\textwidth}
+				\centering
+				\includegraphics[height=2.5cm]{../../pictures/haribo.png}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+	\section{Technische Highlights}
+	
+	\begin{frame}{Technische Highlights}
+
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Software-Unabhängigkeit}}
+				\begin{itemize}
+					\item Open Source
+					\item Erweiterbar
+				\end{itemize}
+			\end{block}
+		\end{column}
+
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Modulare Softwarearchitektur}}
+				\begin{itemize}
+					\item Klare Schnittstellen
+					\item Austauschbare Module
+					\item Einfache Wartung
+				\end{itemize}
+			\end{block}
+		\end{column}
+	\end{columns}
+
+	\vspace{0.3cm}
+
+	\begin{columns}[T]
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Fail-Safe Mechanismen}}
+				\begin{itemize}
+					\item Fehlererkennung
+					\item Notfallstrategien
+				\end{itemize}
+			\end{block}
+		\end{column}
+
+		\begin{column}{0.48\textwidth}
+			\begin{block}{\textbf{Präzises ML-Modell}}
+				\begin{itemize}
+					\item Einfaches und robustes Modell
+					\item Voting durch mehrere Bilder
+				\end{itemize}
+			\end{block}
+		\end{column}
+	\end{columns}
+
+	\end{frame}
+	
+	\section{Rahmenbedingungen}
+	
+	\begin{frame}{Rahmenbedingungen}
+		\begin{itemize}
+			\item Code für serielle Schnittstelle muss vorhanden sein
+			\item Beleuchtung muss konstant und korrekt sein
+			\item Kamera muss korrekt eingestellt sein
+			\item Förderbandgeschwindigkeit konstant zwischen 0.01 m/s und 0.05 m/s
+			\item Strom- und Druckluftzufuhr
+			\item Rechner mit ROS2 Humble muss konstant angeschlossen sein
+		\end{itemize}
+	\end{frame}
+	
+	\section{Performance}
+	
+	\begin{frame}{Performance}
+		\begin{itemize}
+			\item \textbf{Sortiergeschwindigkeit}: 0.01 m/s bis 0.03 m/s (optimal bei 0.015 m/s)
+			\item \textbf{Pickrate}: 91\% (In spez. Hardwaretest)
+			\item \textbf{Objektklassifizierung}: 100\% (in gesamt getestetem Zeitraum)
+		\end{itemize}
+	\end{frame}
+	
+	\section{Demonstration}
+		
+	\begin{frame}{Demonstration}
+
+	\centering
+
+	\begin{tabular}{l}
+	\fbox{\parbox{4cm}{\centering Initialisierung}} \\[0.3cm]
+
+	\hspace{1.5cm}$\searrow$ \\[0.1cm]
+
+	\hspace{2cm}\fbox{\parbox{4cm}{\centering Objekterkennung}} \\[0.3cm]
+
+	\hspace{3.5cm}$\searrow$ \\[0.1cm]
+
+	\hspace{4cm}\fbox{\parbox{4cm}{\centering Sortierung}} \\[0.3cm]
+
+	\hspace{5.5cm}$\searrow$ \\[0.1cm]
+
+	\hspace{6cm}\fbox{\parbox{4cm}{\centering Fail-Safe Fahrt}}
+	\end{tabular}
+
+	\vfill
+
+	\small
+	Alternative: Videodemonstration des spezifizierten Hardwaretests.
+
+	\end{frame}
+	
+	\section{Zusammenfassung}
+	
+	\begin{frame}{Zusammenfassung \& Ausblick}
+
+	\begin{columns}[T]
+
+	\begin{column}{0.48\textwidth}
+		\begin{block}{Projektzusammenfassung}
+			\begin{itemize}
+				\item Pünkliche Lieferung der Software
+				\item Modulare Softwarearchitektur
+				\item Funktionale Softwaremodule
+				\item Umfassende Dokumentation
+			\end{itemize}
+		\end{block}
+	\end{column}
+
+	\begin{column}{0.48\textwidth}
+		\begin{block}{Ausblick}
+			\begin{itemize}
+				\item Erweiterung der Software um weitere Objekte
+				\item Effizienterer Greifprozess
+				\item Ausschusserkennung
+				\item Hardware\textit{anpassungen}
+			\end{itemize}
+		\end{block}
+	\end{column}
+
+	\end{columns}
+	\begin{block}{Für Fragen oder Angebote:}
+		\begin{itemize}
+			\item Im Anschluss
+			\item Per GitHub: \url{https://github.com/derlole/NimSort42}
+		\end{itemize}
+	\end{block}
+
+	\end{frame}
+	
+\end{document}

@@ -44,19 +44,13 @@ Jeder Eintrag ist ein Tupel der Form `(start_px, end_px, farbe_BGR, dicke_px)`.
 
 ## Hauptschleife
 
-```python
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
-
-    for (start, end, color, thickness) in lines:
-        cv2.line(frame, start, end, color, thickness)
-
-    cv2.imshow("FBI-Survailance-Cam", frame)
-```
-
-Pro Frame wird jede Hilfslinie direkt ins Bild gezeichnet (`cv2.line`) und dann angezeigt. Das Original-Frame wird dabei nicht verändert. Die Linien existieren nur im Anzeigebild.
+- Liest in jedem Durchlauf einen Frame von der Kamera ein (cap.read())
+- Bricht die Schleife ab, falls kein Frame gelesen werden konnte (ret == False)
+- Zeichnet alle vordefinierten Linien auf den aktuellen Frame
+- Zeigt den Frame im Fenster an
+- Wartet auf einen Tastendruck
+- Bei ESC (Taste 27): Schleife wird beendet
+- Bei 'f': wechselt zwischen Vollbild- und normaler Fensteransicht
 
 ---
 
@@ -82,3 +76,6 @@ Kamera-Index `4` ist fest kodiert (`cv2.VideoCapture(4)`). Falls die Kamera unte
 ## Einordnung im NimSort-System
 
 Dieser Code gehört zur **Kamera-Ausrichtung**, der vor dem eigentlichen Pipeline-Betrieb ausgeführt wird.
+
+## Rücksprung zum [Camera Alignment](../explanations/camera_alignment.md)
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md)

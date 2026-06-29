@@ -5,7 +5,7 @@ from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from nimsort_msgs.msg import NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed
 from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
-from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
+from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic # TODO warum?
 
 
 from configs.config_position_prediction import DEFAULT_CONVEYOR_BELT_SPEED, SENTINEL_MSG

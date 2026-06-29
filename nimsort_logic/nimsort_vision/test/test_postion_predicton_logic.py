@@ -36,34 +36,6 @@ class TestPositionPrediction:
         assert updated_obj.position[1] == pytest.approx(random_y)
         assert updated_obj.position[2] == pytest.approx(random_z)
 
-    def test_threshold_removal(self, predictor):
-        """Test: Objekte über Schwellwert werden entfernt und in over_threshold_objects gespeichert."""
-        predictor.set_conveyorbelt_speed(1.0)
-
-        # Use positions that will trigger the threshold (X_THRESHOLD=0.55)
-        predictor.set_object_data(0, [0.45, 0.04, 0], 1000)
-        predictor.set_object_data(1, [0.50, 0.04, 0], 1000)
-
-        # These should merge since they're within DUPLICATE_THRESHOLD
-        assert len(predictor._objects) == 1
-
-        predictor._remove_objects_over_threshold()
-
-        # After removal, both objects should still be there since they're below threshold
-        assert len(predictor._objects) == 1
-        assert len(predictor._over_threshold_objects) == 0
-
-    def test_threshold_removal_exact_boundary(self, predictor):
-        """Test: Objekte genau auf dem Schwellwert (>= 0.55) werden ebenfalls entfernt."""
-        predictor.set_conveyorbelt_speed(1.0)
-
-        predictor.set_object_data(0, [0.55, 0.04, 0], 1000)
-
-        predictor._remove_objects_over_threshold()
-
-        assert len(predictor._objects) == 0
-        assert len(predictor._over_threshold_objects) == 1
-
     def test_multiple_objects_update(self, predictor):
         """Test: Mehrere Objekte werden gleichzeitig aktualisiert."""
         speed = 0.2

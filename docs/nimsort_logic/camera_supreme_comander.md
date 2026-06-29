@@ -2,35 +2,21 @@
 
 ## Zweck
 
-Dieser ROS2-Node ist der zentrale Orchestrator der NimSort-Visioon. Er koordiniert den Kamera-Pipeline, die Geschwindigkeitsschätzung des Förderbands und die Objektklassifikation, publiziert die Ergebnisse als ROS-Topics an nachgelagerte Systeme.
+Diese ROS2-Node ist der zentrale Orchestrator der NimSort-Visioon. Er koordiniert die Kamera-Pipeline, die Geschwindigkeitsschätzung des Förderbands und die Objektklassifikation, publiziert die Ergebnisse als ROS-Topics an nachgelagerte Systeme.
 
-Der Node trägt den Namen `camera_supreme_commander` und läuft als `Vision`-Klasse, die von `rclpy.node.Node` erbt.
+Die Node trägt den Namen `camera_supreme_commander` und läuft als `Vision`-Klasse, die von `rclpy.node.Node` erbt.
 
 ---
 
 ## Abhängigkeiten
 
-```python
-import rclpy
-from rclpy.node import Node
-from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
-from geometry_msgs.msg import Point
-from nimsort_msgs.msg import NimSortImageData, NimSortConveyorbeltSpeed
-
-from nimsort_vision.opencv_pipeline import OpencvPipeline
-from nimsort_vision.conveyor_speed import ConveyorSpeedEstimator
-from nimsort_feature_detection.feature_detection import FeatureDetection
-```
-
-| Import | Zweck |
-|--------|-------|
-| `rclpy` | ROS 2 Python-Client |
-| `MultiThreadedExecutor` | Parallele Callback-Ausführung |
-| `NimSortImageData` | Custom-Message: Objektposition + Typ + Zeitstempel |
-| `NimSortConveyorbeltSpeed` | Custom-Message: Bandgeschwindigkeit |
-| `OpencvPipeline` | Bildaufnahme & Pickpoin-Berechnung in Weltkoordinaten |
-| `ConveyorSpeedEstimator` | Geschwindigkeitsschätzung aus Objektbewegung |
-| `FeatureDetection` | Objektklassifikation via Hu-Momente |
+| Name | Version |
+|------|---------|
+| rclpy | 2.0+ |
+| geometry_msgs | 2.0+ |
+| nimsort_msgs | Custom |
+| nimsort_vision | Custom |
+| nimsort_feature_detection | Custom |
 
 ---
 
@@ -42,10 +28,6 @@ from nimsort_feature_detection.feature_detection import FeatureDetection
 |-------|-------------|--------|
 | `/NimSortImageData` | `NimSortImageData` | Position (x, y, z in m), Objekttyp (int), Zeitstempel (ms) |
 | `/NimSortConveyorbeltSpeed` | `NimSortConveyorbeltSpeed` | Aktuelle Bandgeschwindigkeit in m/s |
-
-### Queue-Size
-
-Beide Publisher verwenden `queue_size=10`. Bei Verarbeitungsrückstau werden ältere Nachrichten verworfen.
 
 ---
 
@@ -62,9 +44,7 @@ ros2 run nimsort_vision camera_supreme_commander --ros-args -p camera_index:=0
 
 ---
 
-## Klasse `Vision`
-
-### `__init__()`
+## Klasse `Vision()`
 
 Initialisiert alle Subsysteme in dieser Reihenfolge:
 
@@ -91,7 +71,7 @@ objects, ts, image = self.pipeline.getImageData()
 
 - `objects`: Liste von `(X_m, Y_m, Z_m)` --> Pickpoint aller erkannten Objekte in Weltkoordinaten
 - `ts`: Unix-Zeitstempel in ms des aufgenommenen Frames
-- `image`: Binärbild (Otsu) für die nachgelagerte Klassifikation
+- `image`: Binärbild für die nachgelagerte Klassifikation
 
 Bei `ValueError` (keine Konturen / unplausible Koordinaten) wird ein Dummy-Datensatz `(-1, -1, -1, -1, -1)` publiziert, um nachgelagerte Nodes über das Ausbleiben eines Objekts zu informieren.
 
@@ -145,7 +125,7 @@ Befüllt eine `NimSortImageData`-Message und publiziert sie auf `/NimSortImageDa
 
 | Feld | Typ | Inhalt |
 |------|-----|--------|
-| `current_position_wcs` | `Point` | X, Y, Z in Metern (Weltkoordinaten) |
+| `current_pickpoin_wcs` | `Point` | X, Y, Z in Metern (Weltkoordinaten) |
 | `object_type` | `int` | Klassen-ID aus `FeatureDetection` |
 | `ts` | `int` | Unix-Zeitstempel in ms |
 

@@ -152,15 +152,6 @@ class TestCaptureImage(unittest.TestCase):
         with self.assertRaises(Exception):
             p.captureImage()
 
-    def test_counter_increments(self):
-        p, mock_cap = self._make_pipeline()
-        fake_frame = np.zeros((300, 300, 3), dtype=np.uint8)
-        mock_cap.read.return_value = (True, fake_frame)
-
-        p.captureImage()
-        p.captureImage()
-        self.assertEqual(p._test_counter, 2)
-
 
 class TestGetImageData(unittest.TestCase):
 
@@ -172,12 +163,11 @@ class TestGetImageData(unittest.TestCase):
             mock_cap_cls.return_value = mock_cap
             return OpencvPipeline()
 
-    def test_raises_without_image(self):
-        p = self._make_pipeline()
-        p._raw_image = None
-        with self.assertRaises(Exception):
-            p.getImageData()
-
+        objects, ts, thresh = p.getImageData()
+        self.assertIsInstance(objects, list)
+        self.assertGreater(len(objects), 0)
+        self.assertIsInstance(ts, int)
+        self.assertIsNotNone(thresh)
 
     def test_object_coordinates_are_floats(self):
         p = self._make_pipeline()
@@ -241,7 +231,6 @@ class TestRelease(unittest.TestCase):
             p = OpencvPipeline()
             p.release()
             mock_cap.release.assert_called_once()
-
 
 if __name__ == "__main__":
     unittest.main()

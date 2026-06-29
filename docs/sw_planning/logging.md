@@ -41,3 +41,6 @@ lets pretend the ValueError in line 74 in the class Axis happens the log without
 [ERR-]: [Axis][update--]: Axis 'X': dt must be positive -10.0
 
 print(f"[PoPr][ROOT----][INFO]: Objekt {object_type} hat Schwellwert erreicht – wird entfernt.") 
+
+## Rücksprung zur [Nimsort Nodes](../ros_ws/nimsort_nodes.md#logging)
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md#58-einheitliche-konzepte)
