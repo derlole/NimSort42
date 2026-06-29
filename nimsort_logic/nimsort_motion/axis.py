@@ -5,8 +5,6 @@ contains the Axis Class for handling one Robotaxis.
 """
 
 from dataclasses import dataclass
-from typing import Optional
-
 from nimsort_motion.controller import Controller
 from nimsort_motion.trajectroy_planner import TrajectoryPlanner
 from nimsort_motion.axis_interface import AxisInterface 
@@ -110,26 +108,26 @@ class Axis(AxisInterface):
 
     @property
     def position(self) -> float:
-        """current position [m]."""
+        """return current position [m]."""
         return self._position
 
     @property
     def velocity(self) -> float:
-        """current velocity [m/s]."""
+        """return current velocity [m/s]."""
         return self._velocity
 
     @property
     def acceleration(self) -> float:
-        """current acceleration [m/s²]."""
+        """return current acceleration [m/s²]."""
         return self._acceleration
 
     @property
     def target_reached(self) -> bool:
-        """True wenn die Achse den Zielpunkt erreicht hat und steht."""
+        """return True when the Axis has reached its destination and is not moving."""
         return self._planner.reached
     
     def get_state(self) -> AxisState:
-        """Gibt einen Schnappschuss des aktuellen Zustands zurück."""
+        """returns a Snaphot of the Axs."""
         return AxisState(
             position=self._position,
             velocity=self._velocity,

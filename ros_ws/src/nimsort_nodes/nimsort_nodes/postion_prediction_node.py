@@ -5,7 +5,7 @@ from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
 from nimsort_msgs.msg import NimSortPrediction, NimSortImageData, NimSortConveyorbeltSpeed
 from geometry_msgs.msg import Point
 from std_msgs.msg import Bool
-from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic
+from nimsort_vision.position_prediction_logic import PositionPrediction as PositionPredictionLogic # TODO warum?
 
 
 from configs.config_position_prediction import DEFAULT_CONVEYOR_BELT_SPEED, SENTINEL_MSG
@@ -64,7 +64,6 @@ class PositionPredictionNode(Node):
     def prediction_feedback_callback(self, msg: Bool):
         if not msg.data:
             self.logic.remove_first_object()
-            # nue vorhersage schicken, wenn die alte vorhersage verworfen wurde
             self.main_order()
 
     def send_prediction(self, position: tuple[float, float, float, int]) -> None:
@@ -100,10 +99,10 @@ def main(args=None):
     try:
         executor.spin()
     except (ExternalShutdownException, KeyboardInterrupt):
-        node.get_logger().error("[ACN-][main----]: Shutdown Node")
+        node.get_logger().error("[PoPr][main----]: Shutdown Node")
 
     except RuntimeError as e:
-        node.get_logger().error(f"[ACN-][main----]: {str(e)}")
+        node.get_logger().error(f"[PoPr][main----]: {str(e)}")
 
     finally:
         executor.shutdown()

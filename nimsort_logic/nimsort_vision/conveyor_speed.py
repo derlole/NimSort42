@@ -1,16 +1,14 @@
 from collections import deque
 import statistics
-
+from configs.config_camera import DEFAULT_SPEED_ESTIMATION   
 class ConveyorSpeedEstimator:
     """
     Förderband-Geschwindigkeitsschätzung mit:
     - Medianfilter
-    - EMA-Glättung
-    - Ausreißerunterdrückung
-    - Persistenzprüfung für Geschwindigkeitsänderungen
+    - EMA-Glättung also know as PT1-Filter or Low-Pass-Filter as PT-1
     """
 
-    def __init__(self, smoothing: float = 0.3, median_window: int = 11, drop_threshold: float = 0.8, required_drop_frames: int = 8):
+    def __init__(self, smoothing: float = 0.3, median_window: int = 32, drop_threshold: float = 0.8, required_drop_frames: int = 8):
         self._last_x: float | None = None
         self._last_ts_ms: int | None = None
         self._estimated_speed: float = 0.0
@@ -50,22 +48,17 @@ class ConveyorSpeedEstimator:
 
         if self._estimated_speed == 0.0:
             self._estimated_speed = filtered_speed
-            return self._estimated_speed
-
-        if filtered_speed < self._estimated_speed * self._drop_threshold:
-            self._drop_counter += 1
-
-            if self._drop_counter < self._required_drop_frames:
-                return self._estimated_speed
-
         else:
-            self._drop_counter = 0
+            self._estimated_speed = (
+                self._alpha * filtered_speed
+                + (1 - self._alpha) * self._estimated_speed
+            )
 
-        self._estimated_speed = (
-            self._alpha * filtered_speed
-            + (1.0 - self._alpha) * self._estimated_speed
-        )
-
+        return self._estimated_speed
+    
+    def get_last_speed(self) -> float:
+        if self._estimated_speed is None or self._estimated_speed <= 0.0:
+            return DEFAULT_SPEED_ESTIMATION
         return self._estimated_speed
 
     def reset(self):

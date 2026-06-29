@@ -1,4 +1,4 @@
-import time
+
 from nimsort_motion.axis import Axis
 from nimsort_motion.controller import Controller
 from nimsort_motion.trajectroy_planner import TrajectoryPlanner

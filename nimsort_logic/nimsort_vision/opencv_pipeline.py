@@ -13,14 +13,7 @@ class OpencvPipeline(OpencvPipelineInterface):
     def __init__(self, camera_index = CAMERA_INDEX):
         self.time_stamp_ms = None
         self._last_result = None
-        self._test_counter = 0
         self._plausi = PlausibilityCheck()
-
-        # Basisverzeichnis für Bilder relativ zum Skript-Verzeichnis
-        self._base_images_dir = os.path.join(os.path.dirname(__file__), "..", "images_live")
-        os.makedirs(os.path.join(self._base_images_dir, "raw"), exist_ok=True)
-        os.makedirs(os.path.join(self._base_images_dir, "roi"), exist_ok=True)
-        os.makedirs(os.path.join(self._base_images_dir, "bin"), exist_ok=True)
 
         self._cap = cv.VideoCapture(camera_index)
         if not self._cap.isOpened():
@@ -29,7 +22,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         print(f"[OcvP][__init__]: Kamera {camera_index} geöffnet, warte auf Stabilisierung...")
 
         # Homographie berechnen
-        self.H, _ = cv.findHomography(PIXEL_PUNKTE, WELT_PUNKTE)
+        self.H, _ = cv.findHomography(PIXEL_PUNKTE, WELT_PUNKTE) #TODO Try catch für Homographie
 
         # Bounding Box des Trapezes einmalig vorberechnen (für effizienten Slice)
         x, y, w, h = cv.boundingRect(ROI_TRAPEZ)
@@ -56,11 +49,9 @@ class OpencvPipeline(OpencvPipelineInterface):
 
     def captureImage(self):
         """Liest exklusiv den Rohframe – minimale Laufzeit."""
-        self._test_counter += 1
         ret, self._raw_image = self._cap.read()
         self.time_stamp_ms = int(time.time() * 1000)
-        #cv.imwrite(os.path.join(self._base_images_dir, "raw", f"image_{self._test_counter}.png"), self._raw_image) #TODO remove after testing
-
+        
         if not ret or self._raw_image is None:
             raise Exception("Bildaufnahme fehlgeschlagen.")
 
@@ -75,8 +66,7 @@ class OpencvPipeline(OpencvPipelineInterface):
         # Bounding-Box-Ausschnitt + Trapezmaske anwenden
         roi = self._raw_image[self._roi_slice].copy()
         roi_masked = cv.bitwise_and(roi, roi, mask = self._trapez_mask)
-        #cv.imwrite(os.path.join(self._base_images_dir, "roi", f"image_{self._test_counter}.png"), roi_masked) #TODO remove after testing
-
+        
         gray = cv.cvtColor(roi_masked, cv.COLOR_BGR2GRAY)
         blur = cv.GaussianBlur(gray, (5, 5), 0)
         otsu_val, thresh = cv.threshold(blur, 0, 255, cv.THRESH_BINARY + cv.THRESH_OTSU)
@@ -85,8 +75,7 @@ class OpencvPipeline(OpencvPipelineInterface):
             thresh = np.zeros_like(blur)
 
         thresh = cv.bitwise_and(thresh, self._trapez_mask)
-        #cv.imwrite(os.path.join(self._base_images_dir, "bin", f"image_{self._test_counter}.png"), thresh) #TODO remove after testing
-
+       
         contours, _ = cv.findContours(thresh, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_NONE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
         contours = sorted(contours, key=lambda cnt: cv.moments(cnt)["m10"] / cv.moments(cnt)["m00"], reverse=True)

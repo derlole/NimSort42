@@ -20,7 +20,7 @@ class FeatureDetection(FeatureDetectionInterface):
     def __init__(self, model_path: str = _MODEL_PATH):
         
         if not os.path.isfile(model_path):
-            raise FileNotFoundError(f"[FD][__init__]: Modell nicht gefunden: {model_path}\n""Bitte zuerst train_classifier.py ausführen.")
+            raise FileNotFoundError(f"[FD][__init__]: Modell nicht gefunden: {model_path}\n""Bitte zuerst model_trainer.py ausführen.")
 
         self._model = joblib.load(model_path)
         self._last_feature = []
@@ -33,7 +33,7 @@ class FeatureDetection(FeatureDetectionInterface):
         Extrahiert Features für ALLE gültigen Konturen.
 
         Returns:
-            List[(feature_vector, contour)]
+            List[(feature_vector)]
         """
         contours, _ = cv.findContours(binary_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         contours = [cnt for cnt in contours if cv.contourArea(cnt) >= MIN_CONTOUR_AREA]
@@ -55,7 +55,7 @@ class FeatureDetection(FeatureDetectionInterface):
             hu_3 = hu_log[3]
 
             feature_vec = np.array([[hu_0, hu_3]], dtype=np.float32)
-            results.append((feature_vec, cnt))
+            results.append((feature_vec))
 
         return results
 
@@ -79,7 +79,7 @@ class FeatureDetection(FeatureDetectionInterface):
 
         features = []
 
-        for feature_vec, cnt in extracted:
+        for feature_vec in extracted:
             prediction: int = int(self._model.predict(feature_vec)[0])
             features.append(prediction)
             print(f"[FD][getFeature]: Prediction {prediction}")

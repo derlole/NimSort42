@@ -57,3 +57,5 @@ Geplant war zunächst ein Austausch der Motortreiber, zunächst bei der Y-Achse.
 Deshalb wurden stattdessen die `umgelöteten Motorpins der Y-Achse am Arduino` vorgenommen, wodurch das ursprüngliche Problem behoben wurde.  
 
 Dementsprechend wurde an keinem Motortreiber etwas verändert.
+
+## Rücksprung zur [Dokumentation](../documentation/documentation.md#54-fehlerhafte-hardware-kostet-software-viel-zeit)

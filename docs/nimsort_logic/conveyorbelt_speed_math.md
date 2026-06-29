@@ -50,7 +50,7 @@ Median der 11 Werte = der Mittelwert (6. Wert) ≈ 1.00
 
 ---
 
-### 3. **Exponentiell gewichteter Durchschnitt (EMA)**
+### 3. **Exponentiell gewichteter Durchschnitt (EMA) auch als PT1-Filter bekannt.**
 
 ```math
 v_smooth = α · v_filtered + (1 - α) · v_smooth_previous
@@ -80,50 +80,6 @@ Messung 3: v_filtered = 1.0 m/s
   → v_smooth = 0.3 × 1.0 + 0.7 × 0.51 = 0.657 m/s
   (nähert sich langsam dem wahren Wert an)
 ```
-
----
-
-### 4. **Persistenzprüfung (Drop Detection)**
-
-```math
-\text{Falls } v_{filtered} < v_{smooth} · \text{drop\_threshold}:
-  \text{drop\_counter += 1}
-  
-\text{Falls } \text{drop\_counter} ≥ \text{required\_drop\_frames}:
-  \text{akzeptiere Geschwindigkeitsänderung}
-\text{Sonst:}
-  \text{ignoriere Ausreißer und halte alte Geschwindigkeit}
-```
-
-Wobei:
-- `drop_threshold` = 0.8 (erlaubter Geschwindigkeitsabfall = 20%)
-- `required_drop_frames` = 8 (nötige aufeinanderfolgende Frames)
-
-**Was:** Ein Hysteresefilter, der nur signifikante und anhaltende Geschwindigkeitsabfälle akzeptiert.
-
-**Warum gut:**
-- **Ausreißerunterdrückung:** Einzelne fehlerhafte Messungen führen nicht zu Geschwindigkeitssprüngen
-- **Verzögerung akzeptabel:** Im Anwendungsfall (Förderband) ändert sich die Geschwindigkeit nicht abrupt; daher ist eine kleine Verzögerung kein Problem
-- **Robustheit:** Das System vertraut erst nach mehreren bestätigenden Messungen
-
-**Beispiel:**
-```
-Aktuelle Geschwindigkeit: 1.0 m/s
-drop_threshold = 0.8 → Trigger bei < 0.8 m/s
-
-Messung: 0.5 m/s (großer Abfall)
-  → drop_counter = 1 (< 8, ignorieren → 1.0 m/s bleiben)
-
-Messung: 0.4 m/s (großer Abfall)
-  → drop_counter = 2 (< 8, ignorieren → 1.0 m/s bleiben)
-
-... (6 weitere schlechte Messungen) ...
-
-Messung 8: 0.3 m/s
-  → drop_counter = 8 (≥ 8, akzeptieren → neue Geschwindigkeit setzen)
-```
-
----
 
 ## Ablauf des Algorithmus
 
@@ -172,13 +128,11 @@ update(x_m, ts_ms):
 |---------|---------------------------|-------------|--------------------------|
 | **Medianfilter** | Ausreißer in Einzelmessungen | Mittelwertfilter | Mittelwert wird von Ausreißern stark beeinflusst |
 | **EMA-Glättung** | Sprunghafte Übergänge | Kalman-Filter | Kalman-Filter sind komplexer, benötigen Systemmodell |
-| **Persistenzprüfung** | Falsche Geschwindigkeitsstöße | Direkter EMA | Würde auf jeden Messfehler reagieren |
 
 ### Synergieeffekte
 
 1. **Medianfilter** entfernt Ausreißer → **EMA** bekommt saubere Daten
 2. **EMA** glättet → **Persistenzprüfung** erkennt echte Änderungen vs. Noise
-3. **Persistenzprüfung** akzeptiert nur bestätigte Änderungen → System bleibt stabil
 
 ---
 
@@ -189,18 +143,10 @@ update(x_m, ts_ms):
 - Höher (z.B. 0.7) → schnellere Reaktion auf Änderungen, aber störanfälliger
 - Niedriger (z.B. 0.1) → stabiler, aber langsamere Reaktion
 
-### `median_window = 11`
+### `median_window = 32`
 - Anzahl der Rohwerte, aus denen der Median berechnet wird
 - Größer → mehr Filterung, aber längere Verzögerung
-- Standard 11 ist ein guter Kompromiss
-
-### `drop_threshold = 0.8`
-- Welcher Geschwindigkeitsabfall als signifikant gilt (20%)
-- Bei 1.0 m/s gilt < 0.8 m/s als Abfall
-
-### `required_drop_frames = 8`
-- Wie viele aufeinanderfolgende Frames einen Abfall bestätigen müssen
-- Mehr Frames → robuster gegen Noise, aber langsamere Reaktion auf echte Änderungen
+- Standard 32 ist ein guter Kompromiss
 
 ---
 
@@ -211,7 +157,6 @@ update(x_m, ts_ms):
 self._last_x = None  # Speichert letzte Position
 self._estimated_speed = 0.0  # Startet bei 0
 self._speed_buffer = deque(maxlen=11)  # Ringpuffer (automatisches Verwerfen alter Werte)
-self._drop_counter = 0  # Zähler für persistente Abfälle
 ```
 
 ### Reset-Funktion

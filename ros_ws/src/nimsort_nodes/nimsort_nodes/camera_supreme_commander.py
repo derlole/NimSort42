@@ -1,9 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.executors import ExternalShutdownException, MultiThreadedExecutor
-from tf2_ros import Buffer, TransformListener, LookupException, ConnectivityException, ExtrapolationException
-import tf2_geometry_msgs
-from geometry_msgs.msg import PointStamped, Point
+from geometry_msgs.msg import Point
 import time
 
 from nimsort_msgs.msg import NimSortImageData, NimSortConveyorbeltSpeed
@@ -122,7 +120,8 @@ class Vision(Node):
 
             
         if speed is None:
-            speed = 0.01
+            speed = self.speed_calc.get_last_speed()
+
         self.publish_conveyorbelt_speed(speed)
 
 

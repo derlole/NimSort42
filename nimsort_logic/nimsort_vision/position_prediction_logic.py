@@ -36,7 +36,6 @@ class PositionPrediction(PositionPredictionInterface):
             existing.position[0] = (old_x + position[0]) / 2.0
             existing.position[1] = (old_y + position[1]) / 2.0
             
-            # Count the object_type vote
             existing_id = next(
                 (obj_id for obj_id, obj in self._objects.items() if obj is existing),
                 None
@@ -61,7 +60,7 @@ class PositionPrediction(PositionPredictionInterface):
                 position=position,
                 ts=float(ts),
             )
-            # Initialize vote counter for this object
+          
             self._object_type_votes[new_id] = Counter([object_type])
 
         print(f"[INFO][PoPr][SOD-----]: Objekt mit ID {self._object_id_counter} bei X={position[0]:.2f} gespeichert.")
@@ -107,19 +106,17 @@ class PositionPrediction(PositionPredictionInterface):
     def calculate_next_object_positions(self) -> list[tuple[float, float, float, int]]:
         """
         Berechnet die nächsten Positionen der führenden Objekte.
-        Update und Threshold-Entfernung passiert genau einmal hier.
         """
         if self._conveyor_belt_speed is None or self._conveyor_belt_speed < 0:
             raise ValueError("[WARN][PoPr][CNOP----]: Förderband-Geschwindigkeit ungültig.")
  
         self._update_positions()
-        # self._remove_objects_over_threshold()
  
         if not self._objects:
             return [[-1.0, -1.0, -1.0, -1]]
  
         candidates = self.get_next_objects_to_publish(n=1)
-
+        print(f"[DEBUG][PoPr][CNOP----]: Kandidaten für Vorhersage: {candidates}")
         if not candidates:
             return [[-1.0, -1.0, -1.0, -1]]
  
@@ -156,23 +153,6 @@ class PositionPrediction(PositionPredictionInterface):
         """X-Position aller Objekte um speed * dt erhöhen."""
         for obj in self._objects.values():
             obj.position[0] += self._conveyor_belt_speed * DT
- 
-    def _remove_objects_over_threshold(self) -> None:
-        """
-        Objekte deren X-Position den Schwellwert überschreitet entfernen.
-
-        Entfernte Objekte werden in _over_threshold_objects gespeichert.
-        """
-        for obj_id, obj in list(self._objects.items()):
-            if obj.position[0] >= X_THRESHOLD:
-                self._over_threshold_objects.append(obj)
-                del self._objects[obj_id]
-                if obj_id in self._object_type_votes:
-                    del self._object_type_votes[obj_id]
-                print(
-                    f"[INFO][PoPr][ROOT----]: Objekt ID {obj_id} bei X={obj.position[0]:.2f} "
-                    f"über Threshold und in over_threshold_objects verschoben."
-                )
  
     def _find_similar_object(self, x_position: float) -> MagicObject | None:
         """

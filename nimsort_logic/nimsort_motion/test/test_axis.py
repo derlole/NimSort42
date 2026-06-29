@@ -11,7 +11,7 @@ from nimsort_motion.trajectroy_planner import TrajectoryPlanner
 
 class TestAxis:
     def setup_method(self):
-        self.planner = TrajectoryPlanner(max_velocity=1.0, max_acceleration=1.0)
+        self.planner = TrajectoryPlanner(max_velocity=1.0, max_acceleration=1.0, position_tolerance=1e-6, velocity_tolerance=1e-6)
         self.controller = Controller(kp=1.0, kd=0.0, output_limit=10.0)
         self.axis = Axis("Test", self.controller, self.planner, 0.0)
 

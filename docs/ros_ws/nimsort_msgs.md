@@ -14,7 +14,7 @@ int32 process_id
 
 **Erklärung:**
 - `target_point` – [x, y, z] Zielkoordinaten im World-Koordinatensystem [m]
-- `process_id` – Eindeutige ID des Griff-Vorgangs (für Tracking)
+- `process_id` – Eindeutige ID des Fahrprozesses
 
 **Verwendet von:** `MainNode` → `AxisControllerNode`
 
@@ -28,8 +28,8 @@ int32 object_type
 ```
 
 **Erklärung:**
-- `predicted_position_wcs` – Vorhergesagte Position des Objekts [m]
-- `object_type` – Klassifikations-Typ (z.B. 0=Katze, 1=Einhorn, -1=ungültig)
+- `predicted_position_wcs` – [x, y, z] Vorhergesagte Position des Objekts [m]
+- `object_type` – Klassifikations-Typ (z.B. 0=Katze, 1=Einhorn, 3=andere)
 
 **Verwendet von:** `PositionPredictionNode` → `MainNode`
 
@@ -59,10 +59,10 @@ int64 ts
 ```
 
 **Erklärung:**
-- `current_position_wcs` – Erkannte Position des Objekts im World-CS [m]
+- `current_position_wcs` – [x, y, z] Erkannte Position des Objekts im World-CS [m]
   - `-1.0` bedeutet: kein gültiges Objekt erkannt
-- `object_type` – Klassifikations-Typ
-- `ts` – Zeitstempel [Nanosekunden seit Epoche]
+- `object_type` – Klassifikations-Typ (z.B. 0=Katze, 1=Einhorn, 3=andere)
+- `ts` – Zeitstempel [Millisekunden seit Epoche]
 
 **Verwendet von:** `VisionNode` → `PositionPredictionNode`
 
@@ -77,7 +77,7 @@ float64 conveyorbelt_speed
 **Erklärung:**
 - `conveyorbelt_speed` – Aktuelle Geschwindigkeit [m/s]
 
-**Verwendet von:** `VisionNode` → `PositionPredictionNode`
+**Verwendet von:** `VisionNode` → `PositionPredictionNode` und `VisionNode` → `MainNode` 
 
 ---
 
@@ -93,25 +93,6 @@ Diese Messages sind ROS2-Wrapper um die Python-Datenstrukturen aus `nimsort_logi
 | `NimSortImageData` | Vision Output (Position + Type) |
 | `NimSortConveyorbeltSpeed` | `ConveyorSpeed.get_speed()` |
 
-## Message-Flow (Timing)
-
-```
-Vision (10 Hz) → NimSortImageData
-                      ↓
-Prediction (10 Hz) → NimSortPrediction (mit Extrapolation)
-                      ↓
-Main (10 Hz) → NimSortTarget
-                      ↓
-AxisController (10 Hz) → NimSortMotionState (feedback)
-```
-
-**Achtung:** Alle Nodes laufen mit ~10 Hz (0.1s Timer). Achten Sie auf Synchronisierung!
-
-## Best Practices
-
-1. **Koordinatensystem:** Immer World-Koordinatensystem (WCS) verwenden
-2. **-1.0 Sentinel:** Position (-1.0, -1.0, -1.0, -1) bedeutet "leerer Datensatz"
-3. **object_type:** Muss mit `LABEL_MAP` aus `configs.config_camera` konsistent sein
 
 ## Kompilierung
 
@@ -123,7 +104,7 @@ colcon build --packages-select nimsort_msgs
 
 Die generierten Python-Klassen sind dann verfügbar:
 ```python
-from nimsort_msgs.msg import NimSortTarget, NimSortPrediction
+from nimsort_msgs.msg import NimSortTarget, NimSortPrediction #, usw.
 ```
 
 ## Debugging
@@ -139,3 +120,7 @@ ros2 topic info /NimSortTarget -v
 # Message-Definition anzeigen
 ros2 interface show nimsort_msgs/msg/NimSortTarget
 ```
+
+
+## Rücksprung zur [nimsort_ros](../../documentation/nimsort_ros.md)
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md)

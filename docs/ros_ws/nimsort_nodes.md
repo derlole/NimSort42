@@ -1,9 +1,9 @@
 # nimsort_nodes – ROS2 Knoten-Implementation
 
 ## Überblick
-Das `nimsort_nodes` Paket enthält alle ROS2 Nodes (Python-basiert). Jeder Node wrappet die Logik aus `nimsort_logic` und kommuniziert über ROS2 Topics mit anderen Nodes.
+Das `nimsort_nodes` Paket enthält alle ROS2 Nodes (Python-basiert). Jeder Node wrappet die Logik aus `nimsort_logic` und kommuniziert über ROS2 Topics mit anderen Nodes. 
+Alle Topics sind entweder default ROS2 Typen, oder durch [nimsort_msgs.md](nimsort_msgs.md) dokumentiert.
 
-## Hauptknoten
 
 ### MainNode (`main_node.py`)
 **Zentrale State Machine für Sortierlogik – ROS2 Wrapper**
@@ -23,11 +23,11 @@ Wrappet: `nimsort_main.NimSortMain` (aus nimsort_logic)
 - `listener_callback_prediction()` – Verarbeitet Prediction + sendet Feedback
 - `main_order()` – Hauptschleife (10 Hz Timer)
 
-**Logik:**
-1. Empfange Prediction von PositionPredictionNode
-2. Prüfe ob Position plausibel/erreichbar ist
-3. Sende Feedback (valid/invalid)
-4. Falls valid → sende NimSortTarget an AxisController
+**Zyklischer Hauptablauf:**
+- 
+
+**Timeout:**
+- 1.0s ohne neue Prediction → stoppe Node
 
 ---
 
@@ -49,10 +49,17 @@ Wrappet: `nimsort_motion.axis.Axis` (aus nimsort_logic)
 - `robot_pos_callback()` – Aktuellen Status vom Roboter empfangen
 - `main_order()` – Verarbeitet Target + sendet Commands
 
+**Zyklischer Hauptablauf:**
+- 
+
+
 **Besonderheiten:**
 - **Timeouts:** 1.0s für Target, 0.5s für RobotPos (Fehler bei Timeout)
 - **InitProcess:** Kalibrierungs-Sequenz beim Start
-- **Offset-Tracking:** XYZ-Offsets für Positionsanpassung
+- **RescueInit:** Falls Kommunikation zu anderen Nodes fehlschlägt
+
+**Timeout:**
+- 1.0s ohne neue Target → stoppe Achse nach `RescueInit`
 
 ---
 
@@ -71,12 +78,12 @@ Wrappet:
 **Parameter:**
 - `camera_index` – Kamera-Nummer (default: 4)
 
-**Logik:**
-1. Erfasse Kamerabild
-2. Führe OpenCV-Pipeline aus → erkannte Positionen
-3. Klassifiziere Objekte (Feature Detection)
-4. Schätze Förderband-Geschwindigkeit
-5. Publiziere beide Topics
+**Wichtige Methoden:**
+- 
+
+**Zyklischer Hauptablauf:**
+- 
+
 
 **Fehlerbehandlung:**
 - RuntimeError bei Kamera-Initialisierung → log & re-raise
@@ -97,12 +104,12 @@ Wrappet: `nimsort_vision.position_prediction_logic.PositionPrediction`
 **Publications:**
 - `/NimSortPrediction` – Extrapolierte Objektposition
 
-**Logik:**
-1. Empfange Objektposition von Vision
-2. Empfange Förderband-Geschwindigkeit
-3. Extrapoliere Position basierend auf Geschwindigkeit
-4. Sende Prediction
-5. Je nach Feedback (MainNode): Track Position oder discard
+**Wichtige Methoden:**
+- 
+
+**Zyklischer Hauptablauf:**
+- 
+
 
 **Timeout:**
 - 1.0s ohne neue ImageData → stoppe Prediction
@@ -112,7 +119,8 @@ Wrappet: `nimsort_vision.position_prediction_logic.PositionPrediction`
 ### ManualAxisNode (`manual_axis.py`)
 **Manuelle Achsen-Steuerung (für Debugging/Setup)**
 
-Erlaubt manuelle X/Y/Z-Bewegungen für Kalibrierung und Fehlersuche.
+- Erlaubt manuelle X/Y/Z-Bewegungen für Kalibrierung und Fehlersuche.
+- Implementiert den Regler, und Achsendsoftware, welche auch im echten System verwendet wird.
 
 ---
 
@@ -127,6 +135,7 @@ MainNode (benötigt Prediction)
    ↓
 AxisControllerNode (benötigt MainNode Targets)
 ```
+Alle Potentiellen Feedbacks sind nicht unbedingt Notwendig für das Überleben der Node
 
 ## Threading & Callbacks
 
@@ -150,53 +159,17 @@ Alle Parameter kommen aus `configs/`:
 
 Alle Nodes verwenden ROS2 Logger:
 ```python
-self.get_logger().info("Message")
-self.get_logger().error("[ERROR_CODE] Details")
+self.get_logger().info("CONTENT")
+self.get_logger().error("CONTENT")
 ```
 
-## Fehlerbehandlung
-
-- **Timeout:** Wenn Node lange keine Messages erhält → log warning
-- **Invalid Position:** MainNode sendet Feedback=False → PositionPrediction verwirft
-- **Hardware Error:** AxisController kriegt keine RobotPos → error & stop
-
----
+Der Content ist so geschrieben, dass das Gesamtbild des Logs den Logging Konventionen, die in [logging.md](../sw_planning/logging.md) beschrieben sind.
 
 ## Integration mit nimsort_logic
 
-Alle Nodes nutzen direkt die Python-Klassen:
+Alle Nodes nutzen direkt die zugehörigen Python-Klassen, wie in [nimsort_logic.md](../../documentation/nimsort_logic.md) beschrieben
 
-```python
-# MainNode
-from nimsort_main.main_logic import NimSortMain
-self.nimsort_main = NimSortMain()
+Die Nodes sind **Wrapper** dieser Logik, nicht Neu-Implementierung, damit ncah bedarf möglichst einfach auf eine andere Middleware gewechselt werden kann.
 
-# VisionNode
-from nimsort_vision.opencv_pipeline import OpencvPipeline
-self.pipeline = OpencvPipeline(camera_index)
-
-# PositionPredictionNode
-from nimsort_vision.position_prediction_logic import PositionPrediction
-self.logic = PositionPrediction()
-```
-
-Die Nodes sind **Wrapper**, nicht Neu-Implementierung!
-
----
-
-## Debugging & Testing
-
-**Starten Sie einzelne Nodes:**
-```bash
-# Nur Vision
-ros2 run nimsort_nodes camera_supreme_commander
-
-# Nur Prediction
-ros2 run nimsort_nodes postion_prediction_node
-
-# Nur Main
-ros2 run nimsort_nodes main_node
-
-# Nur AxisController
-ros2 run nimsort_nodes axis_controller_node
-```
+## Rücksprung zur [nimsort_ros](../../documentation/nimsort_ros.md)
+## Rücksprung zur [Dokumentation](../../documentation/documentation.md)
