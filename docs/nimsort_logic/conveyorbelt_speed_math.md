@@ -50,7 +50,7 @@ Median der 11 Werte = der Mittelwert (6. Wert) ≈ 1.00
 
 ---
 
-### 3. **Exponentiell gewichteter Durchschnitt (EMA)**
+### 3. **Exponentiell gewichteter Durchschnitt (EMA) auch als PT1-Filter bekannt.**
 
 ```math
 v_smooth = α · v_filtered + (1 - α) · v_smooth_previous
